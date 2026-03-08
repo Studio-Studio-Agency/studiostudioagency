@@ -3,7 +3,13 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { AuthProvider } from "@/hooks/useAuth";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -14,14 +20,35 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/registrieren" element={<Register />} />
+            <Route path="/passwort-vergessen" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/listen" element={
+              <ProtectedRoute>
+                <div className="flex min-h-screen items-center justify-center">
+                  <p className="text-muted-foreground">Listen-Übersicht kommt in Schritt 3</p>
+                </div>
+              </ProtectedRoute>
+            } />
+            <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
+            <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
+);
+
+const PlaceholderPage = ({ title }: { title: string }) => (
+  <div className="container py-20 max-w-2xl">
+    <h1 className="text-3xl font-bold mb-4">{title}</h1>
+    <p className="text-muted-foreground">Inhalt folgt.</p>
+  </div>
 );
 
 export default App;
