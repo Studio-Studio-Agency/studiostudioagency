@@ -29,16 +29,12 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Verify user
-    const anonClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!
-    );
+    // Verify user using service role client
     const token = authHeader.replace("Bearer ", "");
     const {
       data: { user },
       error: userError,
-    } = await anonClient.auth.getUser(token);
+    } = await supabase.auth.getUser(token);
 
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "Nicht authentifiziert" }), {
