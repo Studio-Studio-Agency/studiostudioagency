@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Settings, List } from "lucide-react";
+import { LogOut, Settings, List, Calendar } from "lucide-react";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
