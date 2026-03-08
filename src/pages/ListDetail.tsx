@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import ListItemRow, { Item } from "@/components/ListItemRow";
+import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
