@@ -40,6 +40,9 @@ const App = () => (
             <Route path="/kalender" element={
               <ProtectedRoute><CalendarPage /></ProtectedRoute>
             } />
+            <Route path="/umfrage" element={
+              <ProtectedRoute><SurveyPage /></ProtectedRoute>
+            } />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
             <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />
             <Route path="*" element={<NotFound />} />
