@@ -29,12 +29,12 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Get user ID from token
-    const token = authHeader.replace("Bearer ", "");
+    // Verify user
     const anonClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!
     );
+    const token = authHeader.replace("Bearer ", "");
     const {
       data: { user },
       error: userError,
@@ -47,22 +47,17 @@ serve(async (req) => {
       });
     }
 
-    // Get user's Claude API key
-    const { data: settings } = await supabase
-      .from("user_settings")
-      .select("claude_api_key")
-      .eq("user_id", user.id)
-      .single();
-
-    if (!settings?.claude_api_key) {
+    // Use the global Anthropic API key from secrets
+    const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!apiKey) {
+      console.error("ANTHROPIC_API_KEY not configured");
       return new Response(
         JSON.stringify({
-          error: "no_api_key",
-          message:
-            "Bitte trage deinen Anthropic API Key in den Einstellungen ein.",
+          error: "config_error",
+          message: "KI-Service ist nicht konfiguriert.",
         }),
         {
-          status: 400,
+          status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
@@ -74,7 +69,7 @@ serve(async (req) => {
       {
         method: "POST",
         headers: {
-          "x-api-key": settings.claude_api_key,
+          "x-api-key": apiKey,
           "anthropic-version": "2023-06-01",
           "content-type": "application/json",
         },
@@ -99,7 +94,7 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({
           error: "api_error",
-          message: "Claude API Fehler. Bitte prüfe deinen API Key.",
+          message: "KI-Analyse fehlgeschlagen. Bitte versuche es erneut.",
         }),
         {
           status: 500,
@@ -114,7 +109,6 @@ serve(async (req) => {
     // Parse JSON from Claude response
     let analysis;
     try {
-      // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       analysis = JSON.parse(jsonMatch ? jsonMatch[0] : content);
     } catch {
