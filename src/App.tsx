@@ -12,6 +12,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ListsOverview from "./pages/ListsOverview";
 import ListDetail from "./pages/ListDetail";
+import CalendarPage from "./pages/CalendarPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,9 @@ const App = () => (
             } />
             <Route path="/listen/:id" element={
               <ProtectedRoute><ListDetail /></ProtectedRoute>
+            } />
+            <Route path="/kalender" element={
+              <ProtectedRoute><CalendarPage /></ProtectedRoute>
             } />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
             <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />

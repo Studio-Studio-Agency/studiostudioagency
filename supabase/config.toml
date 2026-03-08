@@ -2,3 +2,6 @@ project_id = "itxpdoppymvbotsiutea"
 
 [functions.analyze-item]
 verify_jwt = false
+
+[functions.calendar-feed]
+verify_jwt = false

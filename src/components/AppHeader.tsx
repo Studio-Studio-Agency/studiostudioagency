@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Settings, List } from "lucide-react";
+import { LogOut, Settings, List, Calendar } from "lucide-react";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -17,6 +17,11 @@ const AppHeader = () => {
             <Link to="/listen">
               <Button variant="ghost" size="sm">
                 <List className="h-4 w-4 mr-1" /> Listen
+              </Button>
+            </Link>
+            <Link to="/kalender">
+              <Button variant="ghost" size="sm">
+                <Calendar className="h-4 w-4" />
               </Button>
             </Link>
             <Link to="/einstellungen">
