@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ListsOverview from "./pages/ListsOverview";
 import ListDetail from "./pages/ListDetail";
 import CalendarPage from "./pages/CalendarPage";
+import SurveyPage from "./pages/SurveyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
