@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ListsOverview from "./pages/ListsOverview";
 import ListDetail from "./pages/ListDetail";
 import CalendarPage from "./pages/CalendarPage";
+import SurveyPage from "./pages/SurveyPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -38,6 +39,9 @@ const App = () => (
             } />
             <Route path="/kalender" element={
               <ProtectedRoute><CalendarPage /></ProtectedRoute>
+            } />
+            <Route path="/umfrage" element={
+              <ProtectedRoute><SurveyPage /></ProtectedRoute>
             } />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
             <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />

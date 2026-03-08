@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import ListItemRow, { Item } from "@/components/ListItemRow";
+import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -126,7 +127,10 @@ const ListDetail = () => {
           <ArrowLeft className="h-4 w-4" /> Zurück
         </button>
 
-        <h1 className="text-2xl font-bold mb-6">{listName || "..."}</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">{listName || "..."}</h1>
+          {listId && <ShareListDialog listId={listId} listName={listName} />}
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
