@@ -130,11 +130,50 @@ const ListDetail = () => {
       )
     );
 
-    // If checking (= bought), trigger AI analysis placeholder
+    // If checking (= bought), trigger AI analysis
     if (nowChecked) {
       setAnalyzingId(item.id);
-      // KI-Analyse kommt in Schritt 4
-      setTimeout(() => setAnalyzingId(null), 1500);
+      try {
+        const { data, error: fnError } = await supabase.functions.invoke("analyze-item", {
+          body: {
+            artikelName: item.name,
+            menge: item.menge,
+            einheit: item.einheit,
+            itemId: item.id,
+          },
+        });
+
+        if (fnError) throw fnError;
+
+        if (data?.error === "no_api_key") {
+          toast({
+            title: "API Key fehlt",
+            description: "Bitte trage deinen Anthropic API Key in den Einstellungen ein.",
+            variant: "destructive",
+          });
+        } else if (data?.error) {
+          toast({ title: "KI-Fehler", description: data.message, variant: "destructive" });
+        } else if (data?.success) {
+          // Update local item with analysis results
+          const a = data.analysis;
+          setItems(prev =>
+            prev.map(i => i.id === item.id ? {
+              ...i,
+              ist_lebensmittel: a.istLebensmittel,
+              kategorie: a.kategorie,
+              haltbarkeit_tage: a.haltbarkeitTage,
+              erinnerung_vor_tagen: a.erinnerungVorTagen,
+              ablauf_datum: a.ablaufDatum,
+              erklaerung: a.erklaerung,
+              lagerhinweis: a.lagerhinweis,
+            } : i)
+          );
+        }
+      } catch (err) {
+        console.error("Analysis error:", err);
+        toast({ title: "Analyse fehlgeschlagen", description: "Bitte versuche es erneut.", variant: "destructive" });
+      }
+      setAnalyzingId(null);
     }
   };
 
