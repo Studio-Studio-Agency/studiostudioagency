@@ -10,6 +10,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import ListsOverview from "./pages/ListsOverview";
+import ListDetail from "./pages/ListDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,11 +30,10 @@ const App = () => (
             <Route path="/passwort-vergessen" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/listen" element={
-              <ProtectedRoute>
-                <div className="flex min-h-screen items-center justify-center">
-                  <p className="text-muted-foreground">Listen-Übersicht kommt in Schritt 3</p>
-                </div>
-              </ProtectedRoute>
+              <ProtectedRoute><ListsOverview /></ProtectedRoute>
+            } />
+            <Route path="/listen/:id" element={
+              <ProtectedRoute><ListDetail /></ProtectedRoute>
             } />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
             <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />
