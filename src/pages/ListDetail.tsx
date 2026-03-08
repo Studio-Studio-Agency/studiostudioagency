@@ -145,13 +145,7 @@ const ListDetail = () => {
 
         if (fnError) throw fnError;
 
-        if (data?.error === "no_api_key") {
-          toast({
-            title: "API Key fehlt",
-            description: "Bitte trage deinen Anthropic API Key in den Einstellungen ein.",
-            variant: "destructive",
-          });
-        } else if (data?.error) {
+        if (data?.error) {
           toast({ title: "KI-Fehler", description: data.message, variant: "destructive" });
         } else if (data?.success) {
           // Update local item with analysis results
