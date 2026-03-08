@@ -14,7 +14,203 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      feedback_entries: {
+        Row: {
+          created_at: string
+          id: string
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          text?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ios_waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      items: {
+        Row: {
+          ablauf_datum: string | null
+          checked_at: string | null
+          created_at: string
+          einheit: string | null
+          erinnerung_vor_tagen: number | null
+          erklaerung: string | null
+          haltbarkeit_tage: number | null
+          id: string
+          is_checked: boolean
+          ist_lebensmittel: boolean | null
+          kategorie: string | null
+          lagerhinweis: string | null
+          list_id: string
+          menge: number | null
+          name: string
+          user_id: string
+        }
+        Insert: {
+          ablauf_datum?: string | null
+          checked_at?: string | null
+          created_at?: string
+          einheit?: string | null
+          erinnerung_vor_tagen?: number | null
+          erklaerung?: string | null
+          haltbarkeit_tage?: number | null
+          id?: string
+          is_checked?: boolean
+          ist_lebensmittel?: boolean | null
+          kategorie?: string | null
+          lagerhinweis?: string | null
+          list_id: string
+          menge?: number | null
+          name: string
+          user_id: string
+        }
+        Update: {
+          ablauf_datum?: string | null
+          checked_at?: string | null
+          created_at?: string
+          einheit?: string | null
+          erinnerung_vor_tagen?: number | null
+          erklaerung?: string | null
+          haltbarkeit_tage?: number | null
+          id?: string
+          is_checked?: boolean
+          ist_lebensmittel?: boolean | null
+          kategorie?: string | null
+          lagerhinweis?: string | null
+          list_id?: string
+          menge?: number | null
+          name?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "items_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+          user_id: string
+          vorname: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+          vorname?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+          vorname?: string | null
+        }
+        Relationships: []
+      }
+      survey_responses: {
+        Row: {
+          antwort: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          antwort: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          antwort?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          calendar_token: string | null
+          claude_api_key: string | null
+          email_notifications: boolean | null
+          sprache: string | null
+          user_id: string
+        }
+        Insert: {
+          calendar_token?: string | null
+          claude_api_key?: string | null
+          email_notifications?: boolean | null
+          sprache?: string | null
+          user_id: string
+        }
+        Update: {
+          calendar_token?: string | null
+          claude_api_key?: string | null
+          email_notifications?: boolean | null
+          sprache?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
