@@ -1,7 +1,9 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { LogOut, Settings, List, Calendar } from "lucide-react";
+import { LogOut, Settings, List, Calendar, MessageSquare, Smartphone } from "lucide-react";
+import FeedbackDialog from "@/components/FeedbackDialog";
+import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -22,6 +24,13 @@ const AppHeader = () => {
             <Link to="/kalender">
               <Button variant="ghost" size="sm">
                 <Calendar className="h-4 w-4" />
+              </Button>
+            </Link>
+            <FeedbackDialog />
+            <IOSWaitlistDialog />
+            <Link to="/umfrage">
+              <Button variant="ghost" size="sm">
+                Umfrage
               </Button>
             </Link>
             <Link to="/einstellungen">
