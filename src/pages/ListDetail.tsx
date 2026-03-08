@@ -16,6 +16,7 @@ const ListDetail = () => {
   const navigate = useNavigate();
 
   const [listName, setListName] = useState("");
+  const [editToken, setEditToken] = useState<string | undefined>();
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
@@ -26,8 +27,11 @@ const ListDetail = () => {
   const fetchData = useCallback(async () => {
     if (!listId) return;
     const { data: listData } = await supabase
-      .from("lists").select("name").eq("id", listId).single();
-    if (listData) setListName(listData.name);
+      .from("lists").select("name, edit_token").eq("id", listId).single();
+    if (listData) {
+      setListName(listData.name);
+      setEditToken(listData.edit_token);
+    }
 
     const { data: itemsData, error } = await supabase
       .from("items").select("*").eq("list_id", listId)
