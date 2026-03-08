@@ -429,6 +429,11 @@ const ItemRow = ({
               )}
               {item.erklaerung && <p className="text-muted-foreground">{item.erklaerung}</p>}
               {item.lagerhinweis && <p className="text-muted-foreground">💡 {item.lagerhinweis}</p>}
+              {item.ablauf_datum && (
+                <Link to="/kalender" className="inline-block mt-1 text-xs text-primary hover:underline">
+                  📅 Kalender verbinden für automatische Erinnerung
+                </Link>
+              )}
             </div>
           )}
         </div>
