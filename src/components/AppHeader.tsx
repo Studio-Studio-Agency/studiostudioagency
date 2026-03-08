@@ -19,6 +19,11 @@ const AppHeader = () => {
                 <List className="h-4 w-4 mr-1" /> Listen
               </Button>
             </Link>
+            <Link to="/kalender">
+              <Button variant="ghost" size="sm">
+                <Calendar className="h-4 w-4" />
+              </Button>
+            </Link>
             <Link to="/einstellungen">
               <Button variant="ghost" size="sm">
                 <Settings className="h-4 w-4" />
