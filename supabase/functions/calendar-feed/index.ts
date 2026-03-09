@@ -4,6 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 serve(async (req) => {
   const url = new URL(req.url);
   const token = url.searchParams.get("token");
+  const format = url.searchParams.get("format") || "ics";
 
   if (!token) {
     return new Response("Unauthorized", { status: 401 });
@@ -25,7 +26,60 @@ serve(async (req) => {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Load all checked food items with expiry dates
+  // Build the ICS feed URL (always https)
+  const feedUrl = `${url.origin}/functions/v1/calendar-feed?token=${token}`;
+
+  // ── .mobileconfig (Apple Configuration Profile) ──────────────────────────
+  if (format === "mobileconfig") {
+    const mobileconfig = `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>PayloadContent</key>
+  <array>
+    <dict>
+      <key>PayloadType</key>
+      <string>com.apple.subscribedcalendar.account</string>
+      <key>PayloadVersion</key>
+      <integer>1</integer>
+      <key>PayloadIdentifier</key>
+      <string>app.freshfreshai.calendar.subscription</string>
+      <key>PayloadUUID</key>
+      <string>${crypto.randomUUID()}</string>
+      <key>PayloadDisplayName</key>
+      <string>FreshFresh AI – Haltbarkeit</string>
+      <key>SubCalAccountDescription</key>
+      <string>🛒 FreshFresh AI – Haltbarkeit</string>
+      <key>SubCalAccountHostName</key>
+      <string>${feedUrl}</string>
+      <key>SubCalAccountUseSSL</key>
+      <true/>
+    </dict>
+  </array>
+  <key>PayloadDisplayName</key>
+  <string>🛒 FreshFresh AI Kalender</string>
+  <key>PayloadDescription</key>
+  <string>Abonniere deinen persönlichen Haltbarkeits-Kalender von FreshFresh AI.</string>
+  <key>PayloadIdentifier</key>
+  <string>app.freshfreshai.calendar</string>
+  <key>PayloadType</key>
+  <string>Configuration</string>
+  <key>PayloadUUID</key>
+  <string>${crypto.randomUUID()}</string>
+  <key>PayloadVersion</key>
+  <integer>1</integer>
+</dict>
+</plist>`;
+
+    return new Response(mobileconfig, {
+      headers: {
+        "Content-Type": "application/x-apple-aspen-config",
+        "Content-Disposition": 'attachment; filename="freshfresh-kalender.mobileconfig"',
+      },
+    });
+  }
+
+  // ── ICS feed ─────────────────────────────────────────────────────────────
   const { data: items } = await supabase
     .from("items")
     .select("*")
@@ -45,7 +99,6 @@ serve(async (req) => {
     }
   };
 
-  // Generate ICS events
   const icsEvents = (items || [])
     .map((item) => {
       const reminderDate = new Date(item.ablauf_datum);
