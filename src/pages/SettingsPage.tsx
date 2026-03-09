@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
+import CameraCapture from "@/components/CameraCapture";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus } from "lucide-react";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
@@ -24,6 +25,7 @@ const SettingsPage = () => {
   const [vorname, setVorname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [emailNotifications, setEmailNotifications] = useState(false);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -45,11 +47,8 @@ const SettingsPage = () => {
     load();
   }, [user]);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    console.log("Avatar upload triggered, file:", file?.name, file?.type, file?.size);
-    if (!file || !user) return;
-
+  const uploadAvatarFile = async (file: File) => {
+    if (!user) return;
     if (!file.type.startsWith("image/")) {
       toast({ title: "Fehler", description: "Bitte wähle eine Bilddatei.", variant: "destructive" });
       return;
@@ -138,36 +137,50 @@ const SettingsPage = () => {
           <CardContent className="space-y-4">
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
-              <button
-                type="button"
-                className="relative group cursor-pointer bg-transparent border-0 p-0"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-              >
-                <Avatar className="h-24 w-24 border-2 border-border">
-                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
-                  <AvatarFallback className="text-2xl bg-muted">{initials}</AvatarFallback>
-                </Avatar>
-                <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  {uploading ? (
-                    <Loader2 className="h-6 w-6 animate-spin text-white" />
-                  ) : (
-                    <Camera className="h-6 w-6 text-white" />
-                  )}
-                </div>
-              </button>
+              <Avatar className="h-24 w-24 border-2 border-border">
+                <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
+                <AvatarFallback className="text-2xl bg-muted">{initials}</AvatarFallback>
+              </Avatar>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => setCameraOpen(true)}
+                  disabled={uploading}
+                >
+                  <Camera className="h-4 w-4" /> Foto aufnehmen
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1.5"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <ImagePlus className="h-4 w-4" /> Hochladen
+                </Button>
+              </div>
+              {uploading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
               <input
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 className="hidden"
                 onChange={(e) => {
-                  handleAvatarUpload(e);
+                  const file = e.target.files?.[0];
+                  if (file) uploadAvatarFile(file);
                   e.target.value = "";
                 }}
                 disabled={uploading}
               />
-              <p className="text-xs text-muted-foreground">Klicke um dein Foto zu ändern</p>
+              <CameraCapture
+                open={cameraOpen}
+                onClose={() => setCameraOpen(false)}
+                onCapture={(file) => uploadAvatarFile(file)}
+              />
             </div>
 
             <div className="space-y-2">

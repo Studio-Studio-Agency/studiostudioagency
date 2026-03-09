@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
+import CameraCapture from "@/components/CameraCapture";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
@@ -26,7 +27,7 @@ const ScanReceiptPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
@@ -184,12 +185,20 @@ const ScanReceiptPage = () => {
               <Card className="p-8 border-2 border-dashed border-border text-center space-y-4">
                 <p className="text-muted-foreground">Fotografiere oder lade ein Bild deines Einkaufszettels hoch</p>
                 <div className="flex gap-3 justify-center flex-wrap">
+                  <Button variant="outline" onClick={() => setCameraOpen(true)} className="gap-2">
+                    <Camera className="h-4 w-4" /> Foto aufnehmen
+                  </Button>
                   <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="gap-2">
-                    <Camera className="h-4 w-4" /> Foto aufnehmen / wählen
+                    <ImagePlus className="h-4 w-4" /> Bild wählen
                   </Button>
                 </div>
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                   onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); e.target.value = ""; }} />
+                <CameraCapture
+                  open={cameraOpen}
+                  onClose={() => setCameraOpen(false)}
+                  onCapture={(file) => handleFile(file)}
+                />
               </Card>
             ) : (
               <div className="space-y-4">
