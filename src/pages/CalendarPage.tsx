@@ -5,7 +5,8 @@ import AppHeader from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Copy, RefreshCw, Check, Calendar, Download, ExternalLink, Smartphone, ChevronDown, ChevronUp } from "lucide-react";
+import { Copy, RefreshCw, Check, Calendar, Download, ExternalLink, Smartphone, ChevronDown, ChevronUp, Link2 } from "lucide-react";
+import { AppleCalendarIcon, GoogleCalendarIcon, OutlookCalendarIcon } from "@/components/CalendarIcons";
 
 const CalendarPage = () => {
   const { user } = useAuth();
