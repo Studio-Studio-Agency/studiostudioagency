@@ -106,7 +106,7 @@ const ListsOverview = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <main className="container py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
@@ -201,7 +201,9 @@ const ListsOverview = () => {
           </DialogContent>
         </Dialog>
       </main>
-      <AppFooter />
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };
