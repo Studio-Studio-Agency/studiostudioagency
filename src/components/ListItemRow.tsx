@@ -33,7 +33,7 @@ export interface Item {
 
 export const KATEGORIEN: Record<string, string> = {
   "Obst & Früchte": "🍎",
-  "Gemüse & Salat": "🥦",
+  "Gemüse & Salat": "🥕",
   "Fleisch & Fisch": "🥩",
   "Milchprodukte": "🧀",
   "Backwaren": "🍞",
