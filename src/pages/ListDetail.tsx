@@ -193,20 +193,49 @@ const ListDetail = () => {
             {/* Checked items */}
             {checkedItems.length > 0 && (
               <div className="mt-8 pt-4 border-t border-border">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Gekauft ({checkedItems.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Gekauft ({checkedItems.length})
+                  </h3>
+                  <div className="flex gap-1 flex-wrap">
+                    {([
+                      { key: 'all' as const, label: 'Alle', count: checkedItems.length },
+                      { key: 'red' as const, label: '🔴', count: statusCounts.red },
+                      { key: 'orange' as const, label: '🟠', count: statusCounts.orange },
+                      { key: 'yellow' as const, label: '🟡', count: statusCounts.yellow },
+                      { key: 'green' as const, label: '🟢', count: statusCounts.green },
+                    ] as const).filter(f => f.key === 'all' || f.count > 0).map(f => (
+                      <button
+                        key={f.key}
+                        onClick={() => setFilterStatus(f.key)}
+                        className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                          filterStatus === f.key
+                            ? 'bg-accent text-accent-foreground border-accent font-medium'
+                            : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                        }`}
+                      >
+                        {f.label}{f.key !== 'all' ? ` ${f.count}` : ` ${f.count}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-1">
-                  {checkedItems.map(item => (
-                    <ListItemRow
-                      key={item.id}
-                      item={item}
-                      analyzing={analyzingId === item.id}
-                      onToggle={() => toggleCheck(item)}
-                      onDelete={() => deleteItem(item.id)}
-                      onRename={(n) => renameItem(item.id, n)}
-                    />
-                  ))}
+                  {filteredCheckedItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-2 text-center">
+                      Keine Items in dieser Kategorie.
+                    </p>
+                  ) : (
+                    filteredCheckedItems.map(item => (
+                      <ListItemRow
+                        key={item.id}
+                        item={item}
+                        analyzing={analyzingId === item.id}
+                        onToggle={() => toggleCheck(item)}
+                        onDelete={() => deleteItem(item.id)}
+                        onRename={(n) => renameItem(item.id, n)}
+                      />
+                    ))
+                  )}
                 </div>
               </div>
             )}
