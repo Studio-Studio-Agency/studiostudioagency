@@ -201,6 +201,7 @@ const ListsOverview = () => {
           </DialogContent>
         </Dialog>
       </main>
+      <AppFooter />
     </div>
   );
 };
