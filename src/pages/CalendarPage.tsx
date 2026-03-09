@@ -90,7 +90,9 @@ const CalendarPage = () => {
             {/* ── Apple Profil (empfohlen) ── */}
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="py-4 flex items-center gap-4">
-                <div className="text-3xl">📱</div>
+                <div className="h-10 w-10 rounded-lg bg-muted flex items-center justify-center shrink-0">
+                  <AppleCalendarIcon className="h-6 w-6" />
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="font-semibold text-sm flex items-center gap-1.5">
                     Apple Kalender
