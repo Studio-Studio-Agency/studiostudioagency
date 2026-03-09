@@ -13,7 +13,7 @@ import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
-  const { resolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme }heme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [vorname, setVorname] = useState("");
 
@@ -37,8 +37,7 @@ const AppHeader = () => {
   return (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between py-3">
-        <Link to={user ? "/listen" : "/"} className="flex items-center">
-          <iresolvedmg src={mg src={resolvedT? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
+        <Link to={user ? "/listen" : "/"} className="flex items-centemg src={resolvedTheme === "dark" g src={resolvedT? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
         </Link>
         <div className="flex items-center gap-2">
           <Button
