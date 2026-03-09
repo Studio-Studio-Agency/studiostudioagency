@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
+import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
