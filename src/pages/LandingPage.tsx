@@ -36,14 +36,9 @@ const LandingPage = () => {
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
           <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
-          <div className="flex gap-2">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Anmelden</Button>
-            </Link>
-            <Link to="/registrieren">
-              <Button size="sm">Kostenlos starten</Button>
-            </Link>
-          </div>
+          <Link to="/login">
+            <Button variant="ghost" size="sm">Anmelden</Button>
+          </Link>
         </div>
       </header>
 
