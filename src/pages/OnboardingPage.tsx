@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { AppleCalendarIcon, GoogleCalendarIcon, OutlookCalendarIcon } from "@/components/CalendarIcons";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const STEPS = [
   { id: "welcome", label: "Willkommen" },
