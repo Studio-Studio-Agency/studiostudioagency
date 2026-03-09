@@ -9,6 +9,7 @@ import { LogOut, Settings, List, Calendar, Sun, Moon } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
