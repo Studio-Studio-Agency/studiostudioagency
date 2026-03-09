@@ -84,9 +84,7 @@ const AppHeader = () => {
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
               <Link to="/umfrage">Umfrage</Link>
             </Button>
-            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/einstellungen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-              <Link to="/einstellungen"><Settings className="h-4 w-4" /></Link>
-            </Button>
+            
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-xs px-2" onClick={signOut}>
               <LogOut className="h-4 w-4" />
             </Button>
