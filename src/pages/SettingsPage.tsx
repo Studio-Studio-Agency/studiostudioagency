@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import AppHeader from "@/components/AppHeader";
@@ -14,6 +15,7 @@ import { Loader2, Save, User, Bell, LogOut, Camera } from "lucide-react";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
@@ -45,6 +47,7 @@ const SettingsPage = () => {
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log("Avatar upload triggered, file:", file?.name, file?.type, file?.size);
     if (!file || !user) return;
 
     if (!file.type.startsWith("image/")) {
@@ -102,6 +105,7 @@ const SettingsPage = () => {
       toast({ title: "Fehler", description: "Einstellungen konnten nicht gespeichert werden.", variant: "destructive" });
     } else {
       toast({ title: "Gespeichert", description: "Deine Einstellungen wurden aktualisiert." });
+      navigate("/listen");
     }
   };
 
