@@ -123,7 +123,7 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <main className="container max-w-lg py-8 space-y-6">
         <h1 className="text-2xl font-bold">Einstellungen</h1>
