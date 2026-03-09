@@ -6,7 +6,9 @@ import { ShoppingCart, Bot, Calendar, ArrowRight, Sparkles, Shield, Users } from
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, type Easing } from "framer-motion";
+import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 import AppFooter from "@/components/AppFooter";
 
 const ease: Easing = [0.25, 0.1, 0.25, 1];
