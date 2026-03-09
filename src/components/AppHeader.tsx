@@ -13,7 +13,7 @@ import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
-  const { resolvedTheme, setTheme }heme, setTheme }heme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [vorname, setVorname] = useState("");
 
@@ -37,14 +37,15 @@ const AppHeader = () => {
   return (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between py-3">
-        <Link to={user ? "/listen" : "/"} className="mg src={resolvedTheme === "dark" heme === "dark" g src={resolvedT? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
+        <Link to={user ? "/listen" : "/"} className="flex items-center">
+          <img src={resolvedTheme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
         </Link>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick=resolvedTheme ===heme ==resolvedT "dark" ? "light" : "dark")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             aria-label="Dark Mode umschalten"
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
