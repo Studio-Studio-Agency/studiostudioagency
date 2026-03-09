@@ -241,7 +241,7 @@ const CalendarPage = () => {
         <AppFooter />
       </div>
     </div>
-};
+  );
 
 const InstructionCard = ({
   icon,
