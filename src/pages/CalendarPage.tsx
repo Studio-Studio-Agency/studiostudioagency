@@ -242,6 +242,7 @@ const CalendarPage = () => {
       </div>
     </div>
   );
+};
 
 const InstructionCard = ({
   icon,
