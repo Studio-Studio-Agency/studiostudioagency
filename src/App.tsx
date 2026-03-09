@@ -45,6 +45,9 @@ const App = () => (
             <Route path="/listen/:id" element={
               <ProtectedRoute><ListDetail /></ProtectedRoute>
             } />
+            <Route path="/scan" element={
+              <ProtectedRoute><ScanReceiptPage /></ProtectedRoute>
+            } />
             <Route path="/kalender" element={
               <ProtectedRoute><CalendarPage /></ProtectedRoute>
             } />

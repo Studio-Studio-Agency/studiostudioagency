@@ -136,6 +136,7 @@ const ListsOverview = () => {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {loading ? (
