@@ -184,15 +184,10 @@ const ScanReceiptPage = () => {
               <Card className="p-8 border-2 border-dashed border-border text-center space-y-4">
                 <p className="text-muted-foreground">Fotografiere oder lade ein Bild deines Einkaufszettels hoch</p>
                 <div className="flex gap-3 justify-center flex-wrap">
-                  <Button variant="outline" onClick={() => cameraInputRef.current?.click()} className="gap-2">
-                    <Camera className="h-4 w-4" /> Foto aufnehmen
-                  </Button>
                   <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="gap-2">
-                    <ImagePlus className="h-4 w-4" /> Bild wählen
+                    <Camera className="h-4 w-4" /> Foto aufnehmen / wählen
                   </Button>
                 </div>
-                <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden"
-                  onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); e.target.value = ""; }} />
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
                   onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); e.target.value = ""; }} />
               </Card>
