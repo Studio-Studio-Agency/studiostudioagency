@@ -21,6 +21,8 @@ const SettingsPage = () => {
   const [vorname, setVorname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [emailNotifications, setEmailNotifications] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
 
   useEffect(() => {
     if (!user) return;
