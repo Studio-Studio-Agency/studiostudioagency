@@ -81,6 +81,51 @@
   }
 }
 
+  /* Inverted theme zone: swaps light↔dark variables */
+  .theme-inverted {
+    --background: 145 35% 6%;
+    --foreground: 210 40% 96%;
+    --card: 145 30% 9%;
+    --card-foreground: 210 40% 96%;
+    --popover: 145 30% 9%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 145 22% 13%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 145 22% 13%;
+    --muted-foreground: 145 12% 50%;
+    --accent: 145 22% 13%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 210 40% 96%;
+    --border: 145 20% 16%;
+    --input: 145 20% 16%;
+    --ring: 122 39% 49%;
+  }
+
+  .dark .theme-inverted {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 15%;
+    --primary: 122 39% 49%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 120 20% 96%;
+    --secondary-foreground: 220 15% 15%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+    --accent: 120 20% 96%;
+    --accent-foreground: 220 15% 15%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 122 39% 49%;
+  }
+
 @layer base {
   * {
     @apply border-border;
