@@ -24,7 +24,7 @@ const fadeUp = {
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
-  const { resolvedTheme } = useTheme();
+  const { resolvedTesolvedTheme } = useTheme();
   const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const LandingPage = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
-          <img src={theme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+          <iresolvedTg src={theme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           <Link to="/login">
             <Button variant="ghost" size="sm">Anmelden</Button>
           </Link>
