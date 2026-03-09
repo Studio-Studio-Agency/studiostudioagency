@@ -1,16 +1,18 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, List, Calendar } from "lucide-react";
+import { LogOut, Settings, List, Calendar, Sun, Moon } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [vorname, setVorname] = useState("");
 
@@ -37,14 +39,26 @@ const AppHeader = () => {
         <Link to={user ? "/listen" : "/"} className="flex items-center">
           <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-8 w-auto" />
         </Link>
-        {user && (
-          <Link to="/einstellungen">
-            <Avatar className="h-8 w-8 border border-border">
-              <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
-              <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
-            </Avatar>
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            aria-label="Dark Mode umschalten"
+          >
+            <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />
+          </Button>
+          {user && (
+            <Link to="/einstellungen">
+              <Avatar className="h-8 w-8 border border-border">
+                <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
+                <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
+              </Avatar>
+            </Link>
+          )}
+        </div>
       </div>
       {user && (
         <nav className="border-t overflow-x-auto">
