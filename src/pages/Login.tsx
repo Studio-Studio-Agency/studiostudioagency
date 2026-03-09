@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import AppFooter from "@/components/AppFooter";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -37,7 +38,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col bg-background">
+      <div className="flex flex-1 items-center justify-center px-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
@@ -86,6 +88,8 @@ const Login = () => {
           </div>
         </CardContent>
       </Card>
+      </div>
+      <AppFooter />
     </div>
   );
 };

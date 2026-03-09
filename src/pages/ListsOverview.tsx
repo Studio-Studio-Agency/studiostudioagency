@@ -10,6 +10,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, ShoppingCart, Loader2 } from "lucide-react";
+import AppFooter from "@/components/AppFooter";
+import ListSkeleton from "@/components/ListSkeleton";
 
 interface ListItem {
   id: string;
@@ -131,9 +133,7 @@ const ListsOverview = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <ListSkeleton count={3} />
         ) : lists.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground animate-fade-in">
             <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-40" />
@@ -201,6 +201,7 @@ const ListsOverview = () => {
           </DialogContent>
         </Dialog>
       </main>
+      <AppFooter />
     </div>
   );
 };
