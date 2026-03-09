@@ -59,7 +59,7 @@ const Register = () => {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+            <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           </div>
           <CardDescription>Konto erstellen und kostenlos starten</CardDescription>
         </CardHeader>

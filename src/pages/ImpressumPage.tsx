@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 const ImpressumPage = () => (
   <div className="min-h-screen bg-background">
     <header className="border-b bg-card">
-      <div className="container flex items-center justify-between py-3">
+      <div className="container flex items-center justify-between py-4">
         <Link to="/">
-          <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
         </Link>
       </div>
     </header>
