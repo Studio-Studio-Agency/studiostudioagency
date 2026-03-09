@@ -69,9 +69,9 @@ const CalendarPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
-      <main className="container py-6 max-w-2xl">
+      <main className="container py-6 max-w-2xl flex-1">
         <h1 className="text-2xl font-bold mb-2 flex items-center gap-2">
           <Calendar className="h-6 w-6 text-primary" /> Haltbarkeits-Kalender
         </h1>
