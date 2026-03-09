@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, ShoppingCart, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ShoppingCart, Loader2, ScanLine } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AppFooter from "@/components/AppFooter";
 import ListSkeleton from "@/components/ListSkeleton";
 
