@@ -207,40 +207,53 @@ const ScanReceiptPage = () => {
 
             {/* Item list */}
             <div className="space-y-2">
-              {result.items.map((item, idx) => (
-                <Card key={idx} className="p-3">
-                  <div className="flex items-start gap-2">
-                    <span className="shrink-0 text-lg">{getLifecycleDot(item)}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <span className="font-medium">{item.name}</span>
-                        {item.menge && (
-                          <span className="text-sm text-muted-foreground">
-                            {item.menge} {item.einheit}
-                          </span>
-                        )}
+              {result.items.map((item, idx) => {
+                const ablaufDatum = item.haltbarkeitTage && item.istLebensmittel
+                  ? (() => { const d = new Date(); d.setDate(d.getDate() + item.haltbarkeitTage); return d.toLocaleDateString("de-CH"); })()
+                  : null;
+
+                return (
+                  <Card key={idx} className="p-3">
+                    <div className="flex items-start gap-2">
+                      <span className="shrink-0 text-lg">{getLifecycleDot(item)}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="font-medium">{item.name}</span>
+                          {item.menge && (
+                            <span className="text-sm text-muted-foreground">
+                              {item.menge} {item.einheit}
+                            </span>
+                          )}
+                        </div>
+                        <div className="mt-1.5 p-2 rounded-md bg-accent text-sm space-y-1">
+                          {item.kategorie && (
+                            <div className="flex items-center gap-2">
+                              <span>{KATEGORIEN[item.kategorie] || "📦"}</span>
+                              <span className="font-medium text-accent-foreground">{item.kategorie}</span>
+                            </div>
+                          )}
+                          {ablaufDatum && (
+                            <p className="text-muted-foreground">
+                              Mindestens haltbar bis: <span className="text-foreground">{ablaufDatum}</span>
+                            </p>
+                          )}
+                          {item.haltbarkeitTage && (
+                            <p className="text-muted-foreground">
+                              ⏱ ca. {item.haltbarkeitTage} Tage haltbar
+                            </p>
+                          )}
+                          {item.lagerhinweis && (
+                            <p className="text-muted-foreground">💡 {item.lagerhinweis}</p>
+                          )}
+                          {item.erklaerung && (
+                            <p className="text-muted-foreground">{item.erklaerung}</p>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        {item.kategorie && (
-                          <span>
-                            {KATEGORIEN[item.kategorie] || "📦"} {item.kategorie}
-                          </span>
-                        )}
-                      </div>
-                      {item.haltbarkeitTage && (
-                        <p className="text-sm text-muted-foreground mt-1">
-                          ⏱ ca. {item.haltbarkeitTage} Tage haltbar
-                        </p>
-                      )}
-                      {item.lagerhinweis && (
-                        <p className="text-sm text-muted-foreground mt-0.5">
-                          💡 {item.lagerhinweis}
-                        </p>
-                      )}
                     </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                );
+              })}
             </div>
 
             {/* Actions */}

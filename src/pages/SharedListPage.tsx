@@ -4,22 +4,15 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
+import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-
-interface SharedItem {
-  id: string;
-  name: string;
-  is_checked: boolean;
-  menge: number | null;
-  einheit: string | null;
-}
 
 const SharedListPage = () => {
   const { token } = useParams<{ token: string }>();
   const { toast } = useToast();
 
   const [listName, setListName] = useState("");
-  const [items, setItems] = useState<SharedItem[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -59,14 +52,13 @@ const SharedListPage = () => {
     }
   };
 
-  const toggleItem = async (item: SharedItem) => {
+  const toggleItem = async (item: Item) => {
     const nowChecked = !item.is_checked;
-    setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_checked: nowChecked } : i));
+    setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_checked: nowChecked, checked_at: nowChecked ? new Date().toISOString() : null } : i));
     try {
       await call("toggle_item", { itemId: item.id, isChecked: nowChecked });
     } catch {
-      // revert
-      setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_checked: item.is_checked } : i));
+      setItems(prev => prev.map(i => i.id === item.id ? { ...i, is_checked: item.is_checked, checked_at: item.checked_at } : i));
     }
   };
 
@@ -114,6 +106,7 @@ const SharedListPage = () => {
         <h1 className="text-2xl font-bold mb-6">{listName}</h1>
 
         <div className="space-y-1">
+          {/* Unchecked items */}
           {unchecked.map(item => (
             <div key={item.id} className="flex items-center gap-3 py-1.5 group">
               <Checkbox
@@ -121,6 +114,11 @@ const SharedListPage = () => {
                 onCheckedChange={() => toggleItem(item)}
               />
               <span className="flex-1 text-foreground">{item.name}</span>
+              {item.menge && (
+                <span className="text-sm text-muted-foreground">
+                  {item.menge} {item.einheit}
+                </span>
+              )}
               <button
                 onClick={() => deleteItem(item.id)}
                 className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
@@ -142,26 +140,22 @@ const SharedListPage = () => {
             />
           </div>
 
+          {/* Checked items with full details */}
           {checked.length > 0 && (
             <div className="mt-8 pt-4 border-t border-border">
               <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                Erledigt ({checked.length})
+                Gekauft ({checked.length})
               </h3>
               <div className="space-y-1">
                 {checked.map(item => (
-                  <div key={item.id} className="flex items-center gap-3 py-1.5 group">
-                    <Checkbox
-                      checked={true}
-                      onCheckedChange={() => toggleItem(item)}
-                    />
-                    <span className="flex-1 text-muted-foreground line-through">{item.name}</span>
-                    <button
-                      onClick={() => deleteItem(item.id)}
-                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  <ListItemRow
+                    key={item.id}
+                    item={item}
+                    analyzing={false}
+                    onToggle={() => toggleItem(item)}
+                    onDelete={() => deleteItem(item.id)}
+                    onRename={() => {}}
+                  />
                 ))}
               </div>
             </div>
