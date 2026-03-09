@@ -242,18 +242,18 @@ const CalendarPage = () => {
 };
 
 const InstructionCard = ({
-  emoji,
+  icon,
   title,
   steps,
 }: {
-  emoji: string;
+  icon: React.ReactNode;
   title: string;
   steps: string[];
 }) => (
   <Card>
     <CardContent className="py-4">
-      <h3 className="font-medium mb-2 text-sm">
-        {emoji} {title}
+      <h3 className="font-medium mb-2 text-sm flex items-center gap-2">
+        {icon} {title}
       </h3>
       <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
         {steps.map((step, i) => (
