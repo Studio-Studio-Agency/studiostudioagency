@@ -84,8 +84,17 @@ const OnboardingPage = () => {
 
   const finishOnboarding = async () => {
     if (!user) return;
-    await supabase.from("profiles").update({ onboarding_completed: true }).eq("user_id", user.id);
-    navigate("/listen");
+
+    const { error } = await supabase
+      .from("profiles")
+      .upsert({ user_id: user.id, onboarding_completed: true }, { onConflict: "user_id" });
+
+    if (error) {
+      toast({ title: "Fehler", description: error.message, variant: "destructive" });
+      return;
+    }
+
+    navigate("/listen", { replace: true });
   };
 
   const baseUrl = import.meta.env.VITE_SUPABASE_URL;
