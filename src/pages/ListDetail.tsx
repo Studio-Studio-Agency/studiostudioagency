@@ -124,6 +124,26 @@ const ListDetail = () => {
   const uncheckedItems = items.filter(i => !i.is_checked);
   const checkedItems = items.filter(i => i.is_checked);
 
+  const getLifecycleStatus = (item: Item): 'red' | 'orange' | 'yellow' | 'green' => {
+    if (!item.ablauf_datum) return 'green';
+    const days = Math.ceil((new Date(item.ablauf_datum).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    if (days <= 0) return 'red';
+    if (days <= 2) return 'orange';
+    if (days <= 5) return 'yellow';
+    return 'green';
+  };
+
+  const statusCounts = {
+    red: checkedItems.filter(i => getLifecycleStatus(i) === 'red').length,
+    orange: checkedItems.filter(i => getLifecycleStatus(i) === 'orange').length,
+    yellow: checkedItems.filter(i => getLifecycleStatus(i) === 'yellow').length,
+    green: checkedItems.filter(i => getLifecycleStatus(i) === 'green').length,
+  };
+
+  const filteredCheckedItems = filterStatus === 'all'
+    ? checkedItems
+    : checkedItems.filter(i => getLifecycleStatus(i) === filterStatus);
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
