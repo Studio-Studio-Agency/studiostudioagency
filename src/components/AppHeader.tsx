@@ -33,10 +33,9 @@ const AppHeader = () => {
   }, [user]);
 
   const initials = vorname ? vorname.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() ?? "?";
+  const invertedIsDark = resolvedTheme !== "dark";
 
   return (
-    const invertedIsDark = resolvedTheme === "dark" ? false : true;
-
     <header className="border-b bg-card theme-inverted">
       <div className="container flex items-center justify-between py-3">
         <Link to={user ? "/listen" : "/"} className="flex items-center">
