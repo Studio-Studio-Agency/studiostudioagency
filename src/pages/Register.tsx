@@ -8,7 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 import AppFooter from "@/components/AppFooter";
 
 const Register = () => {
