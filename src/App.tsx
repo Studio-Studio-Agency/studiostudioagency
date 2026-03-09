@@ -49,6 +49,9 @@ const App = () => (
             <Route path="/einstellungen" element={
               <ProtectedRoute><SettingsPage /></ProtectedRoute>
             } />
+            <Route path="/willkommen" element={
+              <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+            } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
