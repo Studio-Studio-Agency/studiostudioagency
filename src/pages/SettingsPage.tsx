@@ -94,7 +94,6 @@ const SettingsPage = () => {
       supabase.from("user_settings").upsert({
         user_id: user.id,
         email_notifications: emailNotifications,
-        claude_api_key: apiKey.trim() || null,
       }, { onConflict: "user_id" }),
     ]);
     setSaving(false);
