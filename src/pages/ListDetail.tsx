@@ -20,6 +20,7 @@ const ListDetail = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'red' | 'orange' | 'yellow' | 'green'>('all');
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
