@@ -55,6 +55,13 @@ const AppHeader = () => {
           </Button>
           {user && (
             <Link to="/einstellungen">
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Einstellungen">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
+          {user && (
+            <Link to="/einstellungen">
               <Avatar className="h-8 w-8 border border-border">
                 <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                 <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
@@ -77,9 +84,7 @@ const AppHeader = () => {
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
               <Link to="/umfrage">Umfrage</Link>
             </Button>
-            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/einstellungen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-              <Link to="/einstellungen"><Settings className="h-4 w-4" /></Link>
-            </Button>
+            
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-xs px-2" onClick={signOut}>
               <LogOut className="h-4 w-4" />
             </Button>
