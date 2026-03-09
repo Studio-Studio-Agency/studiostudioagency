@@ -20,6 +20,7 @@ const ListDetail = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'red' | 'orange' | 'yellow' | 'green'>('all');
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
@@ -123,6 +124,26 @@ const ListDetail = () => {
   const uncheckedItems = items.filter(i => !i.is_checked);
   const checkedItems = items.filter(i => i.is_checked);
 
+  const getLifecycleStatus = (item: Item): 'red' | 'orange' | 'yellow' | 'green' => {
+    if (!item.ablauf_datum) return 'green';
+    const days = Math.ceil((new Date(item.ablauf_datum).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    if (days <= 0) return 'red';
+    if (days <= 2) return 'orange';
+    if (days <= 5) return 'yellow';
+    return 'green';
+  };
+
+  const statusCounts = {
+    red: checkedItems.filter(i => getLifecycleStatus(i) === 'red').length,
+    orange: checkedItems.filter(i => getLifecycleStatus(i) === 'orange').length,
+    yellow: checkedItems.filter(i => getLifecycleStatus(i) === 'yellow').length,
+    green: checkedItems.filter(i => getLifecycleStatus(i) === 'green').length,
+  };
+
+  const filteredCheckedItems = filterStatus === 'all'
+    ? checkedItems
+    : checkedItems.filter(i => getLifecycleStatus(i) === filterStatus);
+
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
@@ -172,20 +193,49 @@ const ListDetail = () => {
             {/* Checked items */}
             {checkedItems.length > 0 && (
               <div className="mt-8 pt-4 border-t border-border">
-                <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Gekauft ({checkedItems.length})
-                </h3>
+                <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
+                  <h3 className="text-sm font-medium text-muted-foreground">
+                    Gekauft ({checkedItems.length})
+                  </h3>
+                  <div className="flex gap-1 flex-wrap">
+                    {([
+                      { key: 'all' as const, label: 'Alle', count: checkedItems.length },
+                      { key: 'red' as const, label: '🔴', count: statusCounts.red },
+                      { key: 'orange' as const, label: '🟠', count: statusCounts.orange },
+                      { key: 'yellow' as const, label: '🟡', count: statusCounts.yellow },
+                      { key: 'green' as const, label: '🟢', count: statusCounts.green },
+                    ] as const).filter(f => f.key === 'all' || f.count > 0).map(f => (
+                      <button
+                        key={f.key}
+                        onClick={() => setFilterStatus(f.key)}
+                        className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                          filterStatus === f.key
+                            ? 'bg-accent text-accent-foreground border-accent font-medium'
+                            : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                        }`}
+                      >
+                        {f.label}{f.key !== 'all' ? ` ${f.count}` : ` ${f.count}`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="space-y-1">
-                  {checkedItems.map(item => (
-                    <ListItemRow
-                      key={item.id}
-                      item={item}
-                      analyzing={analyzingId === item.id}
-                      onToggle={() => toggleCheck(item)}
-                      onDelete={() => deleteItem(item.id)}
-                      onRename={(n) => renameItem(item.id, n)}
-                    />
-                  ))}
+                  {filteredCheckedItems.length === 0 ? (
+                    <p className="text-sm text-muted-foreground py-2 text-center">
+                      Keine Items in dieser Kategorie.
+                    </p>
+                  ) : (
+                    filteredCheckedItems.map(item => (
+                      <ListItemRow
+                        key={item.id}
+                        item={item}
+                        analyzing={analyzingId === item.id}
+                        onToggle={() => toggleCheck(item)}
+                        onDelete={() => deleteItem(item.id)}
+                        onRename={(n) => renameItem(item.id, n)}
+                      />
+                    ))
+                  )}
                 </div>
               </div>
             )}
