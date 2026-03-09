@@ -2,34 +2,36 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Bot, Calendar } from "lucide-react";
+import { ShoppingCart, Bot, Calendar, ArrowRight, Sparkles, Shield, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import AppFooter from "@/components/AppFooter";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1, y: 0,
+    transition: { delay: i * 0.12, duration: 0.5, ease: "easeOut" },
+  }),
+};
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
   const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
-    // Simple count - just a rough number for social proof
-    const fetchCount = async () => {
-      const { count } = await supabase
-        .from("profiles")
-        .select("*", { count: "exact", head: true });
-      setUserCount(count || 0);
-    };
-    fetchCount();
+    supabase.from("profiles").select("*", { count: "exact", head: true })
+      .then(({ count }) => setUserCount(count || 0));
   }, []);
 
-  if (!loading && user) {
-    return <Navigate to="/listen" replace />;
-  }
+  if (!loading && user) return <Navigate to="/listen" replace />;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b bg-card">
+      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-14 items-center justify-between">
           <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
           <div className="flex gap-2">
@@ -44,68 +46,132 @@ const LandingPage = () => {
       </header>
 
       {/* Hero */}
-      <section className="container py-20 text-center animate-fade-in">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-          Schluss mit weggeworfenen<br />Lebensmitteln.
-        </h1>
-        <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-          GoodGoods erinnert dich automatisch, bevor dein Essen schlecht wird – 
-          ganz ohne manuelles Eintragen.
-        </p>
-        <Link to="/registrieren">
-          <Button size="lg" className="text-base px-8">
-            Kostenlos starten →
-          </Button>
-        </Link>
-        {userCount > 0 && (
-          <p className="mt-4 text-sm text-muted-foreground">
-            Bereits {userCount} {userCount === 1 ? "Nutzer" : "Nutzer"} dabei
-          </p>
-        )}
+      <section className="relative overflow-hidden">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-accent/30" />
+        <div className="absolute top-20 -right-32 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="absolute -bottom-20 -left-32 w-80 h-80 rounded-full bg-primary/8 blur-3xl" />
+
+        <div className="container relative py-24 md:py-32 text-center">
+          <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
+            <span className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground mb-6">
+              <Sparkles className="h-3 w-3 text-primary" />
+              KI-gestützte Haltbarkeitsanalyse
+            </span>
+          </motion.div>
+
+          <motion.h1
+            className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-6"
+            initial="hidden" animate="visible" variants={fadeUp} custom={1}
+          >
+            Schluss mit{" "}
+            <span className="bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">
+              weggeworfenen
+            </span>
+            <br />Lebensmitteln.
+          </motion.h1>
+
+          <motion.p
+            className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
+            initial="hidden" animate="visible" variants={fadeUp} custom={2}
+          >
+            GoodGoods erinnert dich automatisch, bevor dein Essen schlecht wird –
+            ganz ohne manuelles Eintragen von Ablaufdaten.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-3 justify-center items-center"
+            initial="hidden" animate="visible" variants={fadeUp} custom={3}
+          >
+            <Link to="/registrieren">
+              <Button size="lg" className="text-base px-8 shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all">
+                Kostenlos starten <ArrowRight className="ml-1 h-4 w-4" />
+              </Button>
+            </Link>
+            {userCount > 0 && (
+              <span className="text-sm text-muted-foreground">
+                Bereits <strong className="text-foreground">{userCount}</strong> Nutzer dabei
+              </span>
+            )}
+          </motion.div>
+        </div>
       </section>
 
-      {/* Features */}
-      <section className="container pb-20">
-        <div className="grid gap-8 md:grid-cols-3 max-w-3xl mx-auto">
-          <FeatureCard
-            icon={<ShoppingCart className="h-8 w-8 text-primary" />}
-            title="Einkaufen"
-            description="Erstelle deine Liste und hake Artikel beim Kauf ab."
-          />
-          <FeatureCard
-            icon={<Bot className="h-8 w-8 text-primary" />}
-            title="KI analysiert"
-            description="Claude AI berechnet automatisch die Haltbarkeit deiner Lebensmittel."
-          />
-          <FeatureCard
-            icon={<Calendar className="h-8 w-8 text-primary" />}
-            title="Rechtzeitig erinnert"
-            description="Kalender-Erinnerung bevor das Essen schlecht wird."
-          />
+      {/* How it works */}
+      <section className="container py-20 md:py-28">
+        <motion.div
+          className="text-center mb-14"
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-3">So einfach geht's</h2>
+          <p className="text-muted-foreground text-lg">Drei Schritte – kein Aufwand</p>
+        </motion.div>
+
+        <div className="grid gap-8 md:grid-cols-3 max-w-4xl mx-auto">
+          {[
+            { icon: ShoppingCart, title: "1. Einkaufen", desc: "Erstelle deine Liste und hake Artikel beim Kauf ab." },
+            { icon: Bot, title: "2. KI analysiert", desc: "Haltbarkeit wird automatisch berechnet – du musst nichts eingeben." },
+            { icon: Calendar, title: "3. Erinnert werden", desc: "Kalender-Erinnerung, bevor das Essen schlecht wird." },
+          ].map((f, i) => (
+            <motion.div
+              key={f.title}
+              className="group rounded-2xl border bg-card p-8 text-center hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1 transition-all duration-300"
+              initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} custom={i}
+            >
+              <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                <f.icon className="h-7 w-7" />
+              </div>
+              <h3 className="font-semibold text-lg mb-2">{f.title}</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Trust bar */}
+      <section className="border-y bg-muted/30">
+        <div className="container py-10 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          {[
+            { icon: Shield, label: "DSGVO-konform" },
+            { icon: Sparkles, label: "KI-gestützt" },
+            { icon: Users, label: "Geteilte Listen" },
+            { icon: Calendar, label: "Kalender-Sync" },
+          ].map((t) => (
+            <div key={t.label} className="flex flex-col items-center gap-2">
+              <t.icon className="h-5 w-5 text-primary" />
+              <span className="text-sm font-medium text-muted-foreground">{t.label}</span>
+            </div>
+          ))}
         </div>
       </section>
 
       {/* iOS Waitlist */}
       <WaitlistSection />
 
-      {/* Footer */}
-      <footer className="border-t py-8">
-        <div className="container flex flex-wrap gap-4 justify-center text-sm text-muted-foreground">
-          <Link to="/datenschutz" className="hover:underline">Datenschutz</Link>
-          <Link to="/impressum" className="hover:underline">Impressum</Link>
-        </div>
-      </footer>
+      {/* CTA */}
+      <section className="container py-20 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }} transition={{ duration: 0.4 }}
+          className="max-w-lg mx-auto"
+        >
+          <h2 className="text-3xl font-bold mb-4">Bereit, weniger wegzuwerfen?</h2>
+          <p className="text-muted-foreground mb-6">Erstelle dein Konto in 30 Sekunden. Kostenlos.</p>
+          <Link to="/registrieren">
+            <Button size="lg" className="text-base px-10 shadow-lg shadow-primary/20">
+              Jetzt starten <ArrowRight className="ml-1 h-4 w-4" />
+            </Button>
+          </Link>
+        </motion.div>
+      </section>
+
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };
-
-const FeatureCard = ({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) => (
-  <div className="rounded-lg border bg-card p-6 text-center animate-slide-up">
-    <div className="flex justify-center mb-3">{icon}</div>
-    <h3 className="font-semibold text-lg mb-2">{title}</h3>
-    <p className="text-sm text-muted-foreground">{description}</p>
-  </div>
-);
 
 const WaitlistSection = () => {
   const [email, setEmail] = useState("");
@@ -114,9 +180,7 @@ const WaitlistSection = () => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    supabase
-      .from("ios_waitlist")
-      .select("*", { count: "exact", head: true })
+    supabase.from("ios_waitlist").select("*", { count: "exact", head: true })
       .then(({ count }) => setCount(count || 0));
   }, [done]);
 
@@ -129,25 +193,22 @@ const WaitlistSection = () => {
   };
 
   return (
-    <section className="bg-accent py-16">
+    <section className="bg-accent/50 py-16">
       <div className="container text-center max-w-md mx-auto">
-        <h2 className="text-2xl font-bold mb-2">📱 iOS App coming soon!</h2>
-        <p className="text-muted-foreground mb-4">Trage dich auf die Warteliste ein.</p>
+        <h2 className="text-2xl font-bold mb-2">📱 iOS App kommt bald</h2>
+        <p className="text-muted-foreground mb-5">Trage dich auf die Warteliste ein.</p>
         {done ? (
-          <p className="text-primary font-medium">✅ Du bist auf der Liste!</p>
+          <motion.p initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-primary font-medium">
+            ✅ Du bist auf der Liste!
+          </motion.p>
         ) : (
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="deine@email.ch"
-              required
-              className="flex-1 rounded-md border bg-background px-3 py-2 text-sm"
+              type="email" value={email} onChange={(e) => setEmail(e.target.value)}
+              placeholder="deine@email.ch" required
+              className="flex-1 rounded-lg border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            <Button type="submit" disabled={loading} size="sm">
-              Eintragen
-            </Button>
+            <Button type="submit" disabled={loading}>Eintragen</Button>
           </form>
         )}
         {count > 0 && (
