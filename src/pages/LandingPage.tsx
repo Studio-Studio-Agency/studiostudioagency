@@ -55,10 +55,19 @@ const LandingPage = () => {
 
         <div className="container relative py-24 md:py-32 text-center">
           <motion.div initial="hidden" animate="visible" variants={fadeUp} custom={0}>
-            <span className="inline-flex items-center gap-1.5 rounded-full border bg-card px-3 py-1 text-xs font-medium text-muted-foreground mb-6">
-              <Sparkles className="h-3 w-3 text-primary" />
+            <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-5 py-2 text-sm md:text-base font-semibold text-primary mb-8 shadow-sm shadow-primary/10 backdrop-blur-sm">
+              <Sparkles className="h-4 w-4 md:h-5 md:w-5" />
               KI-gestützte Haltbarkeitsanalyse
             </span>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, rotate: -8 }} 
+            animate={{ opacity: 1, scale: 1, rotate: 3 }} 
+            transition={{ delay: 0.15, duration: 0.6, type: "spring", bounce: 0.4 }}
+            className="flex justify-center mb-6 relative z-10"
+          >
+            <img src={overripeBanana} alt="Überreife Banane" className="h-36 md:h-48 drop-shadow-2xl hover:scale-110 hover:rotate-0 transition-all duration-500 cursor-pointer" />
           </motion.div>
 
           <motion.h1
@@ -71,15 +80,6 @@ const LandingPage = () => {
             </span>
             <br />Lebensmitteln.
           </motion.h1>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8, rotate: -5 }} 
-            animate={{ opacity: 1, scale: 1, rotate: 0 }} 
-            transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
-            className="flex justify-center mb-8 relative z-10"
-          >
-            <img src={overripeBanana} alt="Überreife Banane" className="h-40 md:h-52 drop-shadow-2xl hover:scale-105 transition-transform duration-300" />
-          </motion.div>
 
           <motion.p
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
