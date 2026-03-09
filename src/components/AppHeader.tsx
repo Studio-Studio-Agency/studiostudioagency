@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { LogOut, Settings, List, Calendar, MessageSquare, Smartphone } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
+import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -11,8 +12,8 @@ const AppHeader = () => {
   return (
     <header className="border-b bg-card">
       <div className="container flex h-14 items-center justify-between">
-        <Link to={user ? "/listen" : "/"} className="flex items-center gap-2 font-bold text-lg">
-          🥬 <span>FreshFresh AI</span>
+        <Link to={user ? "/listen" : "/"} className="flex items-center gap-2">
+          <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-7 w-auto" />
         </Link>
         {user && (
           <nav className="flex items-center gap-2">
