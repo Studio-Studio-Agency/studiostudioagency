@@ -130,7 +130,7 @@ const SettingsPage = () => {
             <div className="flex flex-col items-center gap-3">
               <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
                 <Avatar className="h-24 w-24 border-2 border-border">
-                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" />
+                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                   <AvatarFallback className="text-2xl bg-muted">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
