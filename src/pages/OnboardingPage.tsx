@@ -168,7 +168,7 @@ const OnboardingPage = () => {
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Avatar className="h-36 w-36 border-4 border-primary/20 shadow-xl shadow-primary/10">
-                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" />
+                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                   <AvatarFallback className="text-4xl bg-muted">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -349,7 +349,7 @@ const OnboardingPage = () => {
 
               <div className="flex items-center justify-center gap-4 py-4">
                 <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg">
-                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" />
+                  <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                   <AvatarFallback className="text-xl bg-muted">{initials}</AvatarFallback>
                 </Avatar>
                 <div className="text-left">
