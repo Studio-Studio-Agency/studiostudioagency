@@ -383,13 +383,10 @@ const OnboardingPage = () => {
 
       {/* Skip */}
       {step > 0 && step < 4 && (
-        <div className="fixed bottom-6 left-0 right-0 text-center">
-          <button
-            onClick={finishOnboarding}
-            className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4"
-          >
-            Einrichtung überspringen
-          </button>
+        <div className="fixed bottom-6 left-0 right-0 text-center space-y-2">
+          <Button variant="outline" size="sm" onClick={() => navigate("/listen", { replace: true })} className="gap-1">
+            Später fortfahren <ArrowRight className="h-3 w-3" />
+          </Button>
         </div>
       )}
     </div>
