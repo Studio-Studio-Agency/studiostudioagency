@@ -7,3 +7,5 @@ project_id = "itxpdoppymvbotsiutea"
     verify_jwt = false
   [functions.calendar-feed]
     verify_jwt = false
+  [functions.scan-receipt]
+    verify_jwt = false
