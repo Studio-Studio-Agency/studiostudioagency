@@ -111,15 +111,15 @@ const ListsOverview = () => {
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <main className="container py-6 max-w-2xl">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold">Meine Einkaufslisten</h1>
           <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => navigate("/scan")}>
+            <Button size="sm" variant="outline" className="flex-1 sm:flex-none" onClick={() => navigate("/scan")}>
               <ScanLine className="h-4 w-4 mr-1" /> Bon scannen
             </Button>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
-              <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Neue Liste</Button>
+              <Button size="sm" className="flex-1 sm:flex-none"><Plus className="h-4 w-4 mr-1" /> Neue Liste</Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
