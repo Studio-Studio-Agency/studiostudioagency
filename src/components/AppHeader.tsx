@@ -33,15 +33,14 @@ const AppHeader = () => {
   }, [user]);
 
   const initials = vorname ? vorname.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() ?? "?";
-  const invertedIsDark = resolvedTheme !== "dark";
   const location = useLocation();
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <header className="border-b bg-card text-card-foreground theme-inverted">
+    <header className="border-b bg-card text-card-foreground">
       <div className="container flex items-center justify-between py-3">
         <Link to={user ? "/listen" : "/"} className="flex items-center">
-          <img src={invertedIsDark ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
+          <img src={resolvedTheme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
         </Link>
         <div className="flex items-center gap-2">
           <Button
