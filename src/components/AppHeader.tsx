@@ -80,12 +80,12 @@ const AppHeader = () => {
             <FeedbackDialog />
             <IOSWaitlistDialog />
             <Link to="/umfrage">
-              <Button variant="ghost" size="sm" className="whitespace-nowrap text-xs px-2">
+              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
                 Umfrage
               </Button>
             </Link>
             <Link to="/einstellungen">
-              <Button variant="ghost" size="sm" className="whitespace-nowrap text-xs px-2">
+              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/einstellungen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
                 <Settings className="h-4 w-4" />
               </Button>
             </Link>
