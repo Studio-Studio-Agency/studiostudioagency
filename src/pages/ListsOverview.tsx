@@ -25,6 +25,7 @@ interface ListItem {
 const ListsOverview = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [lists, setLists] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState("");
