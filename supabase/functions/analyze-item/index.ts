@@ -41,6 +41,28 @@ serve(async (req) => {
       });
     }
 
+    // Rate limiting: max 30 analyses per user per hour
+    const RATE_LIMIT = 30;
+    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { count, error: countError } = await supabase
+      .from("items")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .gte("checked_at", oneHourAgo);
+
+    if (!countError && (count ?? 0) >= RATE_LIMIT) {
+      return new Response(
+        JSON.stringify({
+          error: "rate_limit",
+          message: `Maximal ${RATE_LIMIT} Analysen pro Stunde. Bitte warte etwas.`,
+        }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
     if (!anthropicApiKey) {
       console.error("ANTHROPIC_API_KEY not configured");
