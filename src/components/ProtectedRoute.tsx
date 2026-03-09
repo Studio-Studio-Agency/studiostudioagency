@@ -20,8 +20,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       .select("onboarding_completed")
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
-        setOnboardingCompleted(data?.onboarding_completed ?? false);
+      .then(({ data, error }) => {
+        if (error) {
+          console.error("Onboarding check error:", error);
+          setOnboardingCompleted(null);
+        } else {
+          setOnboardingCompleted(data?.onboarding_completed ?? false);
+        }
         setCheckingOnboarding(false);
       });
   }, [user]);
