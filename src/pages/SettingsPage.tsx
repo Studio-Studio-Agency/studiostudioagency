@@ -47,11 +47,8 @@ const SettingsPage = () => {
     load();
   }, [user]);
 
-  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    console.log("Avatar upload triggered, file:", file?.name, file?.type, file?.size);
-    if (!file || !user) return;
-
+  const uploadAvatarFile = async (file: File) => {
+    if (!user) return;
     if (!file.type.startsWith("image/")) {
       toast({ title: "Fehler", description: "Bitte wähle eine Bilddatei.", variant: "destructive" });
       return;
