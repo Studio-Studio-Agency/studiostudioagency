@@ -192,9 +192,9 @@ const ScanReceiptPage = () => {
                   </Button>
                 </div>
                 <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                  onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); e.target.value = ""; }} />
                 <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
-                  onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                  onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); e.target.value = ""; }} />
               </Card>
             ) : (
               <div className="space-y-4">

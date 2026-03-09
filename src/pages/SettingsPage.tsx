@@ -134,7 +134,12 @@ const SettingsPage = () => {
           <CardContent className="space-y-4">
             {/* Avatar */}
             <div className="flex flex-col items-center gap-3">
-              <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+              <button
+                type="button"
+                className="relative group cursor-pointer bg-transparent border-0 p-0"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
                 <Avatar className="h-24 w-24 border-2 border-border">
                   <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                   <AvatarFallback className="text-2xl bg-muted">{initials}</AvatarFallback>
@@ -146,15 +151,18 @@ const SettingsPage = () => {
                     <Camera className="h-6 w-6 text-white" />
                   )}
                 </div>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleAvatarUpload}
-                  disabled={uploading}
-                />
-              </div>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  handleAvatarUpload(e);
+                  e.target.value = "";
+                }}
+                disabled={uploading}
+              />
               <p className="text-xs text-muted-foreground">Klicke um dein Foto zu ändern</p>
             </div>
 
