@@ -201,7 +201,9 @@ const ListsOverview = () => {
           </DialogContent>
         </Dialog>
       </main>
-      <AppFooter />
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };
