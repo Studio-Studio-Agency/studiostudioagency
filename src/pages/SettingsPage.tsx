@@ -104,6 +104,7 @@ const SettingsPage = () => {
       toast({ title: "Fehler", description: "Einstellungen konnten nicht gespeichert werden.", variant: "destructive" });
     } else {
       toast({ title: "Gespeichert", description: "Deine Einstellungen wurden aktualisiert." });
+      navigate("/listen");
     }
   };
 
