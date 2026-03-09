@@ -55,6 +55,13 @@ const AppHeader = () => {
           </Button>
           {user && (
             <Link to="/einstellungen">
+              <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Einstellungen">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </Link>
+          )}
+          {user && (
+            <Link to="/einstellungen">
               <Avatar className="h-8 w-8 border border-border">
                 <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
                 <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
