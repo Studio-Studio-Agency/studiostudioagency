@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Pencil, Trash2, ShoppingCart, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ShoppingCart, Loader2, ScanLine } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import AppFooter from "@/components/AppFooter";
 import ListSkeleton from "@/components/ListSkeleton";
 
@@ -24,6 +25,7 @@ interface ListItem {
 const ListsOverview = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [lists, setLists] = useState<ListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [newName, setNewName] = useState("");
@@ -111,6 +113,10 @@ const ListsOverview = () => {
       <main className="container py-6 max-w-2xl">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Meine Einkaufslisten</h1>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => navigate("/scan")}>
+              <ScanLine className="h-4 w-4 mr-1" /> Bon scannen
+            </Button>
           <Dialog open={createOpen} onOpenChange={setCreateOpen}>
             <DialogTrigger asChild>
               <Button size="sm"><Plus className="h-4 w-4 mr-1" /> Neue Liste</Button>
@@ -130,6 +136,7 @@ const ListsOverview = () => {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {loading ? (

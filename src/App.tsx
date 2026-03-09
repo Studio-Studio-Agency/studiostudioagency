@@ -13,6 +13,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import ListsOverview from "./pages/ListsOverview";
 import ListDetail from "./pages/ListDetail";
+import ScanReceiptPage from "./pages/ScanReceiptPage";
 import CalendarPage from "./pages/CalendarPage";
 import SurveyPage from "./pages/SurveyPage";
 import SharedListPage from "./pages/SharedListPage";
@@ -43,6 +44,9 @@ const App = () => (
             } />
             <Route path="/listen/:id" element={
               <ProtectedRoute><ListDetail /></ProtectedRoute>
+            } />
+            <Route path="/scan" element={
+              <ProtectedRoute><ScanReceiptPage /></ProtectedRoute>
             } />
             <Route path="/kalender" element={
               <ProtectedRoute><CalendarPage /></ProtectedRoute>
