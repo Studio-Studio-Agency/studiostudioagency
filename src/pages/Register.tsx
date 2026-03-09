@@ -123,6 +123,8 @@ const Register = () => {
           </p>
         </CardContent>
       </Card>
+      </div>
+      <AppFooter />
     </div>
   );
 };
