@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Bot, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
