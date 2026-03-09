@@ -17,6 +17,7 @@ import SurveyPage from "./pages/SurveyPage";
 import SharedListPage from "./pages/SharedListPage";
 import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
+import ImpressumPage from "./pages/ImpressumPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -55,7 +56,7 @@ const App = () => (
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
-            <Route path="/impressum" element={<PlaceholderPage title="Impressum" />} />
+            <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
