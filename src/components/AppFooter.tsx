@@ -4,7 +4,7 @@ import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const AppFooter = () => {
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   return (
     <footer className="border-t bg-card/50 backdrop-blur-sm">
       <div className="container py-8 flex flex-col md:flex-row items-center justify-between gap-4">
