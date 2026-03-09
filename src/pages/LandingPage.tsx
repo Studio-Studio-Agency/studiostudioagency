@@ -72,6 +72,15 @@ const LandingPage = () => {
             <br />Lebensmitteln.
           </motion.h1>
 
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8, rotate: -5 }} 
+            animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+            transition={{ delay: 0.3, duration: 0.5, type: "spring" }}
+            className="flex justify-center mb-8 relative z-10"
+          >
+            <img src={overripeBanana} alt="Überreife Banane" className="h-40 md:h-52 drop-shadow-2xl hover:scale-105 transition-transform duration-300" />
+          </motion.div>
+
           <motion.p
             className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed"
             initial="hidden" animate="visible" variants={fadeUp} custom={2}
