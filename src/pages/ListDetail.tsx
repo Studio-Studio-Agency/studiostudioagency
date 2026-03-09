@@ -141,9 +141,14 @@ const ListDetail = () => {
     green: checkedItems.filter(i => getLifecycleStatus(i) === 'green').length,
   };
 
-  const filteredCheckedItems = filterStatus === 'all'
-    ? checkedItems
-    : checkedItems.filter(i => getLifecycleStatus(i) === filterStatus);
+  // Collect unique categories from checked items
+  const kategorienInList = Array.from(new Set(checkedItems.map(i => i.kategorie).filter(Boolean))) as string[];
+
+  const filteredCheckedItems = checkedItems.filter(i => {
+    const statusMatch = filterStatus === 'all' || getLifecycleStatus(i) === filterStatus;
+    const katMatch = filterKategorie === 'all' || i.kategorie === filterKategorie;
+    return statusMatch && katMatch;
+  });
 
   return (
     <div className="min-h-screen bg-background">
