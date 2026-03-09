@@ -4,7 +4,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -41,9 +41,9 @@ serve(async (req) => {
       });
     }
 
-    const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
-    if (!lovableApiKey) {
-      console.error("LOVABLE_API_KEY not configured");
+    const anthropicApiKey = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!anthropicApiKey) {
+      console.error("ANTHROPIC_API_KEY not configured");
       return new Response(
         JSON.stringify({
           error: "config_error",
@@ -56,36 +56,57 @@ serve(async (req) => {
       );
     }
 
-    // Call Lovable AI Gateway (OpenAI-compatible)
-    const aiResponse = await fetch(
-      "https://ai.gateway.lovable.dev/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${lovableApiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "google/gemini-3-flash-preview",
-          max_tokens: 500,
-          messages: [
-            {
-              role: "system",
-              content:
-                "Du bist ein Lebensmittel-Experte. Analysiere Einkaufsartikel und antworte IMMER als valides JSON ohne Markdown-Formatierung. Keine Erklärungen außerhalb des JSON.",
-            },
-            {
-              role: "user",
-              content: `Analysiere: "${artikelName}" (Menge: ${menge || "unbekannt"} ${einheit || ""})\n\nAntworte NUR als JSON:\n{\n  "istLebensmittel": true/false,\n  "kategorie": "Obst|Gemüse|Fleisch & Fisch|Milchprodukte|Backwaren|Getränke|Tiefkühl|Konserven|Haushalt|Technik|Sonstiges",\n  "haltbarkeitTage": Ganzzahl oder null,\n  "erinnerungVorTagen": Ganzzahl oder null,\n  "erklaerung": "Kurze deutsche Erklärung",\n  "lagerhinweis": "Lagerungshinweis oder null"\n}`,
-            },
-          ],
-        }),
-      }
-    );
+    // Call Anthropic Claude API directly
+    const aiResponse = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "x-api-key": anthropicApiKey,
+        "anthropic-version": "2023-06-01",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 500,
+        system:
+          "Du bist ein Lebensmittel-Experte. Analysiere Einkaufsartikel und antworte IMMER als valides JSON ohne Markdown-Formatierung. Keine Erklärungen außerhalb des JSON.",
+        messages: [
+          {
+            role: "user",
+            content: `Analysiere: "${artikelName}" (Menge: ${menge || "unbekannt"} ${einheit || ""})\n\nAntworte NUR als JSON:\n{\n  "istLebensmittel": true/false,\n  "kategorie": "Obst|Gemüse|Fleisch & Fisch|Milchprodukte|Backwaren|Getränke|Tiefkühl|Konserven|Haushalt|Technik|Sonstiges",\n  "haltbarkeitTage": Ganzzahl oder null,\n  "erinnerungVorTagen": Ganzzahl oder null,\n  "erklaerung": "Kurze deutsche Erklärung",\n  "lagerhinweis": "Lagerungshinweis oder null"\n}`,
+          },
+        ],
+      }),
+    });
 
     if (!aiResponse.ok) {
       const errText = await aiResponse.text();
-      console.error("AI Gateway error:", aiResponse.status, errText);
+      console.error("Anthropic API error:", aiResponse.status, errText);
+
+      if (aiResponse.status === 401) {
+        return new Response(
+          JSON.stringify({
+            error: "auth_error",
+            message: "Ungültiger API Key. Bitte prüfe deinen Anthropic API Key.",
+          }),
+          {
+            status: 401,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      if (aiResponse.status === 429) {
+        return new Response(
+          JSON.stringify({
+            error: "rate_limit",
+            message: "API Rate Limit erreicht. Bitte versuche es gleich erneut.",
+          }),
+          {
+            status: 429,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+
       return new Response(
         JSON.stringify({
           error: "api_error",
@@ -99,7 +120,7 @@ serve(async (req) => {
     }
 
     const aiData = await aiResponse.json();
-    const content = aiData.choices?.[0]?.message?.content || "";
+    const content = aiData.content?.[0]?.text || "";
 
     // Parse JSON from response
     let analysis;
