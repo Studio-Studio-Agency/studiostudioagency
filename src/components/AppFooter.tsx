@@ -5,7 +5,7 @@ const AppFooter = () => (
   <footer className="border-t bg-card/50 backdrop-blur-sm">
     <div className="container py-8 flex flex-col md:flex-row items-center justify-between gap-4">
       <div className="flex items-center gap-3">
-        <img src={goodgoodsLogo} alt="GoodGoods" className="h-5 w-auto opacity-60" />
+        <img src={goodgoodsLogo} alt="GoodGoods" className="h-4 w-auto opacity-60" />
         <span className="text-xs text-muted-foreground">© 2026 Studio Studio Agency</span>
       </div>
       <div className="flex gap-6 text-sm text-muted-foreground">

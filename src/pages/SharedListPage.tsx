@@ -104,8 +104,8 @@ const SharedListPage = () => {
     <div className="min-h-screen bg-background">
       {/* Simple header without auth */}
       <header className="border-b border-border bg-background/80 backdrop-blur sticky top-0 z-10">
-        <div className="container flex items-center gap-2 h-14 max-w-2xl">
-          <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+        <div className="container flex items-center gap-2 h-16 max-w-2xl">
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           <span className="text-muted-foreground text-sm ml-auto">Geteilte Liste</span>
         </div>
       </header>
