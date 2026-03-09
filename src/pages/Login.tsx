@@ -40,7 +40,9 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">🥬 FreshFresh AI</CardTitle>
+          <div className="flex justify-center mb-3">
+            <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+          </div>
           <CardDescription>Melde dich an, um deine Einkaufslisten zu verwalten</CardDescription>
         </CardHeader>
         <CardContent>

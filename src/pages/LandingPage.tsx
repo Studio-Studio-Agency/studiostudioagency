@@ -49,7 +49,7 @@ const LandingPage = () => {
           Schluss mit weggeworfenen<br />Lebensmitteln.
         </h1>
         <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-          FreshFresh AI erinnert dich automatisch, bevor dein Essen schlecht wird – 
+          GoodGoods erinnert dich automatisch, bevor dein Essen schlecht wird – 
           ganz ohne manuelles Eintragen.
         </p>
         <Link to="/registrieren">
