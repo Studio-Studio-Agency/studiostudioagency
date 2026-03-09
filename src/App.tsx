@@ -19,6 +19,7 @@ import SharedListPage from "./pages/SharedListPage";
 import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
+import DatenschutzPage from "./pages/DatenschutzPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -57,7 +58,7 @@ const App = () => (
             } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
-            <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
+            <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
