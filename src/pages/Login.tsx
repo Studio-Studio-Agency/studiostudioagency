@@ -7,7 +7,9 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 import AppFooter from "@/components/AppFooter";
 
 const Login = () => {
@@ -16,6 +18,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme } = useTheme();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +46,7 @@ const Login = () => {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+            <img src={theme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           </div>
           <CardDescription>Melde dich an, um deine Einkaufslisten zu verwalten</CardDescription>
         </CardHeader>
