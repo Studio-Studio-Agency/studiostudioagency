@@ -72,7 +72,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Analysiere: "${artikelName}" (Menge: ${menge || "unbekannt"} ${einheit || ""})\n\nAntworte NUR als JSON:\n{\n  "istLebensmittel": true/false,\n  "kategorie": "Obst|Gemüse|Fleisch & Fisch|Milchprodukte|Backwaren|Getränke|Tiefkühl|Konserven|Haushalt|Technik|Sonstiges",\n  "haltbarkeitTage": Ganzzahl oder null,\n  "erinnerungVorTagen": Ganzzahl oder null,\n  "erklaerung": "Kurze deutsche Erklärung",\n  "lagerhinweis": "Lagerungshinweis oder null"\n}`,
+            content: `Analysiere: "${artikelName}" (Menge: ${menge || "unbekannt"} ${einheit || ""})\n\nAntworte NUR als JSON:\n{\n  "istLebensmittel": true/false,\n  "kategorie": "Obst & Früchte|Gemüse & Salat|Fleisch & Fisch|Milchprodukte|Backwaren|Getränke|Tiefkühl|Konserven & Vorrat|Gewürze & Saucen|Snacks & Süsses|Frühstück & Cerealien|Haushalt & Reinigung|Pflege & Hygiene|Baby & Kind|Tierbedarf|Technik & Elektronik|Sonstiges",\n  "haltbarkeitTage": Ganzzahl oder null,\n  "erinnerungVorTagen": Ganzzahl oder null,\n  "erklaerung": "Kurze deutsche Erklärung",\n  "lagerhinweis": "Lagerungshinweis oder null"\n}`,
           },
         ],
       }),

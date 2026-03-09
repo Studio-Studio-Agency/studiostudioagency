@@ -203,28 +203,59 @@ const ListDetail = () => {
                   <h3 className="text-sm font-medium text-muted-foreground">
                     Gekauft ({checkedItems.length})
                   </h3>
-                  <div className="flex gap-1 flex-wrap">
-                    {([
-                      { key: 'all' as const, label: 'Alle', count: checkedItems.length },
-                      { key: 'red' as const, label: '🔴', count: statusCounts.red },
-                      { key: 'orange' as const, label: '🟠', count: statusCounts.orange },
-                      { key: 'yellow' as const, label: '🟡', count: statusCounts.yellow },
-                      { key: 'green' as const, label: '🟢', count: statusCounts.green },
-                    ] as const).filter(f => f.key === 'all' || f.count > 0).map(f => (
+                </div>
+
+                {/* Lifecycle filter */}
+                <div className="flex gap-1 flex-wrap mb-2">
+                  {([
+                    { key: 'all' as const, label: 'Alle', count: checkedItems.length },
+                    { key: 'red' as const, label: '🔴', count: statusCounts.red },
+                    { key: 'orange' as const, label: '🟠', count: statusCounts.orange },
+                    { key: 'yellow' as const, label: '🟡', count: statusCounts.yellow },
+                    { key: 'green' as const, label: '🟢', count: statusCounts.green },
+                  ] as const).filter(f => f.key === 'all' || f.count > 0).map(f => (
+                    <button
+                      key={f.key}
+                      onClick={() => setFilterStatus(f.key)}
+                      className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                        filterStatus === f.key
+                          ? 'bg-accent text-accent-foreground border-accent font-medium'
+                          : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                      }`}
+                    >
+                      {f.label} {f.count}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Kategorie filter */}
+                {kategorienInList.length > 1 && (
+                  <div className="flex gap-1 flex-wrap mb-3">
+                    <button
+                      onClick={() => setFilterKategorie('all')}
+                      className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
+                        filterKategorie === 'all'
+                          ? 'bg-primary text-primary-foreground border-primary font-medium'
+                          : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground'
+                      }`}
+                    >
+                      Alle Kategorien
+                    </button>
+                    {kategorienInList.map(kat => (
                       <button
-                        key={f.key}
-                        onClick={() => setFilterStatus(f.key)}
+                        key={kat}
+                        onClick={() => setFilterKategorie(kat)}
                         className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${
-                          filterStatus === f.key
-                            ? 'bg-accent text-accent-foreground border-accent font-medium'
+                          filterKategorie === kat
+                            ? 'bg-primary text-primary-foreground border-primary font-medium'
                             : 'border-border text-muted-foreground hover:text-foreground hover:border-muted-foreground'
                         }`}
                       >
-                        {f.label}{f.key !== 'all' ? ` ${f.count}` : ` ${f.count}`}
+                        {KATEGORIEN[kat] || "📦"} {kat}
                       </button>
                     ))}
                   </div>
-                </div>
+                )}
                 <div className="space-y-1">
                   {filteredCheckedItems.length === 0 ? (
                     <p className="text-sm text-muted-foreground py-2 text-center">
