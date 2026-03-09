@@ -47,6 +47,7 @@ const SettingsPage = () => {
 
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    console.log("Avatar upload triggered, file:", file?.name, file?.type, file?.size);
     if (!file || !user) return;
 
     if (!file.type.startsWith("image/")) {
