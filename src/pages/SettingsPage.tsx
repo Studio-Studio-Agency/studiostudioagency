@@ -36,7 +36,10 @@ const SettingsPage = () => {
         setVorname(profileRes.data.vorname ?? "");
         setAvatarUrl(profileRes.data.avatar_url ?? null);
       }
-      if (settingsRes.data) setEmailNotifications(settingsRes.data.email_notifications ?? false);
+      if (settingsRes.data) {
+        setEmailNotifications(settingsRes.data.email_notifications ?? false);
+        setApiKey(settingsRes.data.claude_api_key ?? "");
+      }
       setLoading(false);
     };
     load();
