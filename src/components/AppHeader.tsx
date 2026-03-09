@@ -34,6 +34,8 @@ const AppHeader = () => {
 
   const initials = vorname ? vorname.charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() ?? "?";
   const invertedIsDark = resolvedTheme !== "dark";
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
     <header className="border-b bg-card text-card-foreground theme-inverted">
