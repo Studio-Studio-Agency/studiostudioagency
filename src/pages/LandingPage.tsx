@@ -67,7 +67,7 @@ const LandingPage = () => {
             initial="hidden" animate="visible" variants={fadeUp} custom={1}
           >
             Schluss mit{" "}
-            <span className="bg-gradient-to-r from-primary to-emerald-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
               weggeworfenen
             </span>
             <br />Lebensmitteln.
