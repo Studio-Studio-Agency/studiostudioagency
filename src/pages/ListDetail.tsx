@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
+import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -151,7 +152,7 @@ const ListDetail = () => {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
       <main className="container py-6 max-w-2xl">
         <button onClick={() => navigate("/listen")} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
@@ -279,6 +280,9 @@ const ListDetail = () => {
           </div>
         )}
       </main>
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };

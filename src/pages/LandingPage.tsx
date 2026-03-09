@@ -37,9 +37,9 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
+      <header className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-md theme-inverted">
         <div className="container flex h-16 items-center justify-between">
-          <img src={resolvedTheme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+          <img src={resolvedTheme !== "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           <Link to="/login">
             <Button variant="ghost" size="sm">Anmelden</Button>
           </Link>
