@@ -8,7 +8,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 import AppFooter from "@/components/AppFooter";
 
 const Register = () => {
@@ -18,6 +20,7 @@ const Register = () => {
   const [acceptDsgvo, setAcceptDsgvo] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
   const { toast } = useToast();
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -59,7 +62,7 @@ const Register = () => {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+            <img src={resolvedTheme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           </div>
           <CardDescription>Konto erstellen und kostenlos starten</CardDescription>
         </CardHeader>
