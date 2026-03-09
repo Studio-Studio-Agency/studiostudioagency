@@ -31,7 +31,7 @@ const LandingPage = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container flex h-14 items-center justify-between">
-          <img src={goodgoodsLogo} alt="GoodGoods" className="h-7 w-auto" />
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
           <div className="flex gap-2">
             <Link to="/login">
               <Button variant="ghost" size="sm">Anmelden</Button>

@@ -15,6 +15,7 @@ import ListDetail from "./pages/ListDetail";
 import CalendarPage from "./pages/CalendarPage";
 import SurveyPage from "./pages/SurveyPage";
 import SharedListPage from "./pages/SharedListPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,9 @@ const App = () => (
             } />
             <Route path="/umfrage" element={
               <ProtectedRoute><SurveyPage /></ProtectedRoute>
+            } />
+            <Route path="/einstellungen" element={
+              <ProtectedRoute><SettingsPage /></ProtectedRoute>
             } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
