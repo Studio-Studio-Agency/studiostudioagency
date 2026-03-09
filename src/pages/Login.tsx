@@ -46,7 +46,7 @@ const Login = () => {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+            <img src={theme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           </div>
           <CardDescription>Melde dich an, um deine Einkaufslisten zu verwalten</CardDescription>
         </CardHeader>
