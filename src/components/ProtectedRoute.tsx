@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       setCheckingOnboarding(false);
       return;
     }
+
     setCheckingOnboarding(true);
     supabase
       .from("profiles")
@@ -30,7 +31,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
         setCheckingOnboarding(false);
       });
-  }, [user, location.pathname]);
+  }, [user?.id]);
 
   if (loading || checkingOnboarding) {
     return (
@@ -44,12 +45,13 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <Navigate to="/login" replace />;
   }
 
-  // Redirect to onboarding if not completed (unless already on onboarding page)
-  if (onboardingCompleted === false && location.pathname !== "/willkommen") {
-    return <Navigate to="/willkommen" replace />;
+  // Optional onboarding: if already completed, keep /willkommen out of the way.
+  if (onboardingCompleted === true && location.pathname === "/willkommen") {
+    return <Navigate to="/listen" replace />;
   }
 
   return <>{children}</>;
 };
 
 export default ProtectedRoute;
+
