@@ -133,7 +133,7 @@ const ListDetail = () => {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">{listName || "..."}</h1>
-          {listId && <ShareListDialog listId={listId} listName={listName} />}
+          {listId && <ShareListDialog listId={listId} listName={listName} editToken={editToken} />}
         </div>
 
         {loading ? (
