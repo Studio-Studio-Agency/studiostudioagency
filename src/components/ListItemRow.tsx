@@ -1,9 +1,17 @@
-import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Trash2, Loader2, Undo2 } from "lucide-react";
 
 export interface Item {
@@ -24,18 +32,27 @@ export interface Item {
 }
 
 const kategorieEmoji: Record<string, string> = {
-  "Obst": "🍎",
-  "Gemüse": "🥦",
+  Obst: "🍎",
+  Gemüse: "🥦",
   "Fleisch & Fisch": "🥩",
-  "Milchprodukte": "🧀",
-  "Backwaren": "🍞",
-  "Getränke": "🥤",
-  "Tiefkühl": "🧊",
-  "Konserven": "🥫",
-  "Haushalt": "🧹",
-  "Technik": "💻",
-  "Sonstiges": "📦",
+  Milchprodukte: "🧀",
+  Backwaren: "🍞",
+  Getränke: "🥤",
+  Tiefkühl: "🧊",
+  Konserven: "🥫",
+  Haushalt: "🧹",
+  Technik: "💻",
+  Sonstiges: "📦",
 };
+
+function formatDate(dateIso: string) {
+  return new Date(dateIso).toLocaleDateString("de-CH");
+}
+
+function daysUntil(dateIso: string) {
+  // Positive: days remaining, 0: today, negative: expired
+  return Math.ceil((new Date(dateIso).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+}
 
 const ListItemRow = ({
   item,
@@ -52,30 +69,48 @@ const ListItemRow = ({
 }) => {
   const getExpiryColor = () => {
     if (!item.ablauf_datum) return "";
-    const days = Math.ceil((new Date(item.ablauf_datum).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    if (days < 2) return "text-destructive";
+    const days = daysUntil(item.ablauf_datum);
+    if (days <= 0) return "text-destructive";
+    if (days <= 2) return "text-destructive";
     if (days <= 5) return "text-primary";
     return "text-muted-foreground";
   };
 
+  const getLifecycleDot = () => {
+    if (!item.ablauf_datum) return "🟢";
+    const days = daysUntil(item.ablauf_datum);
+    if (days <= 0) return "🔴";
+    if (days <= 2) return "🟠";
+    if (days <= 5) return "🟡";
+    return "🟢";
+  };
+
+  const showDetails =
+    item.is_checked &&
+    !analyzing &&
+    Boolean(item.kategorie || item.checked_at || item.ablauf_datum || item.erklaerung || item.lagerhinweis);
+
   return (
-    <div className={`${item.is_checked ? "opacity-60" : ""}`}>
+    <div>
       <div className="flex items-start gap-3">
         <div className="pt-0.5">
-          <Checkbox
-            checked={item.is_checked}
-            onCheckedChange={onToggle}
-          />
+          <Checkbox checked={item.is_checked} onCheckedChange={onToggle} />
         </div>
+
         <div className="flex-1 min-w-0">
-          <span className={`${item.is_checked ? "line-through text-muted-foreground" : "text-foreground"}`}>
-            {item.name}
-          </span>
-          {item.menge && (
-            <span className="text-sm text-muted-foreground ml-2">
-              {item.menge} {item.einheit}
-            </span>
-          )}
+          <div className="flex items-start gap-2 min-w-0">
+            {item.is_checked && (
+              <span className="shrink-0" aria-label="Haltbarkeitsstatus">
+                {getLifecycleDot()}
+              </span>
+            )}
+            <span className="text-foreground break-words">{item.name}</span>
+            {item.menge && (
+              <span className="text-sm text-muted-foreground shrink-0">
+                {item.menge} {item.einheit}
+              </span>
+            )}
+          </div>
 
           {analyzing && (
             <p className="text-sm text-primary mt-1 flex items-center gap-1">
@@ -83,19 +118,32 @@ const ListItemRow = ({
             </p>
           )}
 
-          {item.is_checked && item.kategorie && !analyzing && (
-            <div className="mt-1.5 p-2 rounded-md bg-accent text-sm space-y-0.5">
+          {showDetails && (
+            <div className="mt-1.5 p-2 rounded-md bg-accent text-sm space-y-1">
               <div className="flex items-center gap-2">
-                <span>{kategorieEmoji[item.kategorie] || "📦"}</span>
-                <span className="font-medium text-accent-foreground">{item.kategorie}</span>
+                <span className="shrink-0" aria-hidden>
+                  {item.kategorie ? kategorieEmoji[item.kategorie] || "📦" : "🛒"}
+                </span>
+                <span className="font-medium text-accent-foreground">
+                  {item.kategorie ? item.kategorie : "Gekauft"}
+                </span>
               </div>
-              {item.ablauf_datum && (
-                <p className={getExpiryColor()}>
-                  Ablauf: {new Date(item.ablauf_datum).toLocaleDateString("de-CH")}
+
+              {item.checked_at && (
+                <p className="text-muted-foreground">
+                  Gekauft am: <span className="text-foreground">{formatDate(item.checked_at)}</span>
                 </p>
               )}
+
+              {item.ablauf_datum && (
+                <p className={getExpiryColor()}>
+                  Mindestens haltbar bis: {formatDate(item.ablauf_datum)}
+                </p>
+              )}
+
               {item.erklaerung && <p className="text-muted-foreground">{item.erklaerung}</p>}
               {item.lagerhinweis && <p className="text-muted-foreground">💡 {item.lagerhinweis}</p>}
+
               {item.ablauf_datum && (
                 <Link to="/kalender" className="inline-block mt-1 text-xs text-primary hover:underline">
                   📅 Kalender-Erinnerung
@@ -104,12 +152,14 @@ const ListItemRow = ({
             </div>
           )}
         </div>
+
         <div className="flex gap-1 shrink-0">
           {item.is_checked && (
             <Button variant="ghost" size="icon" onClick={onToggle} title="Rückgängig" className="h-8 w-8">
               <Undo2 className="h-3.5 w-3.5" />
             </Button>
           )}
+
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button variant="ghost" size="icon" className="h-8 w-8">
@@ -134,3 +184,4 @@ const ListItemRow = ({
 };
 
 export default ListItemRow;
+

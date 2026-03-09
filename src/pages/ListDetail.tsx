@@ -173,7 +173,7 @@ const ListDetail = () => {
             {checkedItems.length > 0 && (
               <div className="mt-8 pt-4 border-t border-border">
                 <h3 className="text-sm font-medium text-muted-foreground mb-2">
-                  Erledigt ({checkedItems.length})
+                  Gekauft ({checkedItems.length})
                 </h3>
                 <div className="space-y-1">
                   {checkedItems.map(item => (
