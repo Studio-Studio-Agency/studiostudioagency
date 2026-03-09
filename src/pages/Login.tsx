@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -39,7 +40,9 @@ const Login = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">🥬 FreshFresh AI</CardTitle>
+          <div className="flex justify-center mb-3">
+            <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+          </div>
           <CardDescription>Melde dich an, um deine Einkaufslisten zu verwalten</CardDescription>
         </CardHeader>
         <CardContent>

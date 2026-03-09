@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const Register = () => {
   const [vorname, setVorname] = useState("");
@@ -55,8 +56,10 @@ const Register = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">🥬 Konto erstellen</CardTitle>
-          <CardDescription>Starte kostenlos mit FreshFresh AI</CardDescription>
+          <div className="flex justify-center mb-3">
+            <img src={goodgoodsLogo} alt="GoodGoods" className="h-8 w-auto" />
+          </div>
+          <CardDescription>Konto erstellen und kostenlos starten</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleRegister} className="space-y-4">

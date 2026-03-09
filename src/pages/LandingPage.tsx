@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart, Bot, Calendar } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
@@ -30,7 +31,7 @@ const LandingPage = () => {
       {/* Header */}
       <header className="border-b bg-card">
         <div className="container flex h-14 items-center justify-between">
-          <span className="font-bold text-lg">🥬 FreshFresh AI</span>
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-7 w-auto" />
           <div className="flex gap-2">
             <Link to="/login">
               <Button variant="ghost" size="sm">Anmelden</Button>
@@ -48,7 +49,7 @@ const LandingPage = () => {
           Schluss mit weggeworfenen<br />Lebensmitteln.
         </h1>
         <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-          FreshFresh AI erinnert dich automatisch, bevor dein Essen schlecht wird – 
+          GoodGoods erinnert dich automatisch, bevor dein Essen schlecht wird – 
           ganz ohne manuelles Eintragen.
         </p>
         <Link to="/registrieren">
