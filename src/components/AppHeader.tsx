@@ -67,28 +67,20 @@ const AppHeader = () => {
       {user && (
         <nav className="border-t overflow-x-auto">
           <div className="container flex items-center justify-center gap-1 py-1">
-            <Link to="/listen">
-              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/listen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-                <List className="h-4 w-4 mr-1" /> Listen
-              </Button>
-            </Link>
-            <Link to="/kalender">
-              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/kalender") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-                <Calendar className="h-4 w-4 mr-1" /> Kalender
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/listen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/listen"><List className="h-4 w-4 mr-1" /> Listen</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/kalender") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/kalender"><Calendar className="h-4 w-4 mr-1" /> Kalender</Link>
+            </Button>
             <FeedbackDialog />
             <IOSWaitlistDialog />
-            <Link to="/umfrage">
-              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-                Umfrage
-              </Button>
-            </Link>
-            <Link to="/einstellungen">
-              <Button variant="ghost" size="sm" className={`whitespace-nowrap text-xs px-2 ${isActive("/einstellungen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
-                <Settings className="h-4 w-4" />
-              </Button>
-            </Link>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/umfrage">Umfrage</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/einstellungen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/einstellungen"><Settings className="h-4 w-4" /></Link>
+            </Button>
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-xs px-2" onClick={signOut}>
               <LogOut className="h-4 w-4" />
             </Button>
