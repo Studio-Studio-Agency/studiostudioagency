@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import AppFooter from "@/components/AppFooter";
 
 const Register = () => {
   const [vorname, setVorname] = useState("");
