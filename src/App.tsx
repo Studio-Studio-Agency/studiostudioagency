@@ -58,7 +58,7 @@ const App = () => (
             } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
-            <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />
+            <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
