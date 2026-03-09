@@ -36,7 +36,6 @@ const SettingsPage = () => {
       }
       if (settingsRes.data) {
         setEmailNotifications(settingsRes.data.email_notifications ?? false);
-        setApiKey(settingsRes.data.claude_api_key ?? "");
       }
       setLoading(false);
     };
