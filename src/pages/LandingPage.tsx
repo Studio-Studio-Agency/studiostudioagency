@@ -203,12 +203,17 @@ const WaitlistSection = () => {
   };
 
   return (
-    <section className="bg-accent/50 py-16">
+    <section className="bg-primary py-16">
       <div className="container text-center max-w-md mx-auto">
-        <h2 className="text-2xl font-bold mb-2">📱 iOS App kommt bald</h2>
-        <p className="text-muted-foreground mb-5">Trage dich auf die Warteliste ein.</p>
+        <h2 className="text-2xl font-bold mb-2 text-primary-foreground flex items-center justify-center gap-2">
+          <svg viewBox="0 0 384 512" className="h-6 w-6 fill-primary-foreground" aria-label="Apple Logo">
+            <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-27.1-46.9-42.2-83.7-45.3-34.9-3-73.2 20.5-87.1 20.5-14.7 0-49-19.5-74.3-19.5C63.1 140.2 0 185.3 0 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 37.1 59 128.1 107.2 126.5 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.7-65.2-30.7-61.7-90-61.7-92.9zm-56.6-176.1c27.3-32.4 24.8-62.1 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/>
+          </svg>
+          iOS App kommt bald
+        </h2>
+        <p className="text-primary-foreground/80 mb-5">Trage dich auf die Warteliste ein.</p>
         {done ? (
-          <motion.p initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-primary font-medium">
+          <motion.p initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="text-primary-foreground font-semibold text-lg">
             ✅ Du bist auf der Liste!
           </motion.p>
         ) : (
@@ -216,13 +221,15 @@ const WaitlistSection = () => {
             <input
               type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               placeholder="deine@email.ch" required
-              className="flex-1 rounded-lg border bg-background px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              className="flex-1 rounded-lg border-2 border-primary-foreground/20 bg-primary-foreground px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground/50"
             />
-            <Button type="submit" disabled={loading}>Eintragen</Button>
+            <Button type="submit" disabled={loading} className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 font-semibold shadow-lg">
+              Eintragen
+            </Button>
           </form>
         )}
         {count > 0 && (
-          <p className="mt-3 text-xs text-muted-foreground">
+          <p className="mt-3 text-sm text-primary-foreground/70 font-medium">
             Bereits {count} Personen auf der Warteliste
           </p>
         )}
