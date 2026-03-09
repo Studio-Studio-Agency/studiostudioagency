@@ -15,6 +15,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       setCheckingOnboarding(false);
       return;
     }
+    setCheckingOnboarding(true);
     supabase
       .from("profiles")
       .select("onboarding_completed")
@@ -29,7 +30,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
         }
         setCheckingOnboarding(false);
       });
-  }, [user]);
+  }, [user, location.pathname]);
 
   if (loading || checkingOnboarding) {
     return (
