@@ -24,7 +24,7 @@ const fadeUp = {
 
 const LandingPage = () => {
   const { user, loading } = useAuth();
-  const { resolvedTesolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const [userCount, setUserCount] = useState(0);
 
   useEffect(() => {
