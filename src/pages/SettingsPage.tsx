@@ -15,6 +15,7 @@ import { Loader2, Save, User, Bell, LogOut, Camera } from "lucide-react";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
