@@ -13,7 +13,7 @@ import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
-  const { resolvedTesolvedTheme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [vorname, setVorname] = useState("");
 
