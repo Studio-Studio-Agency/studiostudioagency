@@ -11,7 +11,7 @@ const AppHeader = () => {
 
   return (
     <header className="border-b bg-card">
-      <div className="container flex h-14 items-center justify-between">
+      <div className="container flex min-h-14 flex-wrap items-center justify-between gap-y-2 py-2">
         <Link to={user ? "/listen" : "/"} className="flex items-center gap-2">
           <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-7 w-auto" />
         </Link>
