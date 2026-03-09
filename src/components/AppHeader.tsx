@@ -40,7 +40,7 @@ const AppHeader = () => {
         {user && (
           <Link to="/einstellungen">
             <Avatar className="h-8 w-8 border border-border">
-              <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" />
+              <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
               <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
             </Avatar>
           </Link>
