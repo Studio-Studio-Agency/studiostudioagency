@@ -133,9 +133,7 @@ const ListsOverview = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
+          <ListSkeleton count={3} />
         ) : lists.length === 0 ? (
           <div className="text-center py-16 text-muted-foreground animate-fade-in">
             <ShoppingCart className="h-12 w-12 mx-auto mb-4 opacity-40" />
