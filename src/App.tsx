@@ -15,6 +15,7 @@ import ListDetail from "./pages/ListDetail";
 import CalendarPage from "./pages/CalendarPage";
 import SurveyPage from "./pages/SurveyPage";
 import SharedListPage from "./pages/SharedListPage";
+import SettingsPage from "./pages/SettingsPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
