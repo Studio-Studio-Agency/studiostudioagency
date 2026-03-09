@@ -94,7 +94,11 @@ const SettingsPage = () => {
     setSaving(true);
     const [profileRes, settingsRes] = await Promise.all([
       supabase.from("profiles").upsert({ user_id: user.id, vorname, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
-      supabase.from("user_settings").upsert({ user_id: user.id, email_notifications: emailNotifications }, { onConflict: "user_id" }),
+      supabase.from("user_settings").upsert({
+        user_id: user.id,
+        email_notifications: emailNotifications,
+        claude_api_key: apiKey.trim() || null,
+      }, { onConflict: "user_id" }),
     ]);
     setSaving(false);
     if (profileRes.error || settingsRes.error) {
