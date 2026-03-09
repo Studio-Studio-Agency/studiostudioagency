@@ -36,7 +36,7 @@ const AppHeader = () => {
   const invertedIsDark = resolvedTheme !== "dark";
 
   return (
-    <header className="border-b bg-card theme-inverted">
+    <header className="border-b bg-card text-card-foreground theme-inverted">
       <div className="container flex items-center justify-between py-3">
         <Link to={user ? "/listen" : "/"} className="flex items-center">
           <img src={invertedIsDark ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />

@@ -8,7 +8,7 @@ const AppFooter = () => {
   const invertedIsDark = resolvedTheme === "dark" ? false : true;
 
   return (
-    <footer className="border-t bg-card text-muted-foreground theme-inverted">
+    <footer className="border-t bg-card text-card-foreground theme-inverted">
       <div className="container py-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <img src={invertedIsDark ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-4 w-auto opacity-60" />
