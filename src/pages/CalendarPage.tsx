@@ -202,7 +202,7 @@ const CalendarPage = () => {
             {showManual && (
               <div className="space-y-3 pt-1">
                 <InstructionCard
-                  emoji="📱"
+                  icon={<AppleCalendarIcon className="h-5 w-5" />}
                   title="Apple Kalender (iPhone / Mac)"
                   steps={[
                     "Einstellungen → Kalender → Accounts → Account hinzufügen",
@@ -211,7 +211,7 @@ const CalendarPage = () => {
                   ]}
                 />
                 <InstructionCard
-                  emoji="📅"
+                  icon={<GoogleCalendarIcon className="h-5 w-5" />}
                   title="Google Calendar"
                   steps={[
                     "calendar.google.com → Andere Kalender → Per URL",
@@ -219,7 +219,7 @@ const CalendarPage = () => {
                   ]}
                 />
                 <InstructionCard
-                  emoji="📧"
+                  icon={<OutlookCalendarIcon className="h-5 w-5" />}
                   title="Outlook"
                   steps={[
                     "Kalender → Kalender hinzufügen → Aus dem Internet abonnieren",
