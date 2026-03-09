@@ -45,6 +45,9 @@ const App = () => (
             <Route path="/umfrage" element={
               <ProtectedRoute><SurveyPage /></ProtectedRoute>
             } />
+            <Route path="/einstellungen" element={
+              <ProtectedRoute><SettingsPage /></ProtectedRoute>
+            } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />
             <Route path="/datenschutz" element={<PlaceholderPage title="Datenschutzerklärung" />} />

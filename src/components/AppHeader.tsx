@@ -13,7 +13,7 @@ const AppHeader = () => {
     <header className="border-b bg-card">
       <div className="container flex min-h-14 flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2">
         <Link to={user ? "/listen" : "/"} className="flex items-center gap-2">
-          <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-7 w-auto" />
+          <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-8 w-auto" />
         </Link>
         {user && (
           <nav className="flex items-center gap-2">
