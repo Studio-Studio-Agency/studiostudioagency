@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, Key, Eye, EyeOff } from "lucide-react";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
@@ -21,6 +21,8 @@ const SettingsPage = () => {
   const [vorname, setVorname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [emailNotifications, setEmailNotifications] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [showApiKey, setShowApiKey] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -28,13 +30,16 @@ const SettingsPage = () => {
       setLoading(true);
       const [profileRes, settingsRes] = await Promise.all([
         supabase.from("profiles").select("vorname, avatar_url").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_settings").select("email_notifications").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("email_notifications, claude_api_key").eq("user_id", user.id).maybeSingle(),
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
         setAvatarUrl(profileRes.data.avatar_url ?? null);
       }
-      if (settingsRes.data) setEmailNotifications(settingsRes.data.email_notifications ?? false);
+      if (settingsRes.data) {
+        setEmailNotifications(settingsRes.data.email_notifications ?? false);
+        setApiKey(settingsRes.data.claude_api_key ?? "");
+      }
       setLoading(false);
     };
     load();
@@ -89,7 +94,11 @@ const SettingsPage = () => {
     setSaving(true);
     const [profileRes, settingsRes] = await Promise.all([
       supabase.from("profiles").upsert({ user_id: user.id, vorname, updated_at: new Date().toISOString() }, { onConflict: "user_id" }),
-      supabase.from("user_settings").upsert({ user_id: user.id, email_notifications: emailNotifications }, { onConflict: "user_id" }),
+      supabase.from("user_settings").upsert({
+        user_id: user.id,
+        email_notifications: emailNotifications,
+        claude_api_key: apiKey.trim() || null,
+      }, { onConflict: "user_id" }),
     ]);
     setSaving(false);
     if (profileRes.error || settingsRes.error) {
@@ -173,6 +182,46 @@ const SettingsPage = () => {
             <div className="flex items-center justify-between">
               <Label htmlFor="email-notifications">E-Mail-Benachrichtigungen</Label>
               <Switch id="email-notifications" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Key className="h-4 w-4" /> API Key
+            </CardTitle>
+            <CardDescription>
+              Dein Claude API Key für die KI-gestützte Haltbarkeitsanalyse.
+              Du findest ihn unter{" "}
+              <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                console.anthropic.com
+              </a>.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label htmlFor="api-key">Claude API Key</Label>
+              <div className="relative">
+                <Input
+                  id="api-key"
+                  type={showApiKey ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  placeholder="sk-ant-..."
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowApiKey(!showApiKey)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Wird verschlüsselt gespeichert und nur für die Analyse deiner Artikel verwendet.
+              </p>
             </div>
           </CardContent>
         </Card>
