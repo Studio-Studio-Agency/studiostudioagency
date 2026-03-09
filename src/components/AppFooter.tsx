@@ -10,8 +10,8 @@ const AppFooter = () => {
           <span className="text-xs">© 2026 Studio Studio Agency</span>
         </div>
         <div className="flex gap-6 text-sm">
-          <Link to="/impressum" className="hover:text-gray-900 transition-colors">Impressum</Link>
-          <Link to="/datenschutz" className="hover:text-gray-900 transition-colors">Datenschutz</Link>
+          <Link to="/impressum" className="hover:text-foreground transition-colors">Impressum</Link>
+          <Link to="/datenschutz" className="hover:text-foreground transition-colors">Datenschutz</Link>
         </div>
       </div>
     </footer>
