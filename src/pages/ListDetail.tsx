@@ -280,6 +280,9 @@ const ListDetail = () => {
           </div>
         )}
       </main>
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };

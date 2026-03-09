@@ -201,6 +201,9 @@ const SettingsPage = () => {
           </CardContent>
         </Card>
       </main>
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
   );
 };

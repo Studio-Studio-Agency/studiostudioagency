@@ -237,8 +237,10 @@ const CalendarPage = () => {
           </div>
         )}
       </main>
+      <div className="mt-auto">
+        <AppFooter />
+      </div>
     </div>
-  );
 };
 
 const InstructionCard = ({
