@@ -20,6 +20,7 @@ const Register = () => {
   const [acceptDsgvo, setAcceptDsgvo] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { resolvedTheme } = useTheme();
   const { toast } = useToast();
 
   const handleRegister = async (e: React.FormEvent) => {
