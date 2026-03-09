@@ -31,19 +31,27 @@ export interface Item {
   created_at: string;
 }
 
-const kategorieEmoji: Record<string, string> = {
-  Obst: "🍎",
-  Gemüse: "🥦",
+export const KATEGORIEN: Record<string, string> = {
+  "Obst & Früchte": "🍎",
+  "Gemüse & Salat": "🥦",
   "Fleisch & Fisch": "🥩",
-  Milchprodukte: "🧀",
-  Backwaren: "🍞",
-  Getränke: "🥤",
-  Tiefkühl: "🧊",
-  Konserven: "🥫",
-  Haushalt: "🧹",
-  Technik: "💻",
-  Sonstiges: "📦",
+  "Milchprodukte": "🧀",
+  "Backwaren": "🍞",
+  "Getränke": "🥤",
+  "Tiefkühl": "🧊",
+  "Konserven & Vorrat": "🥫",
+  "Gewürze & Saucen": "🌶️",
+  "Snacks & Süsses": "🍫",
+  "Frühstück & Cerealien": "🥣",
+  "Haushalt & Reinigung": "🧹",
+  "Pflege & Hygiene": "🧴",
+  "Baby & Kind": "🍼",
+  "Tierbedarf": "🐾",
+  "Technik & Elektronik": "💻",
+  "Sonstiges": "📦",
 };
+
+const kategorieEmoji = KATEGORIEN;
 
 function formatDate(dateIso: string) {
   return new Date(dateIso).toLocaleDateString("de-CH");
