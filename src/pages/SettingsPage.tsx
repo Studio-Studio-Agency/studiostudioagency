@@ -30,7 +30,7 @@ const SettingsPage = () => {
       setLoading(true);
       const [profileRes, settingsRes] = await Promise.all([
         supabase.from("profiles").select("vorname, avatar_url").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_settings").select("email_notifications").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("email_notifications, claude_api_key").eq("user_id", user.id).maybeSingle(),
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
