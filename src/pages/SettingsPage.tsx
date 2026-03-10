@@ -212,6 +212,102 @@ const SettingsPage = () => {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Webhook className="h-4 w-4" /> Webhook-API
+            </CardTitle>
+            <CardDescription>
+              Füge per HTTP-Request Artikel hinzu – z.B. via Alexa, Siri Shortcuts oder Home Assistant.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>Webhook-URL</Label>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-add-item`}
+                  className="bg-muted text-xs font-mono"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    navigator.clipboard.writeText(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-add-item`);
+                    toast({ title: "URL kopiert" });
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label>API-Token</Label>
+              <div className="flex gap-2">
+                <Input
+                  readOnly
+                  value={showToken ? (webhookToken ?? "–") : "••••••••••••••••"}
+                  className="bg-muted text-xs font-mono"
+                />
+                <Button variant="outline" size="icon" onClick={() => setShowToken(!showToken)}>
+                  {showToken ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    if (webhookToken) {
+                      navigator.clipboard.writeText(webhookToken);
+                      toast({ title: "Token kopiert" });
+                    }
+                  }}
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={regenerating}
+                  onClick={async () => {
+                    if (!user) return;
+                    setRegenerating(true);
+                    const newToken = crypto.randomUUID();
+                    const { error } = await supabase
+                      .from("user_settings")
+                      .update({ webhook_token: newToken } as any)
+                      .eq("user_id", user.id);
+                    setRegenerating(false);
+                    if (error) {
+                      toast({ title: "Fehler", description: "Token konnte nicht erneuert werden.", variant: "destructive" });
+                    } else {
+                      setWebhookToken(newToken);
+                      toast({ title: "Neuer Token generiert" });
+                    }
+                  }}
+                >
+                  {regenerating ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+                </Button>
+              </div>
+            </div>
+            <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground space-y-2">
+              <p className="font-medium text-foreground">Beispiel (cURL):</p>
+              <pre className="whitespace-pre-wrap break-all">
+{`curl -X POST \\
+  ${import.meta.env.VITE_SUPABASE_URL}/functions/v1/webhook-add-item \\
+  -H "Content-Type: application/json" \\
+  -d '{"token":"DEIN_TOKEN", "items":"Milch, Brot, Eier"}'`}
+              </pre>
+              <p className="mt-2 font-medium text-foreground">Optionen:</p>
+              <ul className="list-disc list-inside space-y-1">
+                <li><code className="text-foreground">"item": "Milch"</code> – Einzelner Artikel</li>
+                <li><code className="text-foreground">"items": "Milch, Brot"</code> – Komma-getrennt</li>
+                <li><code className="text-foreground">"items": [{"name":"Milch","menge":1,"einheit":"l"}]</code> – Mit Details</li>
+                <li><code className="text-foreground">"list_name": "Wocheneinkauf"</code> – Ziel-Liste (Standard: Einkaufsliste)</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
 
         <Button onClick={handleSave} disabled={saving} className="w-full">
           {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
