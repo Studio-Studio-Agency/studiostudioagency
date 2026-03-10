@@ -9,6 +9,7 @@ import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import RecipeImportDialog from "@/components/RecipeImportDialog";
 
 const ListDetail = () => {
   const { id: listId } = useParams<{ id: string }>();
@@ -161,7 +162,12 @@ const ListDetail = () => {
 
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">{listName || "..."}</h1>
-          {listId && <ShareListDialog listId={listId} listName={listName} editToken={editToken} />}
+          <div className="flex items-center gap-2">
+            {listId && user && (
+              <RecipeImportDialog listId={listId} userId={user.id} onItemsAdded={fetchData} />
+            )}
+            {listId && <ShareListDialog listId={listId} listName={listName} editToken={editToken} />}
+          </div>
         </div>
 
         {loading ? (
