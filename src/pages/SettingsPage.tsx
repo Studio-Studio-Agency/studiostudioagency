@@ -302,7 +302,7 @@ const SettingsPage = () => {
               <ul className="list-disc list-inside space-y-1">
                 <li><code className="text-foreground">"item": "Milch"</code> – Einzelner Artikel</li>
                 <li><code className="text-foreground">"items": "Milch, Brot"</code> – Komma-getrennt</li>
-                <li><code className="text-foreground">"items": [{"name":"Milch","menge":1,"einheit":"l"}]</code> – Mit Details</li>
+                <li><code className="text-foreground">{'"items": [{"name":"Milch","menge":1,"einheit":"l"}]'}</code> – Mit Details</li>
                 <li><code className="text-foreground">"list_name": "Wocheneinkauf"</code> – Ziel-Liste (Standard: Einkaufsliste)</li>
               </ul>
             </div>
