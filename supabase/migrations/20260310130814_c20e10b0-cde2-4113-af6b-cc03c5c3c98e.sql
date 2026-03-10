@@ -1,0 +1,1 @@
+ALTER TABLE public.user_settings ADD COLUMN IF NOT EXISTS webhook_token text DEFAULT (gen_random_uuid())::text;

@@ -203,6 +203,7 @@ export type Database = {
           email_notifications: boolean | null
           sprache: string | null
           user_id: string
+          webhook_token: string | null
         }
         Insert: {
           calendar_token?: string | null
@@ -210,6 +211,7 @@ export type Database = {
           email_notifications?: boolean | null
           sprache?: string | null
           user_id: string
+          webhook_token?: string | null
         }
         Update: {
           calendar_token?: string | null
@@ -217,6 +219,7 @@ export type Database = {
           email_notifications?: boolean | null
           sprache?: string | null
           user_id?: string
+          webhook_token?: string | null
         }
         Relationships: []
       }
