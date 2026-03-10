@@ -25,6 +25,9 @@ const SettingsPage = () => {
   const [vorname, setVorname] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [emailNotifications, setEmailNotifications] = useState(false);
+  const [webhookToken, setWebhookToken] = useState<string | null>(null);
+  const [showToken, setShowToken] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
