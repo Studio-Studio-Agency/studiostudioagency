@@ -44,6 +44,7 @@ const SettingsPage = () => {
       }
       if (settingsRes.data) {
         setEmailNotifications(settingsRes.data.email_notifications ?? false);
+        setWebhookToken((settingsRes.data as any).webhook_token ?? null);
       }
       setLoading(false);
     };
