@@ -18,35 +18,56 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Fetch the recipe page
-    console.log('Fetching recipe from:', url);
-    const pageResponse = await fetch(url, {
+    // --- Scrape with Firecrawl ---
+    const FIRECRAWL_API_KEY = Deno.env.get('FIRECRAWL_API_KEY');
+    if (!FIRECRAWL_API_KEY) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Firecrawl is not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    let formattedUrl = url.trim();
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = `https://${formattedUrl}`;
+    }
+
+    console.log('Scraping recipe with Firecrawl:', formattedUrl);
+
+    const scrapeResponse = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; GoodGoods/1.0)',
-        'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'de-DE,de;q=0.9,en;q=0.8',
+        'Authorization': `Bearer ${FIRECRAWL_API_KEY}`,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        url: formattedUrl,
+        formats: ['markdown'],
+        onlyMainContent: true,
+      }),
     });
 
-    if (!pageResponse.ok) {
+    const scrapeData = await scrapeResponse.json();
+
+    if (!scrapeResponse.ok) {
+      console.error('Firecrawl error:', scrapeData);
       return new Response(
-        JSON.stringify({ success: false, error: `Seite konnte nicht geladen werden (${pageResponse.status})` }),
+        JSON.stringify({ success: false, error: `Seite konnte nicht geladen werden (${scrapeResponse.status})` }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const html = await pageResponse.text();
+    const markdown = scrapeData.data?.markdown || scrapeData.markdown || '';
+    if (!markdown) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Kein Inhalt auf der Seite gefunden' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
-    // Extract text content - strip tags for cleaner AI input
-    const textContent = html
-      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, '')
-      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, '')
-      .replace(/<[^>]+>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 8000); // Limit to avoid token limits
+    const textContent = markdown.slice(0, 8000);
 
-    // Use Lovable AI to extract ingredients
+    // --- Extract ingredients with AI ---
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       return new Response(
@@ -75,7 +96,7 @@ Wichtig: Gib NUR das JSON-Array zurück, kein anderer Text.`
           },
           {
             role: 'user',
-            content: `Extrahiere die Zutaten aus diesem Rezept:\n\nURL: ${url}\n\n${textContent}`
+            content: `Extrahiere die Zutaten aus diesem Rezept:\n\nURL: ${formattedUrl}\n\n${textContent}`
           }
         ],
         temperature: 0.1,
@@ -93,11 +114,9 @@ Wichtig: Gib NUR das JSON-Array zurück, kein anderer Text.`
 
     const aiData = await aiResponse.json();
     const content = aiData.choices?.[0]?.message?.content || '[]';
-    
-    // Parse the JSON from AI response
+
     let ingredients;
     try {
-      // Remove potential markdown code blocks
       const cleaned = content.replace(/```json?\s*/g, '').replace(/```/g, '').trim();
       ingredients = JSON.parse(cleaned);
     } catch {
