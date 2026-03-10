@@ -9,6 +9,7 @@ import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import RecipeImportDialog from "@/components/RecipeImportDialog";
 
 const ListDetail = () => {
   const { id: listId } = useParams<{ id: string }>();
