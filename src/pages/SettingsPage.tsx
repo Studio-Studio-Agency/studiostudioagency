@@ -290,7 +290,7 @@ const SettingsPage = () => {
                 </Button>
               </div>
             </div>
-            <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground space-y-2">
+            <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground space-y-3">
               <p className="font-medium text-foreground">Beispiel (cURL):</p>
               <pre className="whitespace-pre-wrap break-all">
 {`curl -X POST \\
@@ -305,6 +305,29 @@ const SettingsPage = () => {
                 <li><code className="text-foreground">{'"items": [{"name":"Milch","menge":1,"einheit":"l"}]'}</code> – Mit Details</li>
                 <li><code className="text-foreground">"list_name": "Wocheneinkauf"</code> – Ziel-Liste (Standard: Einkaufsliste)</li>
               </ul>
+            </div>
+
+            <div className="rounded-md border border-border p-3 text-xs text-muted-foreground space-y-3">
+              <p className="font-semibold text-foreground">📱 Einrichtung mit Alexa</p>
+              <ol className="list-decimal list-inside space-y-1.5">
+                <li>Öffne die <span className="font-medium text-foreground">Alexa-App</span> → „Mehr" → „Routinen"</li>
+                <li>Erstelle eine neue Routine mit einem Sprachbefehl, z.B. <span className="italic">„Alexa, füge Milch zur Einkaufsliste hinzu"</span></li>
+                <li>Füge als Aktion <span className="font-medium text-foreground">„Skill-Aktion"</span> hinzu und wähle einen HTTP-Webhook-Skill (z.B. <span className="font-medium text-foreground">Voicemonkey</span> oder <span className="font-medium text-foreground">Virtual Buttons</span>)</li>
+                <li>Konfiguriere den Skill mit der <span className="font-medium text-foreground">Webhook-URL</span> und deinem <span className="font-medium text-foreground">Token</span> von oben</li>
+                <li>Sende als Body: <code className="text-foreground bg-background/50 px-1 rounded">{`{"token":"DEIN_TOKEN","item":"Milch"}`}</code></li>
+              </ol>
+
+              <p className="font-semibold text-foreground pt-1">🍎 Einrichtung mit Siri Shortcuts</p>
+              <ol className="list-decimal list-inside space-y-1.5">
+                <li>Öffne die <span className="font-medium text-foreground">Kurzbefehle-App</span> auf deinem iPhone/iPad</li>
+                <li>Erstelle einen neuen Kurzbefehl → Aktion <span className="font-medium text-foreground">„URL-Inhalt abrufen"</span></li>
+                <li>Methode: <span className="font-medium text-foreground">POST</span>, Body: JSON mit <code className="text-foreground bg-background/50 px-1 rounded">token</code> und <code className="text-foreground bg-background/50 px-1 rounded">item</code></li>
+                <li>Füge <span className="font-medium text-foreground">„Nach Eingabe fragen"</span> hinzu, um den Artikelnamen per Sprache einzugeben</li>
+                <li>Benenne den Kurzbefehl, z.B. <span className="italic">„Einkaufsliste"</span> – dann sagst du: <span className="italic">„Hey Siri, Einkaufsliste"</span></li>
+              </ol>
+
+              <p className="font-semibold text-foreground pt-1">🏠 Home Assistant</p>
+              <p>Nutze die <code className="text-foreground bg-background/50 px-1 rounded">rest_command</code>-Integration mit der Webhook-URL und deinem Token als JSON-Body.</p>
             </div>
           </CardContent>
         </Card>
