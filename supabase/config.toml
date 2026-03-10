@@ -9,3 +9,5 @@ project_id = "itxpdoppymvbotsiutea"
     verify_jwt = false
   [functions.scan-receipt]
     verify_jwt = false
+  [functions.webhook-add-item]
+    verify_jwt = false
