@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const SharedListPage = () => {
   const { token } = useParams<{ token: string }>();

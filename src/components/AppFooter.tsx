@@ -3,14 +3,11 @@ import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const AppFooter = () => {
-  const { resolvedTheme } = useTheme();
-  const invertedIsDark = resolvedTheme === "dark" ? false : true;
-
   return (
     <footer className="border-t bg-card text-card-foreground theme-inverted">
       <div className="container py-8 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <img src={invertedIsDark ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-4 w-auto opacity-60" />
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-4 w-auto opacity-60" />
           <span className="text-xs">© 2026 Studio Studio Agency</span>
         </div>
         <div className="flex gap-6 text-sm">

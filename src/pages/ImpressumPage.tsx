@@ -1,4 +1,4 @@
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 import { Link } from "react-router-dom";
 
 const ImpressumPage = () => (

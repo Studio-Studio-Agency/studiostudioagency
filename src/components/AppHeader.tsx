@@ -8,8 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, List, Calendar, Sun, Moon } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
