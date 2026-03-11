@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 import AppFooter from "@/components/AppFooter";
 
 const DatenschutzPage = () => (

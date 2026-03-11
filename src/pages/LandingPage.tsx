@@ -7,8 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, type Easing } from "framer-motion";
 import { useTheme } from "next-themes";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 import overripeBanana from "@/assets/overripe-banana.png";
 import AppFooter from "@/components/AppFooter";
 
@@ -39,7 +38,7 @@ const LandingPage = () => {
       {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-md">
         <div className="container flex h-16 items-center justify-between">
-          <img src={resolvedTheme === "dark" ? goodgoodsLogoDark : goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
           <Link to="/login">
             <Button variant="ghost" size="sm">Anmelden</Button>
           </Link>

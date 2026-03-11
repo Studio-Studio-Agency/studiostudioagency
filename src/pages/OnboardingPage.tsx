@@ -10,8 +10,7 @@ import {
   Copy, ExternalLink, Loader2,
 } from "lucide-react";
 import { AppleCalendarIcon, GoogleCalendarIcon, OutlookCalendarIcon } from "@/components/CalendarIcons";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const STEPS = [
   { id: "welcome", label: "Willkommen" },
@@ -145,8 +144,7 @@ const OnboardingPage = () => {
           {step === 0 && (
             <div className="text-center space-y-8">
               <div className="animate-fade-in">
-                <img src={goodgoodsLogo} alt="GoodGoods" className="h-12 w-auto mx-auto mb-6 dark:hidden" />
-                <img src={goodgoodsLogoDark} alt="GoodGoods" className="h-12 w-auto mx-auto mb-6 hidden dark:block" />
+                <img src={goodgoodsLogo} alt="GoodGoods" className="h-12 w-auto mx-auto mb-6" />
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm text-primary mb-4">
                   <Sparkles className="h-4 w-4" /> Willkommen!
                 </div>
