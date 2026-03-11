@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "next-themes";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const AppFooter = () => {
   const { resolvedTheme } = useTheme();
