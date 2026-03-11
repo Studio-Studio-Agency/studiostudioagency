@@ -10,8 +10,7 @@ import {
   Copy, ExternalLink, Loader2,
 } from "lucide-react";
 import { AppleCalendarIcon, GoogleCalendarIcon, OutlookCalendarIcon } from "@/components/CalendarIcons";
-import goodgoodsLogo from "@/assets/goodgoods-logo.svg";
-import goodgoodsLogoDark from "@/assets/goodgoods-logo-dark.svg";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const STEPS = [
   { id: "welcome", label: "Willkommen" },
