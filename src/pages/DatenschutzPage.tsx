@@ -45,7 +45,7 @@ const DatenschutzPage = () => (
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">3. Zweck der Datenverarbeitung</h2>
         <ul className="list-disc list-inside text-muted-foreground space-y-1">
-          <li>Bereitstellung und Betrieb der GoodGoods-Anwendung</li>
+          <li>Bereitstellung und Betrieb der bling-Anwendung</li>
           <li>Benutzerauthentifizierung und Kontoverwaltung</li>
           <li>KI-gestützte Analyse der Haltbarkeit von Lebensmitteln</li>
           <li>Kalender-Integration zur Erinnerung an Ablaufdaten</li>
