@@ -1,6 +1,6 @@
 {
-  "name": "bling",
-  "short_name": "bling",
+  "name": "GoodGoods",
+  "short_name": "GoodGoods",
   "description": "Deine smarte Einkaufsliste – nie wieder Lebensmittel wegwerfen.",
   "start_url": "/",
   "display": "standalone",

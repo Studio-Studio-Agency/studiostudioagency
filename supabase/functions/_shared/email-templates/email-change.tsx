@@ -30,19 +30,19 @@ export const EmailChangeEmail = ({
 }: EmailChangeEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Bestätige deine E-Mail-Änderung für bling</Preview>
+    <Preview>Bestätige deine E-Mail-Änderung für GoodGoods</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="bling"
+          alt="GoodGoods"
           style={logo}
         />
         <Heading style={h1}>E-Mail-Adresse ändern</Heading>
         <Text style={text}>
-          Du hast angefordert, deine E-Mail-Adresse für bling von{' '}
+          Du hast angefordert, deine E-Mail-Adresse für GoodGoods von{' '}
           <Link href={`mailto:${email}`} style={link}>
             {email}
           </Link>{' '}

@@ -20,14 +20,14 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Dein Bestätigungscode für bling</Preview>
+    <Preview>Dein Bestätigungscode für GoodGoods</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="bling"
+          alt="GoodGoods"
           style={logo}
         />
         <Heading style={h1}>Bestätigungscode</Heading>

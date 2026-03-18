@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import BlingLogo from "@/components/BlingLogo";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 import AppFooter from "@/components/AppFooter";
 
 const DatenschutzPage = () => (
@@ -7,7 +7,7 @@ const DatenschutzPage = () => (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between py-4">
         <Link to="/">
-          <BlingLogo size={28} />
+          <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
         </Link>
       </div>
     </header>
@@ -45,7 +45,7 @@ const DatenschutzPage = () => (
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">3. Zweck der Datenverarbeitung</h2>
         <ul className="list-disc list-inside text-muted-foreground space-y-1">
-          <li>Bereitstellung und Betrieb der bling-Anwendung</li>
+          <li>Bereitstellung und Betrieb der GoodGoods-Anwendung</li>
           <li>Benutzerauthentifizierung und Kontoverwaltung</li>
           <li>KI-gestützte Analyse der Haltbarkeit von Lebensmitteln</li>
           <li>Kalender-Integration zur Erinnerung an Ablaufdaten</li>
@@ -88,7 +88,7 @@ const DatenschutzPage = () => (
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">7. Cookies & Tracking</h2>
         <p className="text-muted-foreground leading-relaxed">
-          bling verwendet keine Tracking-Cookies und kein Analyse-Tracking von Drittanbietern.
+          GoodGoods verwendet keine Tracking-Cookies und kein Analyse-Tracking von Drittanbietern.
           Es werden ausschliesslich technisch notwendige Cookies für die Authentifizierung verwendet.
         </p>
       </section>

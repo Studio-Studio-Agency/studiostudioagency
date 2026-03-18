@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, List, Calendar, Sun, Moon } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
-import BlingLogo from "@/components/BlingLogo";
+import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const AppHeader = () => {
   const { user, signOut } = useAuth();
@@ -39,7 +39,7 @@ const AppHeader = () => {
     <header className="border-b bg-card text-card-foreground">
       <div className="container flex items-center justify-between py-3">
         <Link to={user ? "/listen" : "/"} className="flex items-center">
-          <BlingLogo size={28} />
+          <img src={goodgoodsLogo} alt="GoodGoods Logo" className="h-6 w-auto" />
         </Link>
         <div className="flex items-center gap-2">
           <Button

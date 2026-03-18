@@ -30,21 +30,21 @@ export const SignupEmail = ({
 }: SignupEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Bestätige deine E-Mail für bling</Preview>
+    <Preview>Bestätige deine E-Mail für GoodGoods</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="bling"
+          alt="GoodGoods"
           style={logo}
         />
-        <Heading style={h1}>Willkommen bei bling! 🥳</Heading>
+        <Heading style={h1}>Willkommen bei GoodGoods! 🥳</Heading>
         <Text style={text}>
           Danke, dass du dich bei{' '}
           <Link href={siteUrl} style={link}>
-            <strong>bling</strong>
+            <strong>GoodGoods</strong>
           </Link>{' '}
           registriert hast!
         </Text>

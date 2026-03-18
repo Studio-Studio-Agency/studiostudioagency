@@ -36,9 +36,9 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 
 // Configuration
 const SITE_NAME = "studiostudioagency"
-const SENDER_DOMAIN = "notify.bling.studiostudio.ch"
-const ROOT_DOMAIN = "bling.studiostudio.ch"
-const FROM_DOMAIN = "bling.studiostudio.ch" // Domain shown in From address (may be root or sender subdomain)
+const SENDER_DOMAIN = "notify.goodgoods.studiostudio.ch"
+const ROOT_DOMAIN = "goodgoods.studiostudio.ch"
+const FROM_DOMAIN = "goodgoods.studiostudio.ch" // Domain shown in From address (may be root or sender subdomain)
 
 // Sample data for preview mode ONLY (not used in actual email sending).
 // URLs are baked in at scaffold time from the project's real data.
