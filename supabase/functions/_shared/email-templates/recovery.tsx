@@ -25,7 +25,7 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Setze dein Passwort für GoodGoods zurück</Preview>
+    <Preview>Setze dein Passwort für bling zurück</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
