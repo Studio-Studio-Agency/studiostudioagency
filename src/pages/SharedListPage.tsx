@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShoppingCart, Trash2 } from "lucide-react";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
-import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
+import BlingLogo from "@/components/BlingLogo";
 
 const SharedListPage = () => {
   const { token } = useParams<{ token: string }>();
@@ -97,7 +97,7 @@ const SharedListPage = () => {
       {/* Simple header without auth */}
       <header className="border-b border-border bg-background/80 backdrop-blur sticky top-0 z-10">
         <div className="container flex items-center gap-2 h-16 max-w-2xl">
-          <img src={goodgoodsLogo} alt="bling" className="h-6 w-auto" />
+          <BlingLogo size={28} />
           <span className="text-muted-foreground text-sm ml-auto">Geteilte Liste</span>
         </div>
       </header>

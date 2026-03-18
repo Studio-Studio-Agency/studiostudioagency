@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
+import BlingLogo from "@/components/BlingLogo";
 import AppFooter from "@/components/AppFooter";
 
 const Register = () => {
@@ -61,7 +61,7 @@ const Register = () => {
       <Card className="w-full max-w-md animate-fade-in">
         <CardHeader className="text-center">
           <div className="flex justify-center mb-3">
-            <img src={goodgoodsLogo} alt="bling" className="h-6 w-auto" />
+            <BlingLogo size={40} />
           </div>
           <CardDescription>Konto erstellen und kostenlos starten</CardDescription>
         </CardHeader>
