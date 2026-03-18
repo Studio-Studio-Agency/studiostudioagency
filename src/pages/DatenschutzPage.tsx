@@ -88,7 +88,7 @@ const DatenschutzPage = () => (
       <section className="space-y-3">
         <h2 className="text-xl font-semibold">7. Cookies & Tracking</h2>
         <p className="text-muted-foreground leading-relaxed">
-          GoodGoods verwendet keine Tracking-Cookies und kein Analyse-Tracking von Drittanbietern.
+          bling verwendet keine Tracking-Cookies und kein Analyse-Tracking von Drittanbietern.
           Es werden ausschliesslich technisch notwendige Cookies für die Authentifizierung verwendet.
         </p>
       </section>

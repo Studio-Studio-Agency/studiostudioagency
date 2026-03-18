@@ -84,7 +84,7 @@ const LandingPage = () => {
             className="text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed font-bold text-muted-foreground dark:text-foreground"
             initial="hidden" animate="visible" variants={fadeUp} custom={2}
           >
-            GoodGoods erinnert dich automatisch, bevor dein Essen schlecht wird –
+            bling erinnert dich automatisch, bevor dein Essen schlecht wird –
             ganz ohne manuelles Eintragen von Ablaufdaten.
           </motion.p>
 

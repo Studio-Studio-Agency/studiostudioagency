@@ -35,14 +35,14 @@ export const InviteEmail = ({
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="GoodGoods"
+          alt="bling"
           style={logo}
         />
-        <Heading style={h1}>Du wurdest eingeladen! 🎉</Heading>
+        <Heading style={h1}>Du wurdest eingeladen</Heading>
         <Text style={text}>
           Du wurdest eingeladen,{' '}
           <Link href={siteUrl} style={link}>
-            <strong>GoodGoods</strong>
+            <strong>bling</strong>
           </Link>{' '}
           beizutreten. Klicke auf den Button unten, um die Einladung anzunehmen 
           und dein Konto zu erstellen.

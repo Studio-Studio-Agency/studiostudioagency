@@ -6,7 +6,7 @@ const ImpressumPage = () => (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between py-4">
         <Link to="/">
-          <img src={goodgoodsLogo} alt="GoodGoods" className="h-6 w-auto" />
+          <img src={goodgoodsLogo} alt="bling" className="h-6 w-auto" />
         </Link>
       </div>
     </header>
@@ -14,7 +14,7 @@ const ImpressumPage = () => (
       <h1 className="text-3xl font-bold">Impressum</h1>
 
       <section className="space-y-2">
-        <h2 className="text-xl font-semibold">Good Goods AI</h2>
+        <h2 className="text-xl font-semibold">bling</h2>
         <p className="text-muted-foreground">
           Copyright © 2026 by Studio Studio Agency | Alain Szerdahelyi
         </p>

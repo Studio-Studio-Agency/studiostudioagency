@@ -27,7 +27,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="GoodGoods"
+          alt="bling"
           style={logo}
         />
         <Heading style={h1}>Bestätigungscode</Heading>

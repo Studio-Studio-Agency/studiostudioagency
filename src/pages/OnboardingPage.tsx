@@ -144,7 +144,7 @@ const OnboardingPage = () => {
           {step === 0 && (
             <div className="text-center space-y-8">
               <div className="animate-fade-in">
-                <img src={goodgoodsLogo} alt="GoodGoods" className="h-12 w-auto mx-auto mb-6" />
+                <img src={goodgoodsLogo} alt="bling" className="h-12 w-auto mx-auto mb-6" />
                 <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm text-primary mb-4">
                   <Sparkles className="h-4 w-4" /> Willkommen!
                 </div>
@@ -152,7 +152,7 @@ const OnboardingPage = () => {
                   Hallo{vorname ? `, ${vorname}` : ""}! 👋
                 </h1>
                 <p className="text-muted-foreground text-lg leading-relaxed">
-                  Lass uns dein GoodGoods in<br />wenigen Schritten einrichten.
+                  Lass uns dein bling in<br />wenigen Schritten einrichten.
                 </p>
               </div>
               <Button size="lg" className="w-full max-w-xs mx-auto text-base gap-2" onClick={() => goTo(1)}>
