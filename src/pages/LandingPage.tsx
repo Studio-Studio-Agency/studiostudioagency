@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, type Easing } from "framer-motion";
 import { useTheme } from "next-themes";
-import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
+import BlingLogo from "@/components/BlingLogo";
 import overripeBanana from "@/assets/overripe-banana.png";
 import AppFooter from "@/components/AppFooter";
 
