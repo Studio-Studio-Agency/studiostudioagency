@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
-import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
+import BlingLogo from "@/components/BlingLogo";
 import AppFooter from "@/components/AppFooter";
 
 const Register = () => {
