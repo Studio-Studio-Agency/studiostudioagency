@@ -25,19 +25,19 @@ export const RecoveryEmail = ({
 }: RecoveryEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Setze dein Passwort für GoodGoods zurück</Preview>
+    <Preview>Setze dein Passwort für bling zurück</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
           src="https://itxpdoppymvbotsiutea.supabase.co/storage/v1/object/public/email-assets/goodgoods-logo.svg"
           width="140"
           height="28"
-          alt="GoodGoods"
+          alt="bling"
           style={logo}
         />
         <Heading style={h1}>Passwort zurücksetzen</Heading>
         <Text style={text}>
-          Du hast angefordert, dein Passwort für GoodGoods zurückzusetzen. 
+          Du hast angefordert, dein Passwort für bling zurückzusetzen.
           Klicke auf den Button unten, um ein neues Passwort zu wählen.
         </Text>
         <Button style={button} href={confirmationUrl}>
