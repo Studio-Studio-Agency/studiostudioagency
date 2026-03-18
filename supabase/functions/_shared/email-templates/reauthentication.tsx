@@ -20,7 +20,7 @@ interface ReauthenticationEmailProps {
 export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Dein Bestätigungscode für GoodGoods</Preview>
+    <Preview>Dein Bestätigungscode für bling</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
