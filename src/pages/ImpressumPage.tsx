@@ -1,4 +1,4 @@
-import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
+import BlingLogo from "@/components/BlingLogo";
 import { Link } from "react-router-dom";
 
 const ImpressumPage = () => (
@@ -6,7 +6,7 @@ const ImpressumPage = () => (
     <header className="border-b bg-card">
       <div className="container flex items-center justify-between py-4">
         <Link to="/">
-          <img src={goodgoodsLogo} alt="bling" className="h-6 w-auto" />
+          <BlingLogo size={28} />
         </Link>
       </div>
     </header>
