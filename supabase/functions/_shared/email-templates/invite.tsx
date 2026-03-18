@@ -28,7 +28,7 @@ export const InviteEmail = ({
 }: InviteEmailProps) => (
   <Html lang="de" dir="ltr">
     <Head />
-    <Preview>Du wurdest zu GoodGoods eingeladen</Preview>
+    <Preview>Du wurdest zu bling eingeladen</Preview>
     <Body style={main}>
       <Container style={container}>
         <Img
