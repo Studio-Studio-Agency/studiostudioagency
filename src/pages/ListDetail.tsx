@@ -64,7 +64,30 @@ const ListDetail = () => {
       return;
     }
     if (data) {
-      setItems(prev => [...prev, data as Item]);
+      const newItem = data as Item;
+      setItems(prev => [...prev, newItem]);
+
+      // Auto-categorize in background
+      setAnalyzingId(newItem.id);
+      try {
+        const { data: aiData, error: fnError } = await supabase.functions.invoke("analyze-item", {
+          body: { artikelName: newItem.name, menge: newItem.menge, einheit: newItem.einheit, itemId: newItem.id },
+        });
+        if (!fnError && aiData?.success) {
+          const a = aiData.analysis;
+          setItems(prev =>
+            prev.map(i => i.id === newItem.id ? {
+              ...i,
+              ist_lebensmittel: a.istLebensmittel, kategorie: a.kategorie,
+              haltbarkeit_tage: a.haltbarkeitTage, erinnerung_vor_tagen: a.erinnerungVorTagen,
+              ablauf_datum: a.ablaufDatum, erklaerung: a.erklaerung, lagerhinweis: a.lagerhinweis,
+            } : i)
+          );
+        }
+      } catch (err) {
+        console.error("Auto-categorize error:", err);
+      }
+      setAnalyzingId(null);
     }
   };
 
@@ -176,17 +199,44 @@ const ListDetail = () => {
           </div>
         ) : (
           <div className="space-y-1">
-            {/* Unchecked items as notepad lines */}
-            {uncheckedItems.map(item => (
-              <ListItemRow
-                key={item.id}
-                item={item}
-                analyzing={analyzingId === item.id}
-                onToggle={() => toggleCheck(item)}
-                onDelete={() => deleteItem(item.id)}
-                onRename={(n) => renameItem(item.id, n)}
-              />
-            ))}
+            {/* Unchecked items grouped by category */}
+            {(() => {
+              const grouped: Record<string, Item[]> = {};
+              uncheckedItems.forEach(item => {
+                const cat = item.kategorie || "Sonstiges";
+                if (!grouped[cat]) grouped[cat] = [];
+                grouped[cat].push(item);
+              });
+              // Sort categories: known ones first, Sonstiges last
+              const sortedCats = Object.keys(grouped).sort((a, b) => {
+                if (a === "Sonstiges") return 1;
+                if (b === "Sonstiges") return -1;
+                return a.localeCompare(b, "de");
+              });
+              const hasMultipleCategories = sortedCats.length > 1 || (sortedCats.length === 1 && sortedCats[0] !== "Sonstiges");
+
+              return sortedCats.map(cat => (
+                <div key={cat}>
+                  {hasMultipleCategories && (
+                    <div className="flex items-center gap-2 mt-4 mb-1.5 first:mt-0">
+                      <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
+                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{cat}</span>
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+                  )}
+                  {grouped[cat].map(item => (
+                    <ListItemRow
+                      key={item.id}
+                      item={item}
+                      analyzing={analyzingId === item.id}
+                      onToggle={() => toggleCheck(item)}
+                      onDelete={() => deleteItem(item.id)}
+                      onRename={(n) => renameItem(item.id, n)}
+                    />
+                  ))}
+                </div>
+              ));
+            })()}
 
             {/* Always-visible new line input */}
             <div className="flex items-center gap-3">
