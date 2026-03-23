@@ -64,7 +64,30 @@ const ListDetail = () => {
       return;
     }
     if (data) {
-      setItems(prev => [...prev, data as Item]);
+      const newItem = data as Item;
+      setItems(prev => [...prev, newItem]);
+
+      // Auto-categorize in background
+      setAnalyzingId(newItem.id);
+      try {
+        const { data: aiData, error: fnError } = await supabase.functions.invoke("analyze-item", {
+          body: { artikelName: newItem.name, menge: newItem.menge, einheit: newItem.einheit, itemId: newItem.id },
+        });
+        if (!fnError && aiData?.success) {
+          const a = aiData.analysis;
+          setItems(prev =>
+            prev.map(i => i.id === newItem.id ? {
+              ...i,
+              ist_lebensmittel: a.istLebensmittel, kategorie: a.kategorie,
+              haltbarkeit_tage: a.haltbarkeitTage, erinnerung_vor_tagen: a.erinnerungVorTagen,
+              ablauf_datum: a.ablaufDatum, erklaerung: a.erklaerung, lagerhinweis: a.lagerhinweis,
+            } : i)
+          );
+        }
+      } catch (err) {
+        console.error("Auto-categorize error:", err);
+      }
+      setAnalyzingId(null);
     }
   };
 
