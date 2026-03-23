@@ -17,6 +17,8 @@ import ScanReceiptPage from "./pages/ScanReceiptPage";
 import CalendarPage from "./pages/CalendarPage";
 import SurveyPage from "./pages/SurveyPage";
 import SharedListPage from "./pages/SharedListPage";
+import NotesOverview from "./pages/NotesOverview";
+import NoteDetail from "./pages/NoteDetail";
 import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
@@ -59,6 +61,12 @@ const App = () => (
             } />
             <Route path="/willkommen" element={
               <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+            } />
+            <Route path="/notizen" element={
+              <ProtectedRoute><NotesOverview /></ProtectedRoute>
+            } />
+            <Route path="/notizen/:id" element={
+              <ProtectedRoute><NoteDetail /></ProtectedRoute>
             } />
             {/* Public shared list page - no auth required */}
             <Route path="/teilen/:token" element={<SharedListPage />} />

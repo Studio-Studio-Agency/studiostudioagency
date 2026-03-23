@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, List, Calendar, Sun, Moon } from "lucide-react";
+import { LogOut, Settings, List, Calendar, Sun, Moon, StickyNote } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
@@ -74,6 +74,9 @@ const AppHeader = () => {
           <div className="container flex items-center justify-center gap-1 py-1">
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/listen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
               <Link to="/listen"><List className="h-4 w-4 mr-1" /> Listen</Link>
+            </Button>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/notizen") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/notizen"><StickyNote className="h-4 w-4 mr-1" /> Notizen</Link>
             </Button>
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/kalender") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
               <Link to="/kalender"><Calendar className="h-4 w-4 mr-1" /> Kalender</Link>
