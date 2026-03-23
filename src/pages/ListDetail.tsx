@@ -51,6 +51,43 @@ const ListDetail = () => {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
+  // Realtime subscription for collaborative editing
+  useEffect(() => {
+    if (!listId) return;
+    const channel = supabase
+      .channel(`list-items-${listId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'items', filter: `list_id=eq.${listId}` },
+        (payload) => {
+          const newItem = payload.new as Item;
+          setItems(prev => {
+            if (prev.some(i => i.id === newItem.id)) return prev;
+            return [...prev, newItem];
+          });
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'items', filter: `list_id=eq.${listId}` },
+        (payload) => {
+          const updated = payload.new as Item;
+          setItems(prev => prev.map(i => i.id === updated.id ? updated : i));
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'items', filter: `list_id=eq.${listId}` },
+        (payload) => {
+          const deletedId = (payload.old as { id: string }).id;
+          setItems(prev => prev.filter(i => i.id !== deletedId));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [listId]);
+
   const addItem = async (name: string) => {
     if (!name.trim() || !user || !listId) return;
     const { data, error } = await supabase.from("items").insert({
