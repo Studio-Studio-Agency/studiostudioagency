@@ -11,3 +11,5 @@ project_id = "itxpdoppymvbotsiutea"
     verify_jwt = false
   [functions.webhook-add-item]
     verify_jwt = false
+  [functions.analyze-note]
+    verify_jwt = false
