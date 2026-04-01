@@ -117,7 +117,7 @@ const PRODUCT_ICONS: Record<string, string> = {
   fischstäbchen: "🐟",
 
   // Haushalt
-  toilettenpapier: "🧻", wc-papier: "🧻", klopapier: "🧻",
+  toilettenpapier: "🧻", "wc-papier": "🧻", klopapier: "🧻",
   küchenpapier: "🧻", haushaltspapier: "🧻",
   spülmittel: "🧴", abwaschmittel: "🧴", geschirrspülmittel: "🧴",
   waschmittel: "🧺",
