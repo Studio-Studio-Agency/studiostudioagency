@@ -162,3 +162,10 @@
   50% { transform: scale(1.2); }
   100% { transform: scale(1); }
 }
+
+/* Bottom nav spacing on mobile */
+@media (max-width: 767px) {
+  .pb-bottom-nav {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
+}
