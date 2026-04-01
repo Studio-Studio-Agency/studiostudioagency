@@ -79,6 +79,7 @@ const App = () => (
             <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <BottomNav />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
