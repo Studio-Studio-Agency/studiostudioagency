@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { List, StickyNote, Calendar, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const tabs = [
   { path: "/listen", icon: List, label: "Listen" },
@@ -10,12 +11,15 @@ const tabs = [
 ];
 
 const BottomNav = () => {
+  const { user } = useAuth();
   const location = useLocation();
   const isActive = (path: string) => location.pathname.startsWith(path);
 
+  if (!user) return null;
+
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden">
-      <div className="flex items-center justify-around h-14 px-2 safe-area-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden pb-[env(safe-area-inset-bottom)]">
+      <div className="flex items-center justify-around h-14 px-2">
         {tabs.map(({ path, icon: Icon, label }) => (
           <Link
             key={path}
