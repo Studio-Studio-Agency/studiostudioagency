@@ -63,6 +63,9 @@ const App = () => (
             <Route path="/willkommen" element={
               <ProtectedRoute><OnboardingPage /></ProtectedRoute>
             } />
+            <Route path="/inspiration" element={
+              <ProtectedRoute><InspirationPage /></ProtectedRoute>
+            } />
             <Route path="/notizen" element={
               <ProtectedRoute><NotesOverview /></ProtectedRoute>
             } />

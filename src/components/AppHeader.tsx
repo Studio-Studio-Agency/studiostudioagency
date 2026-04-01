@@ -81,6 +81,9 @@ const AppHeader = () => {
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/kalender") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
               <Link to="/kalender"><Calendar className="h-4 w-4 mr-1" /> Kalender</Link>
             </Button>
+            <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/inspiration") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
+              <Link to="/inspiration"><Sparkles className="h-4 w-4 mr-1" /> Inspiration</Link>
+            </Button>
             <FeedbackDialog />
             <IOSWaitlistDialog />
             <Button variant="ghost" size="sm" asChild className={`whitespace-nowrap text-xs px-2 ${isActive("/umfrage") ? "bg-accent text-accent-foreground font-semibold" : ""}`}>
