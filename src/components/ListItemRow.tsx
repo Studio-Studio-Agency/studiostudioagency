@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getProductIcon } from "@/lib/productIcons";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -125,10 +126,17 @@ const ListItemRow = ({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start gap-2 min-w-0">
-            {item.is_checked && (
+            {item.is_checked ? (
               <span className="shrink-0" aria-label="Haltbarkeitsstatus">
                 {getLifecycleDot()}
               </span>
+            ) : (
+              (() => {
+                const icon = getProductIcon(item.name);
+                return icon ? (
+                  <span className="shrink-0 text-lg" aria-hidden>{icon}</span>
+                ) : null;
+              })()
             )}
             <span className="text-foreground break-words">{item.name}</span>
             {item.menge && (
