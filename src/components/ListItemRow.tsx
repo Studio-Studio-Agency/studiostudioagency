@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Checkbox } from "@/components/ui/checkbox";
+import { getProductIcon } from "@/lib/productIcons";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
