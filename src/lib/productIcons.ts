@@ -25,7 +25,7 @@ const PRODUCT_ICONS: Record<string, string> = {
   kokosnuss: "🥥",
 
   // Gemüse
-  tomate: "🍅", tomaten: "🍅", cherry-tomaten: "🍅",
+  tomate: "🍅", tomaten: "🍅", "cherry-tomaten": "🍅",
   kartoffel: "🥔", kartoffeln: "🥔",
   karotte: "🥕", karotten: "🥕", möhre: "🥕", möhren: "🥕", rüebli: "🥕",
   zwiebel: "🧅", zwiebeln: "🧅",
