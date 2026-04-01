@@ -23,6 +23,7 @@ import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
+import InspirationPage from "./pages/InspirationPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +62,9 @@ const App = () => (
             } />
             <Route path="/willkommen" element={
               <ProtectedRoute><OnboardingPage /></ProtectedRoute>
+            } />
+            <Route path="/inspiration" element={
+              <ProtectedRoute><InspirationPage /></ProtectedRoute>
             } />
             <Route path="/notizen" element={
               <ProtectedRoute><NotesOverview /></ProtectedRoute>

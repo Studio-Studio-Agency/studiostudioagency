@@ -13,3 +13,5 @@ project_id = "itxpdoppymvbotsiutea"
     verify_jwt = false
   [functions.analyze-note]
     verify_jwt = false
+  [functions.suggest-recipes]
+    verify_jwt = false
