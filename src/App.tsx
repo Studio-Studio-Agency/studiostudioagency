@@ -23,6 +23,7 @@ import SettingsPage from "./pages/SettingsPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
+import InspirationPage from "./pages/InspirationPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
