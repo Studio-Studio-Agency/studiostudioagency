@@ -18,7 +18,7 @@ const BottomNav = () => {
   if (!user) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80 md:hidden pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-primary/20 bg-primary text-primary-foreground md:hidden pb-[env(safe-area-inset-bottom)]">
       <div className="flex items-center justify-around h-14 px-2">
         {tabs.map(({ path, icon: Icon, label }) => (
           <Link
