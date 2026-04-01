@@ -5,7 +5,7 @@ import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, List, Calendar, Sun, Moon, StickyNote } from "lucide-react";
+import { LogOut, Settings, List, Calendar, Sun, Moon, StickyNote, Sparkles } from "lucide-react";
 import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
