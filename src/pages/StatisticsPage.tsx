@@ -202,6 +202,32 @@ const StatisticsPage = () => {
               </Card>
             </div>
 
+            {/* Budget warning */}
+            {monthlyBudget != null && monthlyBudget > 0 && (
+              <Card className={overBudget ? "border-destructive" : ""}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    {overBudget && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                    Monatsbudget
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span>CHF {currentMonthSpent.toFixed(2)} von {monthlyBudget.toFixed(0)}</span>
+                    <span className={`font-semibold ${overBudget ? "text-destructive" : "text-primary"}`}>
+                      {budgetPercent?.toFixed(0)}%
+                    </span>
+                  </div>
+                  <Progress value={budgetPercent ?? 0} className={`h-2 ${overBudget ? "[&>div]:bg-destructive" : ""}`} />
+                  {overBudget && (
+                    <p className="text-xs text-destructive font-medium">
+                      ⚠️ Du hast dein Monatsbudget um CHF {(currentMonthSpent - monthlyBudget).toFixed(2)} überschritten!
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Trend comparison */}
             <Card>
               <CardHeader>
