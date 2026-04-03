@@ -284,6 +284,9 @@ const ListDetail = () => {
               <Download className="h-4 w-4" />
             </Button>
             {listId && user && (
+              <SendListEmailDialog listId={listId} listName={listName} items={items} />
+            )}
+            {listId && user && (
               <RecipeImportDialog listId={listId} userId={user.id} onItemsAdded={fetchData} />
             )}
             {listId && <ShareListDialog listId={listId} listName={listName} editToken={editToken} />}
