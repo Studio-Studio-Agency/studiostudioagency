@@ -37,7 +37,7 @@ const StatisticsPage = () => {
     const load = async () => {
       const [itemsRes, settingsRes] = await Promise.all([
         supabase.from("items").select("name, kategorie, checked_at, is_checked, created_at, preis").eq("user_id", user.id),
-        supabase.from("user_settings").select("monthly_budget").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("monthly_budget, category_budgets").eq("user_id", user.id).maybeSingle(),
       ]);
       setItems(itemsRes.data || []);
       if (settingsRes.data) setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
