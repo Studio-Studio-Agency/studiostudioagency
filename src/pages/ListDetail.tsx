@@ -190,6 +190,11 @@ const ListDetail = () => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, name: newName.trim() } : i));
   }, []);
 
+  const updatePrice = useCallback(async (id: string, preis: number | null) => {
+    await supabase.from("items").update({ preis } as any).eq("id", id);
+    setItems(prev => prev.map(i => i.id === id ? { ...i, preis } : i));
+  }, []);
+
   const searchLower = searchQuery.toLowerCase();
   const uncheckedItems = items.filter(i => !i.is_checked && (!searchQuery || i.name.toLowerCase().includes(searchLower)));
   const checkedItems = items.filter(i => i.is_checked);
