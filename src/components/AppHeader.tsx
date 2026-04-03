@@ -110,9 +110,9 @@ const AppHeader = () => {
                 </Button>
               </Link>
               <Link to="/einstellungen" className="hidden md:inline-flex">
-                <Avatar className="h-8 w-8 border border-border">
+                <Avatar className="h-8 w-8 border border-primary-foreground/20">
                   <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
-                  <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-primary-foreground/15 text-primary-foreground">{initials}</AvatarFallback>
                 </Avatar>
               </Link>
 
