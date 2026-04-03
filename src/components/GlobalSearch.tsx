@@ -192,7 +192,24 @@ const GlobalSearch = () => {
     [user, query]
   );
 
-  if (!user) return null;
+  const handleCreateList = useCallback(async () => {
+    if (!user || !query.trim()) return;
+    const name = query.trim();
+    const { data, error } = await supabase
+      .from("lists")
+      .insert({ name, user_id: user.id })
+      .select("id")
+      .single();
+    if (error || !data) {
+      toast.error("Fehler beim Erstellen der Liste");
+    } else {
+      toast.success(`Liste „${name}" erstellt`);
+      setOpen(false);
+      setQuery("");
+      navigate(`/listen/${data.id}`);
+    }
+  }, [user, query, navigate]);
+
 
   const hasResults = itemResults.length > 0 || noteResults.length > 0 || listResults.length > 0;
 
