@@ -6,7 +6,7 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays, ArrowRightLeft } from "lucide-react";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays, ArrowRightLeft, Printer } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
@@ -262,9 +262,14 @@ const StatisticsPage = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Statistiken</h1>
           {!loading && items.length > 0 && (
-            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5">
-              <Download className="h-3.5 w-3.5" /> CSV Export
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1.5 print:hidden">
+                <Printer className="h-3.5 w-3.5" /> Drucken
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5 print:hidden">
+                <Download className="h-3.5 w-3.5" /> CSV
+              </Button>
+            </div>
           )}
         </div>
 
@@ -308,24 +313,37 @@ const StatisticsPage = () => {
 
             {/* Budget warning */}
             {monthlyBudget != null && monthlyBudget > 0 && (
-              <Card className={overBudget ? "border-destructive" : ""}>
+              <Card className={overBudget ? "border-destructive" : (budgetPercent ?? 0) >= 80 ? "border-yellow-500" : ""}>
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex items-center gap-2">
-                    {overBudget && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                    {overBudget ? (
+                      <AlertTriangle className="h-4 w-4 text-destructive" />
+                    ) : (budgetPercent ?? 0) >= 80 ? (
+                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                    ) : null}
                     Monatsbudget
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span>CHF {currentMonthSpent.toFixed(2)} von {monthlyBudget.toFixed(0)}</span>
-                    <span className={`font-semibold ${overBudget ? "text-destructive" : "text-primary"}`}>
+                    <span className={`font-semibold ${
+                      overBudget ? "text-destructive" : (budgetPercent ?? 0) >= 80 ? "text-yellow-600 dark:text-yellow-400" : "text-primary"
+                    }`}>
                       {budgetPercent?.toFixed(0)}%
                     </span>
                   </div>
-                  <Progress value={budgetPercent ?? 0} className={`h-2 ${overBudget ? "[&>div]:bg-destructive" : ""}`} />
+                  <Progress value={budgetPercent ?? 0} className={`h-2 ${
+                    overBudget ? "[&>div]:bg-destructive" : (budgetPercent ?? 0) >= 80 ? "[&>div]:bg-yellow-500" : ""
+                  }`} />
                   {overBudget && (
                     <p className="text-xs text-destructive font-medium">
                       ⚠️ Du hast dein Monatsbudget um CHF {(currentMonthSpent - monthlyBudget).toFixed(2)} überschritten!
+                    </p>
+                  )}
+                  {!overBudget && (budgetPercent ?? 0) >= 80 && (
+                    <p className="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+                      ⚠️ Du hast bereits {budgetPercent?.toFixed(0)}% deines Monatsbudgets erreicht!
                     </p>
                   )}
                 </CardContent>
