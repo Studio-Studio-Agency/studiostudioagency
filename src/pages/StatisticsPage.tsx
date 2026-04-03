@@ -28,6 +28,7 @@ const StatisticsPage = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
