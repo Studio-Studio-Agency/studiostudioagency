@@ -83,25 +83,25 @@
 
   /* Inverted theme zone: swaps light↔dark variables */
   .theme-inverted {
-    --background: 150 15% 8%;
-    --foreground: 0 0% 95%;
-    --card: 150 12% 11%;
-    --card-foreground: 0 0% 95%;
-    --popover: 150 12% 11%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 122 45% 52%;
+    --background: 150 18% 7%;
+    --foreground: 0 0% 96%;
+    --card: 150 14% 10%;
+    --card-foreground: 0 0% 96%;
+    --popover: 150 14% 10%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 122 50% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 150 12% 16%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 150 10% 16%;
-    --muted-foreground: 150 8% 65%;
-    --accent: 150 12% 16%;
-    --accent-foreground: 0 0% 93%;
-    --destructive: 0 72% 55%;
+    --secondary: 150 14% 15%;
+    --secondary-foreground: 0 0% 92%;
+    --muted: 150 12% 15%;
+    --muted-foreground: 150 6% 70%;
+    --accent: 150 14% 15%;
+    --accent-foreground: 0 0% 94%;
+    --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 100%;
-    --border: 150 10% 22%;
-    --input: 150 10% 22%;
-    --ring: 122 45% 52%;
+    --border: 150 10% 24%;
+    --input: 150 10% 20%;
+    --ring: 122 50% 55%;
   }
 
   .dark .theme-inverted {
