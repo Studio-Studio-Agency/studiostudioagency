@@ -6,13 +6,19 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const REGION_CONFIG: Record<string, { currency: string; stores: string; country: string }> = {
+  CH: { currency: "CHF", stores: "Migros, Coop, Aldi Suisse, Lidl Schweiz, Denner, Spar", country: "Schweiz" },
+  DE: { currency: "EUR", stores: "Aldi, Lidl, REWE, Edeka, Penny, Netto, Kaufland", country: "Deutschland" },
+  AT: { currency: "EUR", stores: "Hofer, Spar, Billa, Lidl Österreich, Penny, Unimarkt", country: "Österreich" },
+};
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { product } = await req.json();
+    const { product, region } = await req.json();
 
     if (!product || typeof product !== "string" || product.trim().length < 1) {
       return new Response(
@@ -21,7 +27,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const productKey = product.trim().toLowerCase();
+    const regionKey = (region && typeof region === "string" && REGION_CONFIG[region]) ? region : "CH";
+    const regionInfo = REGION_CONFIG[regionKey];
+    const productKey = `${product.trim().toLowerCase()}_${regionKey}`;
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
@@ -59,9 +67,9 @@ Deno.serve(async (req) => {
       );
     }
 
-    const systemPrompt = `Du bist ein Preisexperte für Lebensmittel und Produkte in der DACH-Region (Deutschland, Österreich, Schweiz).
-Gib für das genannte Produkt geschätzte Preise bei verschiedenen Discountern und Supermärkten zurück.
-Nutze dein Wissen über typische Preise (Stand 2024/2025). Markiere Preise als Schätzungen.
+    const systemPrompt = `Du bist ein Preisexperte für Lebensmittel und Produkte in ${regionInfo.country}.
+Gib für das genannte Produkt geschätzte Preise bei folgenden Geschäften zurück: ${regionInfo.stores}.
+Nutze dein Wissen über typische Preise (Stand 2024/2025). Die Währung ist ${regionInfo.currency}.
 Antworte NUR mit dem Tool-Call, keine weiteren Erklärungen.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -81,7 +89,7 @@ Antworte NUR mit dem Tool-Call, keine weiteren Erklärungen.`;
             type: "function",
             function: {
               name: "price_estimates",
-              description: "Gibt geschätzte Preise für ein Produkt bei DACH-Supermärkten zurück.",
+              description: "Gibt geschätzte Preise für ein Produkt bei Supermärkten zurück.",
               parameters: {
                 type: "object",
                 properties: {

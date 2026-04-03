@@ -22,7 +22,7 @@ export interface PriceData {
 // In-memory session cache to avoid re-fetching within the same session
 const sessionCache = new Map<string, PriceData>();
 
-export function usePriceEstimates(product: string, enabled: boolean) {
+export function usePriceEstimates(product: string, enabled: boolean, region: string = "CH") {
   const [data, setData] = useState<PriceData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,7 +34,7 @@ export function usePriceEstimates(product: string, enabled: boolean) {
       return;
     }
 
-    const key = product.trim().toLowerCase();
+    const key = `${product.trim().toLowerCase()}_${region}`;
 
     // Check session cache first
     const cached = sessionCache.get(key);
@@ -54,7 +54,7 @@ export function usePriceEstimates(product: string, enabled: boolean) {
       try {
         const { data: result, error: fnError } = await supabase.functions.invoke(
           "estimate-prices",
-          { body: { product: product.trim() } }
+          { body: { product: product.trim(), region } }
         );
 
         if (cancelled) return;
@@ -85,7 +85,7 @@ export function usePriceEstimates(product: string, enabled: boolean) {
       cancelled = true;
       clearTimeout(timeout);
     };
-  }, [product, enabled]);
+  }, [product, enabled, region]);
 
   return { data, loading, error };
 }
@@ -93,8 +93,8 @@ export function usePriceEstimates(product: string, enabled: boolean) {
 /**
  * Get cached cheapest price for a product (from session cache only, no API call)
  */
-export function getCachedCheapestPrice(productName: string): { price: number; store: string; currency: string } | null {
-  const key = productName.trim().toLowerCase();
+export function getCachedCheapestPrice(productName: string, region: string = "CH"): { price: number; store: string; currency: string } | null {
+  const key = `${productName.trim().toLowerCase()}_${region}`;
   const cached = sessionCache.get(key);
   if (cached?.cheapest_price != null && cached.cheapest_store) {
     return {

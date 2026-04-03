@@ -1,0 +1,1 @@
+ALTER TABLE public.user_settings ADD COLUMN preis_region text NOT NULL DEFAULT 'CH';

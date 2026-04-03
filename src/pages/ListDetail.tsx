@@ -35,11 +35,20 @@ const ListDetail = () => {
   const [lastAddedItemName, setLastAddedItemName] = useState("");
   const [showPriceFor, setShowPriceFor] = useState(false);
   const [itemPrices, setItemPrices] = useState<Record<string, { price: number; store: string; currency: string }>>({}); 
+  const [preisRegion, setPreisRegion] = useState("CH");
+
+  // Load user's price region
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_settings").select("preis_region").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data?.preis_region) setPreisRegion(data.preis_region as string); });
+  }, [user]);
 
   // Price estimates for last added item
   const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
     lastAddedItemName,
-    showPriceFor && lastAddedItemName.length >= 2
+    showPriceFor && lastAddedItemName.length >= 2,
+    preisRegion
   );
 
   // When price data arrives, store cheapest for the item badge

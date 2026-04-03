@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet, MapPin } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
 import { KATEGORIEN } from "@/components/ListItemRow";
@@ -37,6 +37,7 @@ const SettingsPage = () => {
   const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
   const [monthlyBudget, setMonthlyBudget] = useState<string>("");
   const [categoryBudgets, setCategoryBudgets] = useState<Record<string, string>>({});
+  const [preisRegion, setPreisRegion] = useState("CH");
 
   useEffect(() => {
     if (!user) return;
@@ -44,7 +45,7 @@ const SettingsPage = () => {
       setLoading(true);
       const [profileRes, settingsRes] = await Promise.all([
         supabase.from("profiles").select("vorname, avatar_url").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_settings").select("email_notifications, webhook_token, auto_delete_days").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("email_notifications, webhook_token, auto_delete_days, monthly_budget, category_budgets, preis_region").eq("user_id", user.id).maybeSingle(),
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
@@ -63,6 +64,7 @@ const SettingsPage = () => {
           Object.entries(catBudgets).forEach(([k, v]) => { mapped[k] = String(v); });
           setCategoryBudgets(mapped);
         }
+        setPreisRegion((settingsRes.data as any).preis_region ?? "CH");
       }
       setLoading(false);
     };
@@ -124,6 +126,7 @@ const SettingsPage = () => {
         category_budgets: Object.keys(categoryBudgets).length > 0
           ? Object.fromEntries(Object.entries(categoryBudgets).filter(([, v]) => v).map(([k, v]) => [k, parseFloat(v)]))
           : null,
+        preis_region: preisRegion,
       } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
@@ -382,6 +385,37 @@ const SettingsPage = () => {
 
               <p className="font-semibold text-foreground pt-1">🏠 Home Assistant</p>
               <p>Nutze die <code className="text-foreground bg-background/50 px-1 rounded">rest_command</code>-Integration mit der Webhook-URL und deinem Token als JSON-Body.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-4 w-4" /> Preisregion
+            </CardTitle>
+            <CardDescription>Für welche Region sollen Preisschätzungen angezeigt werden?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: "CH", label: "🇨🇭 Schweiz", desc: "Migros, Coop, Aldi, Denner" },
+                { value: "DE", label: "🇩🇪 Deutschland", desc: "Aldi, Lidl, REWE, Edeka" },
+                { value: "AT", label: "🇦🇹 Österreich", desc: "Hofer, Spar, Billa, Lidl" },
+              ] as const).map(({ value, label, desc }) => (
+                <button
+                  key={value}
+                  onClick={() => setPreisRegion(value)}
+                  className={`flex flex-col items-center gap-1 rounded-lg border p-3 transition-colors text-center ${
+                    preisRegion === value
+                      ? "border-primary bg-primary/10 text-primary font-medium"
+                      : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="text-sm">{label}</span>
+                  <span className="text-[10px] leading-tight">{desc}</span>
+                </button>
+              ))}
             </div>
           </CardContent>
         </Card>

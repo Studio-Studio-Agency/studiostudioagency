@@ -52,13 +52,22 @@ const GlobalSearch = () => {
   const [allLists, setAllLists] = useState<UserList[]>([]);
   const [query, setQuery] = useState("");
   const [addingTo, setAddingTo] = useState<string | null>(null);
+  const [preisRegion, setPreisRegion] = useState("CH");
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Load user's price region
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("user_settings").select("preis_region").eq("user_id", user.id).maybeSingle()
+      .then(({ data }) => { if (data?.preis_region) setPreisRegion(data.preis_region as string); });
+  }, [user]);
 
   // Price estimates for the current query
   const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
     query,
-    open && query.trim().length >= 2
+    open && query.trim().length >= 2,
+    preisRegion
   );
 
   // Cmd+K shortcut
