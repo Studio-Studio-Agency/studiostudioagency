@@ -229,6 +229,11 @@ const SharedListPage = () => {
             />
           </div>
 
+          {/* Price estimates for last added item */}
+          {showPriceFor && (
+            <PriceEstimatesDisplay data={priceData} loading={priceLoading} error={priceError} />
+          )
+
           {/* Checked items */}
           {checked.length > 0 && (
             <div className="mt-8 pt-4 border-t border-border">
