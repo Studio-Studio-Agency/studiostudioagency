@@ -19,7 +19,14 @@ const SharedListPage = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [activeUsers, setActiveUsers] = useState(1);
+  const [lastAddedItemName, setLastAddedItemName] = useState("");
+  const [showPriceFor, setShowPriceFor] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    lastAddedItemName,
+    showPriceFor && lastAddedItemName.length >= 2
+  );
 
   const call = async (action: string, payload?: object) => {
     const { data, error } = await supabase.functions.invoke("shared-list", {
