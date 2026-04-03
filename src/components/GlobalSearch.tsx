@@ -61,12 +61,12 @@ const GlobalSearch = () => {
     if (!open || !user || query.length < 1) {
       setItemResults([]);
       setNoteResults([]);
+      setListResults([]);
       return;
     }
 
     const timeout = setTimeout(async () => {
-      // Parallel fetch items and notes
-      const [itemsRes, notesRes] = await Promise.all([
+      const [itemsRes, notesRes, listsRes] = await Promise.all([
         supabase
           .from("items")
           .select("id, name, kategorie, list_id, is_checked")
@@ -79,6 +79,13 @@ const GlobalSearch = () => {
           .select("id, title, content")
           .eq("user_id", user.id)
           .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+          .order("updated_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("lists")
+          .select("id, name")
+          .eq("user_id", user.id)
+          .ilike("name", `%${query}%`)
           .order("updated_at", { ascending: false })
           .limit(5),
       ]);
@@ -95,6 +102,22 @@ const GlobalSearch = () => {
         setItemResults(items.map((i) => ({ ...i, list_name: listMap.get(i.list_id) ?? "Liste" })));
       } else {
         setItemResults([]);
+      }
+
+      // Process lists with item counts
+      const matchedLists = listsRes.data ?? [];
+      if (matchedLists.length > 0) {
+        const countPromises = matchedLists.map(async (l) => {
+          const { count } = await supabase
+            .from("items")
+            .select("id", { count: "exact", head: true })
+            .eq("list_id", l.id)
+            .eq("is_checked", false);
+          return { ...l, item_count: count ?? 0 };
+        });
+        setListResults(await Promise.all(countPromises));
+      } else {
+        setListResults([]);
       }
 
       setNoteResults(notesRes.data ?? []);
