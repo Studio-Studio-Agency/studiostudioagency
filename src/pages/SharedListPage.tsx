@@ -189,23 +189,31 @@ const SharedListPage = () => {
                   <div className="flex-1 h-px bg-border" />
                 </div>
               )}
-              {grouped[cat].map(item => (
-                <div key={item.id} className="flex items-center gap-3 py-1.5 group">
-                  <Checkbox checked={false} onCheckedChange={() => toggleItem(item)} />
-                  <span className="flex-1 text-foreground">{item.name}</span>
-                  {item.menge && (
-                    <span className="text-sm text-muted-foreground">
-                      {item.menge} {item.einheit}
-                    </span>
-                  )}
-                  <button
-                    onClick={() => deleteItem(item.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
+              {grouped[cat].map(item => {
+                const cheapest = getCachedCheapestPrice(item.name);
+                return (
+                  <div key={item.id} className="flex items-center gap-3 py-1.5 group">
+                    <Checkbox checked={false} onCheckedChange={() => toggleItem(item)} />
+                    <span className="flex-1 text-foreground">{item.name}</span>
+                    {cheapest && (
+                      <span className="text-[10px] bg-primary/10 text-primary font-medium px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap" title={`Günstigster Preis bei ${cheapest.store}`}>
+                        ab {cheapest.currency === "CHF" ? "CHF" : "€"} {cheapest.price.toFixed(2)}
+                      </span>
+                    )}
+                    {item.menge && (
+                      <span className="text-sm text-muted-foreground">
+                        {item.menge} {item.einheit}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => deleteItem(item.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ))}
 
