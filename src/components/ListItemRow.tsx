@@ -148,6 +148,11 @@ const ListItemRow = ({
                 {item.menge} {item.einheit}
               </span>
             )}
+            {item.is_checked && item.preis != null && (
+              <span className="text-xs text-primary font-medium shrink-0">
+                CHF {item.preis.toFixed(2)}
+              </span>
+            )}
           </div>
 
           {analyzing && (
