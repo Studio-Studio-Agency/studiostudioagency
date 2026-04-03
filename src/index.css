@@ -169,3 +169,26 @@
     padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
   }
 }
+
+/* Print styles for statistics page */
+@media print {
+  header, footer, nav, .print\\:hidden {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  main {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+  .recharts-responsive-container {
+    page-break-inside: avoid;
+  }
+  * {
+    box-shadow: none !important;
+  }
+}
