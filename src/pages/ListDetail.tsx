@@ -7,7 +7,8 @@ import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, ChevronDown, ChevronRight, ChevronsUpDown, Search, X } from "lucide-react";
+import { ArrowLeft, Loader2, ChevronDown, ChevronRight, ChevronsUpDown, Search, X, Download } from "lucide-react";
+import { generateListPdf } from "@/lib/generateListPdf";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -272,6 +273,15 @@ const ListDetail = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">{listName || "..."}</h1>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => generateListPdf(listName, items)}
+              title="Als PDF herunterladen"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
             {listId && user && (
               <RecipeImportDialog listId={listId} userId={user.id} onItemsAdded={fetchData} />
             )}
