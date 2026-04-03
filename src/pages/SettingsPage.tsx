@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2 } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
 import { useTheme } from "next-themes";
