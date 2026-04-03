@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, StickyNote } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/command";
 import { getProductIcon } from "@/lib/productIcons";
 
-interface SearchResult {
+interface ItemResult {
   id: string;
   name: string;
   kategorie: string | null;
@@ -23,9 +23,16 @@ interface SearchResult {
   is_checked: boolean;
 }
 
+interface NoteResult {
+  id: string;
+  title: string;
+  content: string | null;
+}
+
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [itemResults, setItemResults] = useState<ItemResult[]>([]);
+  const [noteResults, setNoteResults] = useState<NoteResult[]>([]);
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -42,54 +49,74 @@ const GlobalSearch = () => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // Search items
+  // Search items + notes
   useEffect(() => {
     if (!open || !user || query.length < 1) {
-      setResults([]);
+      setItemResults([]);
+      setNoteResults([]);
       return;
     }
 
     const timeout = setTimeout(async () => {
-      const { data } = await supabase
-        .from("items")
-        .select("id, name, kategorie, list_id, is_checked")
-        .eq("user_id", user.id)
-        .ilike("name", `%${query}%`)
-        .order("created_at", { ascending: false })
-        .limit(20);
+      // Parallel fetch items and notes
+      const [itemsRes, notesRes] = await Promise.all([
+        supabase
+          .from("items")
+          .select("id, name, kategorie, list_id, is_checked")
+          .eq("user_id", user.id)
+          .ilike("name", `%${query}%`)
+          .order("created_at", { ascending: false })
+          .limit(15),
+        supabase
+          .from("notes")
+          .select("id, title, content")
+          .eq("user_id", user.id)
+          .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+          .order("updated_at", { ascending: false })
+          .limit(5),
+      ]);
 
-      if (!data) { setResults([]); return; }
+      // Process items
+      const items = itemsRes.data ?? [];
+      if (items.length > 0) {
+        const listIds = [...new Set(items.map((i) => i.list_id))];
+        const { data: lists } = await supabase
+          .from("lists")
+          .select("id, name")
+          .in("id", listIds);
+        const listMap = new Map(lists?.map((l) => [l.id, l.name]) ?? []);
+        setItemResults(items.map((i) => ({ ...i, list_name: listMap.get(i.list_id) ?? "Liste" })));
+      } else {
+        setItemResults([]);
+      }
 
-      // Fetch list names for matched items
-      const listIds = [...new Set(data.map((i) => i.list_id))];
-      const { data: lists } = await supabase
-        .from("lists")
-        .select("id, name")
-        .in("id", listIds);
-
-      const listMap = new Map(lists?.map((l) => [l.id, l.name]) ?? []);
-
-      setResults(
-        data.map((i) => ({
-          ...i,
-          list_name: listMap.get(i.list_id) ?? "Liste",
-        }))
-      );
+      setNoteResults(notesRes.data ?? []);
     }, 200);
 
     return () => clearTimeout(timeout);
   }, [query, open, user]);
 
-  const handleSelect = useCallback(
-    (result: SearchResult) => {
+  const handleSelectItem = useCallback(
+    (r: ItemResult) => {
       setOpen(false);
       setQuery("");
-      navigate(`/listen/${result.list_id}`);
+      navigate(`/listen/${r.list_id}`);
+    },
+    [navigate]
+  );
+
+  const handleSelectNote = useCallback(
+    (r: NoteResult) => {
+      setOpen(false);
+      setQuery("");
+      navigate(`/notizen/${r.id}`);
     },
     [navigate]
   );
 
   if (!user) return null;
+
+  const hasResults = itemResults.length > 0 || noteResults.length > 0;
 
   return (
     <>
@@ -105,7 +132,7 @@ const GlobalSearch = () => {
 
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
-          placeholder="Artikel suchen…"
+          placeholder="Artikel & Notizen suchen…"
           value={query}
           onValueChange={setQuery}
         />
@@ -113,15 +140,15 @@ const GlobalSearch = () => {
           <CommandEmpty>
             {query.length < 1
               ? "Tippe, um zu suchen…"
-              : "Keine Artikel gefunden."}
+              : "Keine Ergebnisse gefunden."}
           </CommandEmpty>
-          {results.length > 0 && (
+          {itemResults.length > 0 && (
             <CommandGroup heading="Artikel">
-              {results.map((r) => (
+              {itemResults.map((r) => (
                 <CommandItem
                   key={r.id}
-                  value={`${r.name}-${r.id}`}
-                  onSelect={() => handleSelect(r)}
+                  value={`item-${r.name}-${r.id}`}
+                  onSelect={() => handleSelectItem(r)}
                   className="flex items-center gap-2"
                 >
                   <span className="text-base">{getProductIcon(r.name)}</span>
@@ -133,6 +160,28 @@ const GlobalSearch = () => {
                       {r.list_name}
                       {r.kategorie && ` · ${r.kategorie}`}
                     </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+          {noteResults.length > 0 && (
+            <CommandGroup heading="Notizen">
+              {noteResults.map((r) => (
+                <CommandItem
+                  key={r.id}
+                  value={`note-${r.title}-${r.id}`}
+                  onSelect={() => handleSelectNote(r)}
+                  className="flex items-center gap-2"
+                >
+                  <StickyNote className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span>{r.title}</span>
+                    {r.content && (
+                      <span className="text-xs text-muted-foreground truncate">
+                        {r.content.slice(0, 80)}
+                      </span>
+                    )}
                   </div>
                 </CommandItem>
               ))}
