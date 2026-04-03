@@ -238,6 +238,22 @@ const GlobalSearch = () => {
               : "Keine Ergebnisse gefunden."}
           </CommandEmpty>
 
+          {/* Quick actions */}
+          {query.trim().length > 0 && (
+            <CommandGroup heading="Schnellaktionen">
+              <CommandItem
+                value={`create-list-${query}`}
+                onSelect={handleCreateList}
+                className="flex items-center gap-2"
+              >
+                <FolderPlus className="h-4 w-4 text-primary shrink-0" />
+                <span className="truncate">
+                  Neue Liste „<span className="font-medium">{query.trim()}</span>" erstellen
+                </span>
+              </CommandItem>
+            </CommandGroup>
+          )}
+
           {/* Add to list action */}
           {query.trim().length > 0 && allLists.length > 0 && (
             <CommandGroup heading="Zur Liste hinzufügen">
