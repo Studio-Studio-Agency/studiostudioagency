@@ -144,6 +144,30 @@ const StatisticsPage = () => {
       .map(([month, total]) => ({ month, total: Math.round(total * 100) / 100 }));
   }, [items]);
 
+  const monthNames = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+  const yearlyData = useMemo(() => {
+    const data = monthNames.map((name, idx) => ({ month: name, ausgaben: 0, artikel: 0 }));
+    items.filter(i => i.is_checked && i.checked_at).forEach(item => {
+      const d = new Date(item.checked_at);
+      if (d.getFullYear() !== selectedYear) return;
+      const m = d.getMonth();
+      data[m].artikel++;
+      data[m].ausgaben += item.preis || 0;
+    });
+    data.forEach(d => { d.ausgaben = Math.round(d.ausgaben * 100) / 100; });
+    return data;
+  }, [items, selectedYear]);
+
+  const yearTotal = yearlyData.reduce((s, d) => s + d.ausgaben, 0);
+  const yearArticles = yearlyData.reduce((s, d) => s + d.artikel, 0);
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    items.filter(i => i.checked_at).forEach(i => years.add(new Date(i.checked_at).getFullYear()));
+    if (years.size === 0) years.add(new Date().getFullYear());
+    return Array.from(years).sort((a, b) => b - a);
+  }, [items]);
+
   const exportCSV = useCallback(() => {
     const header = "Name,Kategorie,Preis (CHF),Gekauft,Gekauft am,Erstellt am\n";
     const rows = items.map(i =>
