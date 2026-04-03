@@ -341,6 +341,7 @@ export type Database = {
         Row: {
           auto_delete_days: number | null
           calendar_token: string | null
+          category_budgets: Json | null
           category_order: Json | null
           claude_api_key: string | null
           email_notifications: boolean | null
@@ -352,6 +353,7 @@ export type Database = {
         Insert: {
           auto_delete_days?: number | null
           calendar_token?: string | null
+          category_budgets?: Json | null
           category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null
@@ -363,6 +365,7 @@ export type Database = {
         Update: {
           auto_delete_days?: number | null
           calendar_token?: string | null
+          category_budgets?: Json | null
           category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null

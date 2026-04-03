@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
+import { KATEGORIEN } from "@/components/ListItemRow";
 import { useTheme } from "next-themes";
 
 const SettingsPage = () => {
@@ -35,6 +36,7 @@ const SettingsPage = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
   const [monthlyBudget, setMonthlyBudget] = useState<string>("");
+  const [categoryBudgets, setCategoryBudgets] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) return;
@@ -55,6 +57,12 @@ const SettingsPage = () => {
         setAutoDeleteDays(days ? String(days) : "none");
         const budget = (settingsRes.data as any).monthly_budget;
         setMonthlyBudget(budget != null ? String(budget) : "");
+        const catBudgets = (settingsRes.data as any).category_budgets;
+        if (catBudgets && typeof catBudgets === "object") {
+          const mapped: Record<string, string> = {};
+          Object.entries(catBudgets).forEach(([k, v]) => { mapped[k] = String(v); });
+          setCategoryBudgets(mapped);
+        }
       }
       setLoading(false);
     };
@@ -113,6 +121,9 @@ const SettingsPage = () => {
         email_notifications: emailNotifications,
         auto_delete_days: autoDeleteDays === "none" ? null : parseInt(autoDeleteDays),
         monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
+        category_budgets: Object.keys(categoryBudgets).length > 0
+          ? Object.fromEntries(Object.entries(categoryBudgets).filter(([, v]) => v).map(([k, v]) => [k, parseFloat(v)]))
+          : null,
       } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
@@ -405,7 +416,7 @@ const SettingsPage = () => {
             </CardTitle>
             <CardDescription>Warne mich, wenn meine monatlichen Ausgaben diesen Betrag überschreiten</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="flex items-center gap-2">
               <Input
                 type="number"
@@ -416,8 +427,40 @@ const SettingsPage = () => {
                 onChange={(e) => setMonthlyBudget(e.target.value)}
                 className="max-w-[160px]"
               />
-              <span className="text-sm text-muted-foreground">CHF</span>
+              <span className="text-sm text-muted-foreground">CHF gesamt</span>
             </div>
+
+            <details className="group">
+              <summary className="text-sm font-medium cursor-pointer text-muted-foreground hover:text-foreground">
+                Kategorie-Budgets (optional)
+              </summary>
+              <div className="mt-3 space-y-2">
+                {(() => {
+                  const mainCategories = [
+                    "Obst & Früchte", "Gemüse & Salat", "Fleisch & Fisch", "Milchprodukte",
+                    "Backwaren", "Getränke", "Tiefkühl", "Konserven & Vorrat",
+                    "Gewürze & Saucen", "Snacks & Süsses", "Frühstück & Cerealien",
+                    "Haushalt & Reinigung", "Pflege & Hygiene", "Baby & Kind", "Tierbedarf",
+                    "Technik & Elektronik", "Sonstiges"
+                  ];
+                  return mainCategories.map(cat => (
+                    <div key={cat} className="flex items-center gap-2">
+                      <span className="text-sm w-6 text-center">{KATEGORIEN[cat]}</span>
+                      <span className="text-sm flex-1 truncate">{cat}</span>
+                      <Input
+                        type="number"
+                        min="0"
+                        step="5"
+                        placeholder="–"
+                        value={categoryBudgets[cat] || ""}
+                        onChange={(e) => setCategoryBudgets(prev => ({ ...prev, [cat]: e.target.value }))}
+                        className="w-24 text-right"
+                      />
+                    </div>
+                  ));
+                })()}
+              </div>
+            </details>
           </CardContent>
         </Card>
 

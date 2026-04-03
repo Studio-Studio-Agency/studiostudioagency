@@ -30,16 +30,21 @@ const StatisticsPage = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
+  const [categoryBudgets, setCategoryBudgets] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
       const [itemsRes, settingsRes] = await Promise.all([
         supabase.from("items").select("name, kategorie, checked_at, is_checked, created_at, preis").eq("user_id", user.id),
-        supabase.from("user_settings").select("monthly_budget").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("monthly_budget, category_budgets").eq("user_id", user.id).maybeSingle(),
       ]);
       setItems(itemsRes.data || []);
-      if (settingsRes.data) setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
+      if (settingsRes.data) {
+        setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
+        const cb = (settingsRes.data as any).category_budgets;
+        if (cb && typeof cb === "object") setCategoryBudgets(cb);
+      }
       setLoading(false);
     };
     load();
@@ -113,6 +118,18 @@ const StatisticsPage = () => {
 
   const budgetPercent = monthlyBudget && monthlyBudget > 0 ? Math.min((currentMonthSpent / monthlyBudget) * 100, 100) : null;
   const overBudget = monthlyBudget && monthlyBudget > 0 && currentMonthSpent > monthlyBudget;
+
+  const categorySpending = useMemo(() => {
+    const monthStart = startOfMonth(new Date());
+    const spending: Record<string, number> = {};
+    items
+      .filter(i => i.is_checked && i.checked_at && i.preis && !isBefore(new Date(i.checked_at), monthStart))
+      .forEach(i => {
+        const cat = i.kategorie || "Sonstiges";
+        spending[cat] = (spending[cat] || 0) + (i.preis || 0);
+      });
+    return spending;
+  }, [items]);
 
   const monthlySpending = useMemo(() => {
     const months: Record<string, number> = {};
@@ -267,6 +284,34 @@ const StatisticsPage = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Category budget tracking */}
+            {Object.keys(categoryBudgets).length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Kategorie-Budgets (aktueller Monat)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {Object.entries(categoryBudgets).map(([cat, budget]) => {
+                    if (!budget || budget <= 0) return null;
+                    const spent = categorySpending[cat] || 0;
+                    const pct = Math.min((spent / budget) * 100, 100);
+                    const over = spent > budget;
+                    return (
+                      <div key={cat} className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>{KATEGORIEN[cat] || "📦"} {cat}</span>
+                          <span className={`font-medium ${over ? "text-destructive" : "text-muted-foreground"}`}>
+                            CHF {spent.toFixed(0)} / {budget.toFixed(0)}
+                          </span>
+                        </div>
+                        <Progress value={pct} className={`h-1.5 ${over ? "[&>div]:bg-destructive" : ""}`} />
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Weekly chart */}
             <Card>
