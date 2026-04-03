@@ -1,0 +1,1 @@
+ALTER TABLE public.items ADD COLUMN preis numeric DEFAULT NULL;
