@@ -273,6 +273,15 @@ const ListDetail = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">{listName || "..."}</h1>
           <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => generateListPdf(listName, items)}
+              title="Als PDF herunterladen"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
             {listId && user && (
               <RecipeImportDialog listId={listId} userId={user.id} onItemsAdded={fetchData} />
             )}
