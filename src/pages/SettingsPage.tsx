@@ -50,6 +50,8 @@ const SettingsPage = () => {
       if (settingsRes.data) {
         setEmailNotifications(settingsRes.data.email_notifications ?? false);
         setWebhookToken((settingsRes.data as any).webhook_token ?? null);
+        const days = (settingsRes.data as any).auto_delete_days;
+        setAutoDeleteDays(days ? String(days) : "none");
       }
       setLoading(false);
     };
