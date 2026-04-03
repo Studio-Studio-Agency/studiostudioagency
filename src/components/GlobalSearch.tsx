@@ -55,6 +55,12 @@ const GlobalSearch = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  // Price estimates for the current query
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    query,
+    open && query.trim().length >= 2
+  );
+
   // Cmd+K shortcut
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
