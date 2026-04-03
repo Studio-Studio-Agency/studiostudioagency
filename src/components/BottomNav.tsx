@@ -28,7 +28,7 @@ const BottomNav = () => {
             to={path}
             className={cn(
               "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-primary-foreground transition-colors",
-              isActive(path) && "font-bold border-t-2 border-primary-foreground"
+              isActive(path) && "font-bold bg-primary-foreground/15 rounded-lg"
             )}
           >
             <Icon className="h-5 w-5" />
