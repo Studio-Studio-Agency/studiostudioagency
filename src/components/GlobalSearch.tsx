@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/command";
 import { getProductIcon } from "@/lib/productIcons";
 import { toast } from "sonner";
+import { usePriceEstimates } from "@/hooks/usePriceEstimates";
+import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
 interface ItemResult {
   id: string;
