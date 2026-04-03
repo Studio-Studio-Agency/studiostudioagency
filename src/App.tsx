@@ -68,6 +68,9 @@ const App = () => (
             <Route path="/inspiration" element={
               <ProtectedRoute><InspirationPage /></ProtectedRoute>
             } />
+            <Route path="/statistiken" element={
+              <ProtectedRoute><StatisticsPage /></ProtectedRoute>
+            } />
             <Route path="/notizen" element={
               <ProtectedRoute><NotesOverview /></ProtectedRoute>
             } />

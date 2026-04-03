@@ -9,6 +9,7 @@ const tabs = [
   { path: "/notizen", icon: StickyNote, label: "Notizen" },
   { path: "/kalender", icon: Calendar, label: "Kalender" },
   { path: "/inspiration", icon: Sparkles, label: "Inspiration" },
+  { path: "/statistiken", icon: BarChart3, label: "Statistik" },
 ];
 
 const BottomNav = () => {

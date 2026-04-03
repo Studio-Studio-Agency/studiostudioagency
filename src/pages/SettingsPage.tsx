@@ -371,6 +371,29 @@ const SettingsPage = () => {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Trash2 className="h-4 w-4" /> Auto-Löschung
+            </CardTitle>
+            <CardDescription>Erledigte Artikel nach einer bestimmten Zeit automatisch löschen</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select value={autoDeleteDays} onValueChange={setAutoDeleteDays}>
+              <SelectTrigger>
+                <SelectValue placeholder="Auswählen…" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nie (manuell löschen)</SelectItem>
+                <SelectItem value="3">Nach 3 Tagen</SelectItem>
+                <SelectItem value="7">Nach 7 Tagen</SelectItem>
+                <SelectItem value="14">Nach 14 Tagen</SelectItem>
+                <SelectItem value="30">Nach 30 Tagen</SelectItem>
+              </SelectContent>
+            </Select>
+          </CardContent>
+        </Card>
+
         <CategoryOrderSettings />
 
         <Button onClick={handleSave} disabled={saving} className="w-full">
