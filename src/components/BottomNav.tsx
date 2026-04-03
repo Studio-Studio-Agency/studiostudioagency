@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { List, StickyNote, Calendar, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
