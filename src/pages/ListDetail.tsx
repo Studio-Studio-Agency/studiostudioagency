@@ -32,6 +32,14 @@ const ListDetail = () => {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [lastAddedItemName, setLastAddedItemName] = useState("");
+  const [showPriceFor, setShowPriceFor] = useState(false);
+
+  // Price estimates for last added item
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    lastAddedItemName,
+    showPriceFor && lastAddedItemName.length >= 2
+  );
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
