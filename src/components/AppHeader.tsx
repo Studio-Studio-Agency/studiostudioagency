@@ -88,7 +88,7 @@ const AppHeader = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
             onClick={() => {
               const next = resolvedTheme === "dark" ? "light" : resolvedTheme === "light" ? "dark" : "light";
               setTheme(next);
