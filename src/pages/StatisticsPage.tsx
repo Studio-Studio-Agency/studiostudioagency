@@ -99,6 +99,19 @@ const StatisticsPage = () => {
   const totalItems = items.length;
   const checkedCount = items.filter(i => i.is_checked).length;
   const categoryCount = new Set(items.map(i => i.kategorie).filter(Boolean)).size;
+  const totalSpent = items.reduce((sum, i) => sum + (i.preis || 0), 0);
+
+  const monthlySpending = useMemo(() => {
+    const months: Record<string, number> = {};
+    items.filter(i => i.is_checked && i.checked_at && i.preis).forEach(item => {
+      const key = format(new Date(item.checked_at), "MM/yyyy");
+      months[key] = (months[key] || 0) + (item.preis || 0);
+    });
+    return Object.entries(months)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-6)
+      .map(([month, total]) => ({ month, total: Math.round(total * 100) / 100 }));
+  }, [items]);
 
   const exportCSV = useCallback(() => {
     const header = "Name,Kategorie,Gekauft,Gekauft am,Erstellt am\n";
