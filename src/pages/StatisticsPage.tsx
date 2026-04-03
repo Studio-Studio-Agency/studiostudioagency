@@ -104,6 +104,16 @@ const StatisticsPage = () => {
   const categoryCount = new Set(items.map(i => i.kategorie).filter(Boolean)).size;
   const totalSpent = items.reduce((sum, i) => sum + (i.preis || 0), 0);
 
+  const currentMonthSpent = useMemo(() => {
+    const monthStart = startOfMonth(new Date());
+    return items
+      .filter(i => i.is_checked && i.checked_at && i.preis && !isBefore(new Date(i.checked_at), monthStart))
+      .reduce((sum, i) => sum + (i.preis || 0), 0);
+  }, [items]);
+
+  const budgetPercent = monthlyBudget && monthlyBudget > 0 ? Math.min((currentMonthSpent / monthlyBudget) * 100, 100) : null;
+  const overBudget = monthlyBudget && monthlyBudget > 0 && currentMonthSpent > monthlyBudget;
+
   const monthlySpending = useMemo(() => {
     const months: Record<string, number> = {};
     items.filter(i => i.is_checked && i.checked_at && i.preis).forEach(item => {
