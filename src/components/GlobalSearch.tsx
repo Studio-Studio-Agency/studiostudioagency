@@ -351,6 +351,20 @@ const GlobalSearch = () => {
               ))}
             </CommandGroup>
           )}
+
+          {/* Price estimates */}
+          {query.trim().length >= 2 && (priceLoading || priceData) && (
+            <>
+              <CommandSeparator />
+              <div className="p-1">
+                <PriceEstimatesDisplay
+                  data={priceData}
+                  loading={priceLoading}
+                  error={priceError}
+                />
+              </div>
+            </>
+          )}
         </CommandList>
       </CommandDialog>
     </>
