@@ -105,7 +105,7 @@ const AppHeader = () => {
             <>
               {/* Desktop: Settings + Avatar */}
               <Link to="/einstellungen" className="hidden md:inline-flex">
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Einstellungen">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10" aria-label="Einstellungen">
                   <Settings className="h-4 w-4" />
                 </Button>
               </Link>
