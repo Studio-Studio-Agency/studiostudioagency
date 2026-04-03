@@ -6,7 +6,7 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays, ArrowRightLeft } from "lucide-react";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays, ArrowRightLeft, Printer } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
