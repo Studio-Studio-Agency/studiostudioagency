@@ -84,6 +84,7 @@ const AppHeader = () => {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-1.5">
+          <GlobalSearch />
           <Button
             variant="ghost"
             size="icon"
