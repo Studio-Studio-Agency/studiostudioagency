@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
 import { getCategorySortIndex } from "@/lib/categoryOrder";
+import { usePriceEstimates } from "@/hooks/usePriceEstimates";
+import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
 const ListDetail = () => {
   const { id: listId } = useParams<{ id: string }>();
@@ -30,6 +32,14 @@ const ListDetail = () => {
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
+  const [lastAddedItemName, setLastAddedItemName] = useState("");
+  const [showPriceFor, setShowPriceFor] = useState(false);
+
+  // Price estimates for last added item
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    lastAddedItemName,
+    showPriceFor && lastAddedItemName.length >= 2
+  );
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
@@ -109,6 +119,12 @@ const ListDetail = () => {
     if (data) {
       const newItem = data as Item;
       setItems(prev => [...prev, newItem]);
+
+      // Show price estimates for the added item
+      setLastAddedItemName(newItem.name);
+      setShowPriceFor(true);
+      // Auto-hide prices after 15 seconds
+      setTimeout(() => setShowPriceFor(false), 15000);
 
       // Auto-categorize in background
       setAnalyzingId(newItem.id);
@@ -388,6 +404,27 @@ const ListDetail = () => {
                 autoFocus
               />
             </div>
+
+            {/* Price estimates for last added item */}
+            {showPriceFor && (priceLoading || priceData) && (
+              <div className="ml-8 border border-border rounded-lg overflow-hidden">
+                <PriceEstimatesDisplay
+                  data={priceData}
+                  loading={priceLoading}
+                  error={priceError}
+                />
+                {priceData && (
+                  <div className="flex justify-end px-3 pb-2">
+                    <button
+                      onClick={() => setShowPriceFor(false)}
+                      className="text-[10px] text-muted-foreground hover:text-foreground"
+                    >
+                      Schließen
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Checked items */}
             {checkedItems.length > 0 && (
