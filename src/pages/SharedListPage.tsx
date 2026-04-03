@@ -232,7 +232,7 @@ const SharedListPage = () => {
           {/* Price estimates for last added item */}
           {showPriceFor && (
             <PriceEstimatesDisplay data={priceData} loading={priceLoading} error={priceError} />
-          )
+          )}
 
           {/* Checked items */}
           {checked.length > 0 && (
