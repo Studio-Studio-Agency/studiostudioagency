@@ -7,7 +7,8 @@ import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, ChevronDown, ChevronRight } from "lucide-react";
+import { ArrowLeft, Loader2, ChevronDown, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
 import { getCategorySortIndex } from "@/lib/categoryOrder";
@@ -246,7 +247,6 @@ const ListDetail = () => {
                 if (!grouped[cat]) grouped[cat] = [];
                 grouped[cat].push(item);
               });
-              // Sort categories: known ones first, Sonstiges last
               const sortedCats = Object.keys(grouped).sort((a, b) => {
                 return getCategorySortIndex(a) - getCategorySortIndex(b);
               });
@@ -261,38 +261,64 @@ const ListDetail = () => {
                 });
               };
 
-              return sortedCats.map(cat => {
-                const isCollapsed = collapsedCategories.has(cat);
-                return (
-                  <div key={cat}>
-                    {hasMultipleCategories && (
-                      <button
-                        onClick={() => toggleCollapse(cat)}
-                        className="flex items-center gap-2 mt-4 mb-1.5 first:mt-0 w-full text-left group"
+              const allCollapsed = hasMultipleCategories && sortedCats.every(c => collapsedCategories.has(c));
+              const toggleAll = () => {
+                if (allCollapsed) {
+                  setCollapsedCategories(new Set());
+                } else {
+                  setCollapsedCategories(new Set(sortedCats));
+                }
+              };
+
+              return (
+                <>
+                  {hasMultipleCategories && (
+                    <div className="flex justify-end mb-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleAll}
+                        className="text-xs text-muted-foreground h-7 gap-1"
                       >
-                        {isCollapsed
-                          ? <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-                          : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
-                        }
-                        <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{cat}</span>
-                        <span className="text-xs text-muted-foreground">({grouped[cat].length})</span>
-                        <div className="flex-1 h-px bg-border" />
-                      </button>
-                    )}
-                    {!isCollapsed && grouped[cat].map(item => (
-                      <ListItemRow
-                        key={item.id}
-                        item={item}
-                        analyzing={analyzingId === item.id}
-                        onToggle={() => toggleCheck(item)}
-                        onDelete={() => deleteItem(item.id)}
-                        onRename={(n) => renameItem(item.id, n)}
-                      />
-                    ))}
-                  </div>
-                );
-              });
+                        <ChevronsUpDown className="h-3 w-3" />
+                        {allCollapsed ? "Alle aufklappen" : "Alle zuklappen"}
+                      </Button>
+                    </div>
+                  )}
+                  {sortedCats.map(cat => {
+                    const isCollapsed = collapsedCategories.has(cat);
+                    return (
+                      <div key={cat}>
+                        {hasMultipleCategories && (
+                          <button
+                            onClick={() => toggleCollapse(cat)}
+                            className="flex items-center gap-2 mt-4 mb-1.5 first:mt-0 w-full text-left group"
+                          >
+                            {isCollapsed
+                              ? <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                              : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                            }
+                            <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
+                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{cat}</span>
+                            <span className="text-xs text-muted-foreground">({grouped[cat].length})</span>
+                            <div className="flex-1 h-px bg-border" />
+                          </button>
+                        )}
+                        {!isCollapsed && grouped[cat].map(item => (
+                          <ListItemRow
+                            key={item.id}
+                            item={item}
+                            analyzing={analyzingId === item.id}
+                            onToggle={() => toggleCheck(item)}
+                            onDelete={() => deleteItem(item.id)}
+                            onRename={(n) => renameItem(item.id, n)}
+                          />
+                        ))}
+                      </div>
+                    );
+                  })}
+                </>
+              );
             })()}
 
             {/* Always-visible new line input */}
