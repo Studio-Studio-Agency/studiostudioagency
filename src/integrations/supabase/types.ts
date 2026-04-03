@@ -225,6 +225,7 @@ export type Database = {
       }
       user_settings: {
         Row: {
+          auto_delete_days: number | null
           calendar_token: string | null
           category_order: Json | null
           claude_api_key: string | null
@@ -234,6 +235,7 @@ export type Database = {
           webhook_token: string | null
         }
         Insert: {
+          auto_delete_days?: number | null
           calendar_token?: string | null
           category_order?: Json | null
           claude_api_key?: string | null
@@ -243,6 +245,7 @@ export type Database = {
           webhook_token?: string | null
         }
         Update: {
+          auto_delete_days?: number | null
           calendar_token?: string | null
           category_order?: Json | null
           claude_api_key?: string | null
