@@ -1,14 +1,15 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, Tag } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
-import { startOfWeek, format, subWeeks, isAfter } from "date-fns";
+import { startOfWeek, format, subWeeks, isAfter, isBefore } from "date-fns";
 import { de } from "date-fns/locale";
 
 const COLORS = [
@@ -45,7 +46,6 @@ const StatisticsPage = () => {
     const checkedItems = items.filter(i => i.is_checked && i.checked_at);
     const weeks: Record<string, number> = {};
     const now = new Date();
-    // Initialize last 8 weeks
     for (let i = 7; i >= 0; i--) {
       const weekStart = startOfWeek(subWeeks(now, i), { weekStartsOn: 1 });
       const key = format(weekStart, "dd.MM", { locale: de });
@@ -60,6 +60,29 @@ const StatisticsPage = () => {
       if (key in weeks) weeks[key]++;
     });
     return Object.entries(weeks).map(([week, count]) => ({ week, count }));
+  }, [items]);
+
+  // Trend: this week vs last week
+  const trend = useMemo(() => {
+    const checkedItems = items.filter(i => i.is_checked && i.checked_at);
+    const now = new Date();
+    const thisWeekStart = startOfWeek(now, { weekStartsOn: 1 });
+    const lastWeekStart = startOfWeek(subWeeks(now, 1), { weekStartsOn: 1 });
+
+    const thisWeekCount = checkedItems.filter(i => {
+      const d = new Date(i.checked_at);
+      return !isBefore(d, thisWeekStart);
+    }).length;
+
+    const lastWeekCount = checkedItems.filter(i => {
+      const d = new Date(i.checked_at);
+      return !isBefore(d, lastWeekStart) && isBefore(d, thisWeekStart);
+    }).length;
+
+    const diff = thisWeekCount - lastWeekCount;
+    const percent = lastWeekCount > 0 ? Math.round((diff / lastWeekCount) * 100) : null;
+
+    return { thisWeekCount, lastWeekCount, diff, percent };
   }, [items]);
 
   const categoryData = useMemo(() => {
@@ -77,6 +100,27 @@ const StatisticsPage = () => {
   const checkedCount = items.filter(i => i.is_checked).length;
   const categoryCount = new Set(items.map(i => i.kategorie).filter(Boolean)).size;
 
+  const exportCSV = useCallback(() => {
+    const header = "Name,Kategorie,Gekauft,Gekauft am,Erstellt am\n";
+    const rows = items.map(i =>
+      [
+        `"${(i.name || "").replace(/"/g, '""')}"`,
+        `"${i.kategorie || "Sonstiges"}"`,
+        i.is_checked ? "Ja" : "Nein",
+        i.checked_at ? format(new Date(i.checked_at), "dd.MM.yyyy HH:mm", { locale: de }) : "",
+        format(new Date(i.created_at), "dd.MM.yyyy HH:mm", { locale: de }),
+      ].join(",")
+    ).join("\n");
+
+    const blob = new Blob(["\uFEFF" + header + rows], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `einkaufsstatistik_${format(new Date(), "yyyy-MM-dd")}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, [items]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <AppHeader />
@@ -84,7 +128,14 @@ const StatisticsPage = () => {
         <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4">
           <ArrowLeft className="h-4 w-4" /> Zurück
         </button>
-        <h1 className="text-2xl font-bold mb-6">Statistiken</h1>
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Statistiken</h1>
+          {!loading && items.length > 0 && (
+            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5">
+              <Download className="h-3.5 w-3.5" /> CSV Export
+            </Button>
+          )}
+        </div>
 
         {loading ? (
           <div className="flex justify-center py-12">
@@ -116,6 +167,46 @@ const StatisticsPage = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Trend comparison */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base">Wochenvergleich</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <div className={`flex items-center justify-center w-12 h-12 rounded-full ${
+                    trend.diff > 0 ? "bg-primary/10" : trend.diff < 0 ? "bg-destructive/10" : "bg-muted"
+                  }`}>
+                    {trend.diff > 0 ? (
+                      <TrendingUp className="h-6 w-6 text-primary" />
+                    ) : trend.diff < 0 ? (
+                      <TrendingDown className="h-6 w-6 text-destructive" />
+                    ) : (
+                      <Minus className="h-6 w-6 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      Diese Woche: <span className="font-bold">{trend.thisWeekCount}</span> Artikel
+                      {trend.percent !== null && (
+                        <span className={`ml-2 text-xs font-semibold ${
+                          trend.diff > 0 ? "text-primary" : trend.diff < 0 ? "text-destructive" : "text-muted-foreground"
+                        }`}>
+                          {trend.diff > 0 ? "+" : ""}{trend.percent}%
+                        </span>
+                      )}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Letzte Woche: {trend.lastWeekCount} Artikel
+                      {trend.diff !== 0 && (
+                        <span> · {Math.abs(trend.diff)} {trend.diff > 0 ? "mehr" : "weniger"}</span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             {/* Weekly chart */}
             <Card>
