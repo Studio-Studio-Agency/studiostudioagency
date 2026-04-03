@@ -24,6 +24,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
 import InspirationPage from "./pages/InspirationPage";
+import StatisticsPage from "./pages/StatisticsPage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 
