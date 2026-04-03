@@ -82,6 +82,7 @@ const App = () => (
             <Route path="/teilen/:token" element={<SharedListPage />} />
             <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
