@@ -205,7 +205,7 @@ const PRODUCT_ICONS: Record<string, string> = {
   "kiri": "🧀", "la vache qui rit": "🧀",
   wander: "☕",
   ricola: "🍬",
-  "läderach": "🍫", läderach: "🍫",
+  läderach: "🍫",
   sprüngli: "🍫", "sprüngli pralinés": "🍫",
   lindt: "🍫", "lindt lindor": "🍫",
   frey: "🍫", "chocolat frey": "🍫",
