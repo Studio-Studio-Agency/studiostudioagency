@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2 } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
 import { useTheme } from "next-themes";
@@ -34,6 +34,7 @@ const SettingsPage = () => {
   const [regenerating, setRegenerating] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
   const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
+  const [monthlyBudget, setMonthlyBudget] = useState<string>("");
 
   useEffect(() => {
     if (!user) return;
@@ -52,6 +53,8 @@ const SettingsPage = () => {
         setWebhookToken((settingsRes.data as any).webhook_token ?? null);
         const days = (settingsRes.data as any).auto_delete_days;
         setAutoDeleteDays(days ? String(days) : "none");
+        const budget = (settingsRes.data as any).monthly_budget;
+        setMonthlyBudget(budget != null ? String(budget) : "");
       }
       setLoading(false);
     };
@@ -109,6 +112,7 @@ const SettingsPage = () => {
         user_id: user.id,
         email_notifications: emailNotifications,
         auto_delete_days: autoDeleteDays === "none" ? null : parseInt(autoDeleteDays),
+        monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
       } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
@@ -391,6 +395,29 @@ const SettingsPage = () => {
                 <SelectItem value="30">Nach 30 Tagen</SelectItem>
               </SelectContent>
             </Select>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Wallet className="h-4 w-4" /> Monatsbudget
+            </CardTitle>
+            <CardDescription>Warne mich, wenn meine monatlichen Ausgaben diesen Betrag überschreiten</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min="0"
+                step="10"
+                placeholder="z.B. 500"
+                value={monthlyBudget}
+                onChange={(e) => setMonthlyBudget(e.target.value)}
+                className="max-w-[160px]"
+              />
+              <span className="text-sm text-muted-foreground">CHF</span>
+            </div>
           </CardContent>
         </Card>
 

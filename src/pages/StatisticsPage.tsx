@@ -6,11 +6,12 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet } from "lucide-react";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
-import { startOfWeek, format, subWeeks, isAfter, isBefore } from "date-fns";
+import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
 import { de } from "date-fns/locale";
+import { Progress } from "@/components/ui/progress";
 
 const COLORS = [
   "hsl(var(--primary))",
@@ -28,15 +29,17 @@ const StatisticsPage = () => {
   const navigate = useNavigate();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
 
   useEffect(() => {
     if (!user) return;
     const load = async () => {
-      const { data } = await supabase
-        .from("items")
-        .select("name, kategorie, checked_at, is_checked, created_at, preis")
-        .eq("user_id", user.id);
-      setItems(data || []);
+      const [itemsRes, settingsRes] = await Promise.all([
+        supabase.from("items").select("name, kategorie, checked_at, is_checked, created_at, preis").eq("user_id", user.id),
+        supabase.from("user_settings").select("monthly_budget").eq("user_id", user.id).maybeSingle(),
+      ]);
+      setItems(itemsRes.data || []);
+      if (settingsRes.data) setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
       setLoading(false);
     };
     load();
@@ -100,6 +103,16 @@ const StatisticsPage = () => {
   const checkedCount = items.filter(i => i.is_checked).length;
   const categoryCount = new Set(items.map(i => i.kategorie).filter(Boolean)).size;
   const totalSpent = items.reduce((sum, i) => sum + (i.preis || 0), 0);
+
+  const currentMonthSpent = useMemo(() => {
+    const monthStart = startOfMonth(new Date());
+    return items
+      .filter(i => i.is_checked && i.checked_at && i.preis && !isBefore(new Date(i.checked_at), monthStart))
+      .reduce((sum, i) => sum + (i.preis || 0), 0);
+  }, [items]);
+
+  const budgetPercent = monthlyBudget && monthlyBudget > 0 ? Math.min((currentMonthSpent / monthlyBudget) * 100, 100) : null;
+  const overBudget = monthlyBudget && monthlyBudget > 0 && currentMonthSpent > monthlyBudget;
 
   const monthlySpending = useMemo(() => {
     const months: Record<string, number> = {};
@@ -188,6 +201,32 @@ const StatisticsPage = () => {
                 </CardContent>
               </Card>
             </div>
+
+            {/* Budget warning */}
+            {monthlyBudget != null && monthlyBudget > 0 && (
+              <Card className={overBudget ? "border-destructive" : ""}>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    {overBudget && <AlertTriangle className="h-4 w-4 text-destructive" />}
+                    Monatsbudget
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span>CHF {currentMonthSpent.toFixed(2)} von {monthlyBudget.toFixed(0)}</span>
+                    <span className={`font-semibold ${overBudget ? "text-destructive" : "text-primary"}`}>
+                      {budgetPercent?.toFixed(0)}%
+                    </span>
+                  </div>
+                  <Progress value={budgetPercent ?? 0} className={`h-2 ${overBudget ? "[&>div]:bg-destructive" : ""}`} />
+                  {overBudget && (
+                    <p className="text-xs text-destructive font-medium">
+                      ⚠️ Du hast dein Monatsbudget um CHF {(currentMonthSpent - monthlyBudget).toFixed(2)} überschritten!
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            )}
 
             {/* Trend comparison */}
             <Card>
