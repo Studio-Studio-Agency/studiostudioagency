@@ -7,7 +7,8 @@ import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, ChevronDown, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { ArrowLeft, Loader2, ChevronDown, ChevronRight, ChevronsUpDown, Search, X } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
@@ -27,6 +28,8 @@ const ListDetail = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'red' | 'orange' | 'yellow' | 'green'>('all');
   const [filterKategorie, setFilterKategorie] = useState<string>('all');
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
@@ -187,7 +190,8 @@ const ListDetail = () => {
     setItems(prev => prev.map(i => i.id === id ? { ...i, name: newName.trim() } : i));
   };
 
-  const uncheckedItems = items.filter(i => !i.is_checked);
+  const searchLower = searchQuery.toLowerCase();
+  const uncheckedItems = items.filter(i => !i.is_checked && (!searchQuery || i.name.toLowerCase().includes(searchLower)));
   const checkedItems = items.filter(i => i.is_checked);
 
   const getLifecycleStatus = (item: Item): 'red' | 'orange' | 'yellow' | 'green' => {
@@ -231,6 +235,50 @@ const ListDetail = () => {
             )}
             {listId && <ShareListDialog listId={listId} listName={listName} editToken={editToken} />}
           </div>
+        </div>
+
+        {/* Search bar */}
+        <div className="flex items-center gap-2 mb-4">
+          {showSearch ? (
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Artikel suchen…"
+                className="pl-9 pr-9"
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSearch(true)}
+              className="gap-1.5 text-muted-foreground"
+            >
+              <Search className="h-3.5 w-3.5" />
+              Suchen
+            </Button>
+          )}
+          {showSearch && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+              className="text-xs"
+            >
+              Abbrechen
+            </Button>
+          )}
         </div>
 
         {loading ? (

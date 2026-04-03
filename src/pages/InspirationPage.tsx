@@ -197,6 +197,16 @@ const InspirationPage = () => {
                           <span className="hidden sm:inline">Einkaufsliste</span>
                         </Button>
                       )}
+                      {mode === "seasonal" && s.ingredients && s.ingredients.length > 0 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="shrink-0 gap-1 text-xs"
+                          onClick={() => openCreateList(idx)}
+                        >
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent>

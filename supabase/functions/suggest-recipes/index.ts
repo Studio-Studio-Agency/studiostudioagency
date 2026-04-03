@@ -26,7 +26,21 @@ Deno.serve(async (req) => {
 
     let systemPrompt = '';
     if (mode === 'seasonal') {
-      systemPrompt = `Du bist ein Ernährungsexperte. Es ist ${month} (${season}). Gib 4-5 saisonale Tipps und Empfehlungen für Lebensmittel, die gerade Saison haben. Antworte auf Deutsch als JSON-Array mit Objekten: {"title": "...", "description": "...", "emoji": "..."}. NUR das JSON-Array, kein anderer Text.`;
+      systemPrompt = `Du bist ein Schweizer Ernährungsexperte. Es ist ${month} (${season}).
+Gib 5-6 saisonale Schweizer Produkte, die JETZT in der Schweiz Saison haben.
+Konzentriere dich auf Schweizer Spezialitäten, regionales Obst, Gemüse und Produkte.
+Gib für jedes Produkt konkrete Rezeptideen oder Verwendungstipps.
+
+Antworte auf Deutsch als JSON-Array mit Objekten:
+{
+  "title": "Produktname",
+  "description": "Warum es jetzt Saison hat, woher es kommt, und wie man es am besten verwendet (2-3 Sätze)",
+  "emoji": "passendes Emoji",
+  "ingredients": ["Rezeptidee 1 mit diesem Produkt", "Rezeptidee 2"],
+  "servings": "Saison: März–Mai" (oder passender Zeitraum),
+  "time": "Region: Bern, Wallis etc." (oder passende Region)
+}
+NUR das JSON-Array, kein anderer Text.`;
     } else if (mode === 'tips') {
       systemPrompt = `Du bist ein Experte für Lebensmittel und Nachhaltigkeit. Gib 3-4 praktische Tipps zur Lagerung und Haltbarkeit für diese Lebensmittel: ${itemList}. Antworte auf Deutsch als JSON-Array mit Objekten: {"title": "...", "description": "...", "emoji": "..."}. NUR das JSON-Array, kein anderer Text.`;
     } else {
