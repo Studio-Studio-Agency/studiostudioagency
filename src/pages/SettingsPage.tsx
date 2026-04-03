@@ -108,7 +108,8 @@ const SettingsPage = () => {
       supabase.from("user_settings").upsert({
         user_id: user.id,
         email_notifications: emailNotifications,
-      }, { onConflict: "user_id" }),
+        auto_delete_days: autoDeleteDays === "none" ? null : parseInt(autoDeleteDays),
+      } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
     if (profileRes.error || settingsRes.error) {
