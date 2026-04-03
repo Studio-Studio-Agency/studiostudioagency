@@ -126,6 +126,7 @@ const SettingsPage = () => {
         category_budgets: Object.keys(categoryBudgets).length > 0
           ? Object.fromEntries(Object.entries(categoryBudgets).filter(([, v]) => v).map(([k, v]) => [k, parseFloat(v)]))
           : null,
+        preis_region: preisRegion,
       } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
