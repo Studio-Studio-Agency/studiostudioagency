@@ -141,7 +141,7 @@ const ListDetail = () => {
     }
   };
 
-  const toggleCheck = async (item: Item) => {
+  const toggleCheck = useCallback(async (item: Item) => {
     const nowChecked = !item.is_checked;
     await supabase.from("items").update({
       is_checked: nowChecked,
@@ -177,18 +177,18 @@ const ListDetail = () => {
       }
       setAnalyzingId(null);
     }
-  };
+  }, []);
 
-  const deleteItem = async (id: string) => {
+  const deleteItem = useCallback(async (id: string) => {
     await supabase.from("items").delete().eq("id", id);
     setItems(prev => prev.filter(i => i.id !== id));
-  };
+  }, []);
 
-  const renameItem = async (id: string, newName: string) => {
+  const renameItem = useCallback(async (id: string, newName: string) => {
     if (!newName.trim()) return;
     await supabase.from("items").update({ name: newName.trim() }).eq("id", id);
     setItems(prev => prev.map(i => i.id === id ? { ...i, name: newName.trim() } : i));
-  };
+  }, []);
 
   const searchLower = searchQuery.toLowerCase();
   const uncheckedItems = items.filter(i => !i.is_checked && (!searchQuery || i.name.toLowerCase().includes(searchLower)));

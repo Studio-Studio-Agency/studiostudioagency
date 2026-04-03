@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback, memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -12,13 +12,15 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor } from "lucide-react";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
+import { useTheme } from "next-themes";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -209,6 +211,37 @@ const SettingsPage = () => {
             <div className="flex items-center justify-between">
               <Label htmlFor="email-notifications">E-Mail-Benachrichtigungen</Label>
               <Switch id="email-notifications" checked={emailNotifications} onCheckedChange={setEmailNotifications} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Sun className="h-4 w-4" /> Erscheinungsbild
+            </CardTitle>
+            <CardDescription>Wähle dein bevorzugtes Farbschema</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: "light", label: "Hell", icon: Sun },
+                { value: "dark", label: "Dunkel", icon: Moon },
+                { value: "system", label: "System", icon: Monitor },
+              ] as const).map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => setTheme(value)}
+                  className={`flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-colors ${
+                    theme === value
+                      ? "border-primary bg-primary/10 text-primary font-medium"
+                      : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-xs">{label}</span>
+                </button>
+              ))}
             </div>
           </CardContent>
         </Card>
