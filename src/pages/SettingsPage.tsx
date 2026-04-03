@@ -33,6 +33,7 @@ const SettingsPage = () => {
   const [showToken, setShowToken] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
 
   useEffect(() => {
     if (!user) return;
