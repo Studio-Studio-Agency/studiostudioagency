@@ -393,6 +393,7 @@ const ListDetail = () => {
                             onToggle={() => toggleCheck(item)}
                             onDelete={() => deleteItem(item.id)}
                             onRename={(n) => renameItem(item.id, n)}
+                            cheapestPrice={itemPrices[item.name.trim().toLowerCase()] || getCachedCheapestPrice(item.name)}
                           />
                         ))}
                       </div>
