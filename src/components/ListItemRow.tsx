@@ -21,6 +21,7 @@ export interface Item {
   name: string;
   menge: number | null;
   einheit: string | null;
+  preis: number | null;
   is_checked: boolean;
   checked_at: string | null;
   ist_lebensmittel: boolean | null;
@@ -88,12 +89,14 @@ const ListItemRow = ({
   onToggle,
   onDelete,
   onRename,
+  onPriceChange,
 }: {
   item: Item;
   analyzing: boolean;
   onToggle: () => void;
   onDelete: () => void;
   onRename: (newName: string) => void;
+  onPriceChange?: (price: number | null) => void;
 }) => {
   const getExpiryColor = () => {
     if (!item.ablauf_datum) return "";
@@ -145,6 +148,11 @@ const ListItemRow = ({
                 {item.menge} {item.einheit}
               </span>
             )}
+            {item.is_checked && item.preis != null && (
+              <span className="text-xs text-primary font-medium shrink-0">
+                CHF {item.preis.toFixed(2)}
+              </span>
+            )}
           </div>
 
           {analyzing && (
@@ -178,6 +186,30 @@ const ListItemRow = ({
 
               {item.erklaerung && <p className="text-muted-foreground">{item.erklaerung}</p>}
               {item.lagerhinweis && <p className="text-muted-foreground">💡 {item.lagerhinweis}</p>}
+
+              {/* Price input */}
+              {onPriceChange && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs text-muted-foreground">Preis:</span>
+                  <input
+                    type="number"
+                    step="0.05"
+                    min="0"
+                    placeholder="CHF"
+                    defaultValue={item.preis ?? ""}
+                    className="w-20 text-xs bg-background border border-border rounded px-2 py-1 text-foreground"
+                    onBlur={(e) => {
+                      const val = e.target.value ? parseFloat(e.target.value) : null;
+                      onPriceChange(val);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        (e.target as HTMLInputElement).blur();
+                      }
+                    }}
+                  />
+                </div>
+              )}
 
               {item.ablauf_datum && (
                 <Link to="/kalender" className="inline-block mt-1 text-xs text-primary hover:underline">

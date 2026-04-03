@@ -6,7 +6,7 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download } from "lucide-react";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, format, subWeeks, isAfter, isBefore } from "date-fns";
@@ -34,7 +34,7 @@ const StatisticsPage = () => {
     const load = async () => {
       const { data } = await supabase
         .from("items")
-        .select("name, kategorie, checked_at, is_checked, created_at")
+        .select("name, kategorie, checked_at, is_checked, created_at, preis")
         .eq("user_id", user.id);
       setItems(data || []);
       setLoading(false);
@@ -99,13 +99,27 @@ const StatisticsPage = () => {
   const totalItems = items.length;
   const checkedCount = items.filter(i => i.is_checked).length;
   const categoryCount = new Set(items.map(i => i.kategorie).filter(Boolean)).size;
+  const totalSpent = items.reduce((sum, i) => sum + (i.preis || 0), 0);
+
+  const monthlySpending = useMemo(() => {
+    const months: Record<string, number> = {};
+    items.filter(i => i.is_checked && i.checked_at && i.preis).forEach(item => {
+      const key = format(new Date(item.checked_at), "MM/yyyy");
+      months[key] = (months[key] || 0) + (item.preis || 0);
+    });
+    return Object.entries(months)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-6)
+      .map(([month, total]) => ({ month, total: Math.round(total * 100) / 100 }));
+  }, [items]);
 
   const exportCSV = useCallback(() => {
-    const header = "Name,Kategorie,Gekauft,Gekauft am,Erstellt am\n";
+    const header = "Name,Kategorie,Preis (CHF),Gekauft,Gekauft am,Erstellt am\n";
     const rows = items.map(i =>
       [
         `"${(i.name || "").replace(/"/g, '""')}"`,
         `"${i.kategorie || "Sonstiges"}"`,
+        i.preis != null ? i.preis.toFixed(2) : "",
         i.is_checked ? "Ja" : "Nein",
         i.checked_at ? format(new Date(i.checked_at), "dd.MM.yyyy HH:mm", { locale: de }) : "",
         format(new Date(i.created_at), "dd.MM.yyyy HH:mm", { locale: de }),
@@ -144,7 +158,7 @@ const StatisticsPage = () => {
         ) : (
           <div className="space-y-6">
             {/* Summary cards */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Card>
                 <CardContent className="pt-4 pb-3 text-center">
                   <ShoppingCart className="h-5 w-5 mx-auto mb-1 text-primary" />
@@ -164,6 +178,13 @@ const StatisticsPage = () => {
                   <Tag className="h-5 w-5 mx-auto mb-1 text-primary" />
                   <p className="text-2xl font-bold">{categoryCount}</p>
                   <p className="text-xs text-muted-foreground">Kategorien</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <Wallet className="h-5 w-5 mx-auto mb-1 text-primary" />
+                  <p className="text-2xl font-bold">{totalSpent > 0 ? `${totalSpent.toFixed(0)}` : "–"}</p>
+                  <p className="text-xs text-muted-foreground">CHF ausgegeben</p>
                 </CardContent>
               </Card>
             </div>
@@ -290,6 +311,33 @@ const StatisticsPage = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Monthly spending */}
+            {monthlySpending.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Monatliche Ausgaben (CHF)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={monthlySpending}>
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "hsl(var(--card))",
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: 8,
+                          color: "hsl(var(--foreground))",
+                        }}
+                        formatter={(value: number) => [`CHF ${value.toFixed(2)}`, "Ausgaben"]}
+                      />
+                      <Bar dataKey="total" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </main>

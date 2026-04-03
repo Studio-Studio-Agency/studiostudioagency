@@ -26,6 +26,7 @@ import DatenschutzPage from "./pages/DatenschutzPage";
 import InspirationPage from "./pages/InspirationPage";
 import StatisticsPage from "./pages/StatisticsPage";
 import NotFound from "./pages/NotFound";
+import UnsubscribePage from "./pages/UnsubscribePage";
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
@@ -81,6 +82,7 @@ const App = () => (
             <Route path="/teilen/:token" element={<SharedListPage />} />
             <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
+            <Route path="/unsubscribe" element={<UnsubscribePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
