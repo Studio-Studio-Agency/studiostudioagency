@@ -29,6 +29,12 @@ interface NoteResult {
   content: string | null;
 }
 
+interface ListResult {
+  id: string;
+  name: string;
+  item_count: number;
+}
+
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [itemResults, setItemResults] = useState<ItemResult[]>([]);
