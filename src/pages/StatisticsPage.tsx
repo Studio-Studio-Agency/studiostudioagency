@@ -169,6 +169,67 @@ const StatisticsPage = () => {
     return Array.from(years).sort((a, b) => b - a);
   }, [items]);
 
+  // Month comparison
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthKey = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+
+  const [compareA, setCompareA] = useState(currentMonthKey);
+  const [compareB, setCompareB] = useState(prevMonthKey);
+
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>();
+    items.filter(i => i.checked_at).forEach(i => {
+      const d = new Date(i.checked_at);
+      months.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    });
+    if (months.size === 0) {
+      months.add(currentMonthKey);
+      months.add(prevMonthKey);
+    }
+    return Array.from(months).sort((a, b) => b.localeCompare(a));
+  }, [items]);
+
+  const formatMonthKey = (key: string) => {
+    const [y, m] = key.split("-");
+    return `${monthNames[parseInt(m) - 1]} ${y}`;
+  };
+
+  const getMonthStats = useCallback((monthKey: string) => {
+    const [y, m] = monthKey.split("-").map(Number);
+    const monthStart = new Date(y, m - 1, 1);
+    const monthEnd = new Date(y, m, 0, 23, 59, 59);
+    const monthItems = items.filter(i => {
+      if (!i.is_checked || !i.checked_at) return false;
+      const d = new Date(i.checked_at);
+      return d >= monthStart && d <= monthEnd;
+    });
+    const totalItems = monthItems.length;
+    const totalSpent = monthItems.reduce((s, i) => s + (i.preis || 0), 0);
+    const cats: Record<string, { count: number; spent: number }> = {};
+    monthItems.forEach(i => {
+      const cat = i.kategorie || "Sonstiges";
+      if (!cats[cat]) cats[cat] = { count: 0, spent: 0 };
+      cats[cat].count++;
+      cats[cat].spent += i.preis || 0;
+    });
+    const topCategories = Object.entries(cats)
+      .map(([name, s]) => ({ name, ...s }))
+      .sort((a, b) => b.count - a.count);
+    return { totalItems, totalSpent, topCategories };
+  }, [items]);
+
+  const statsA = useMemo(() => getMonthStats(compareA), [compareA, getMonthStats]);
+  const statsB = useMemo(() => getMonthStats(compareB), [compareB, getMonthStats]);
+
+  const allCompareCategories = useMemo(() => {
+    const cats = new Set<string>();
+    statsA.topCategories.forEach(c => cats.add(c.name));
+    statsB.topCategories.forEach(c => cats.add(c.name));
+    return Array.from(cats).sort();
+  }, [statsA, statsB]);
+
   const exportCSV = useCallback(() => {
     const header = "Name,Kategorie,Preis (CHF),Gekauft,Gekauft am,Erstellt am\n";
     const rows = items.map(i =>
