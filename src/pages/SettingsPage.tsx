@@ -53,6 +53,8 @@ const SettingsPage = () => {
         setWebhookToken((settingsRes.data as any).webhook_token ?? null);
         const days = (settingsRes.data as any).auto_delete_days;
         setAutoDeleteDays(days ? String(days) : "none");
+        const budget = (settingsRes.data as any).monthly_budget;
+        setMonthlyBudget(budget != null ? String(budget) : "");
       }
       setLoading(false);
     };
