@@ -112,6 +112,7 @@ const SettingsPage = () => {
         user_id: user.id,
         email_notifications: emailNotifications,
         auto_delete_days: autoDeleteDays === "none" ? null : parseInt(autoDeleteDays),
+        monthly_budget: monthlyBudget ? parseFloat(monthlyBudget) : null,
       } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
