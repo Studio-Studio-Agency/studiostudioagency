@@ -392,6 +392,37 @@ const SettingsPage = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="h-4 w-4" /> Preisregion
+            </CardTitle>
+            <CardDescription>Für welche Region sollen Preisschätzungen angezeigt werden?</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: "CH", label: "🇨🇭 Schweiz", desc: "Migros, Coop, Aldi, Denner" },
+                { value: "DE", label: "🇩🇪 Deutschland", desc: "Aldi, Lidl, REWE, Edeka" },
+                { value: "AT", label: "🇦🇹 Österreich", desc: "Hofer, Spar, Billa, Lidl" },
+              ] as const).map(({ value, label, desc }) => (
+                <button
+                  key={value}
+                  onClick={() => setPreisRegion(value)}
+                  className={`flex flex-col items-center gap-1 rounded-lg border p-3 transition-colors text-center ${
+                    preisRegion === value
+                      ? "border-primary bg-primary/10 text-primary font-medium"
+                      : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <span className="text-sm">{label}</span>
+                  <span className="text-[10px] leading-tight">{desc}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Trash2 className="h-4 w-4" /> Auto-Löschung
             </CardTitle>
             <CardDescription>Erledigte Artikel nach einer bestimmten Zeit automatisch löschen</CardDescription>
