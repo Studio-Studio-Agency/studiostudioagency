@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, StickyNote } from "lucide-react";
+import { Search, StickyNote, List } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -29,10 +29,17 @@ interface NoteResult {
   content: string | null;
 }
 
+interface ListResult {
+  id: string;
+  name: string;
+  item_count: number;
+}
+
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [itemResults, setItemResults] = useState<ItemResult[]>([]);
   const [noteResults, setNoteResults] = useState<NoteResult[]>([]);
+  const [listResults, setListResults] = useState<ListResult[]>([]);
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -54,12 +61,12 @@ const GlobalSearch = () => {
     if (!open || !user || query.length < 1) {
       setItemResults([]);
       setNoteResults([]);
+      setListResults([]);
       return;
     }
 
     const timeout = setTimeout(async () => {
-      // Parallel fetch items and notes
-      const [itemsRes, notesRes] = await Promise.all([
+      const [itemsRes, notesRes, listsRes] = await Promise.all([
         supabase
           .from("items")
           .select("id, name, kategorie, list_id, is_checked")
@@ -72,6 +79,13 @@ const GlobalSearch = () => {
           .select("id, title, content")
           .eq("user_id", user.id)
           .or(`title.ilike.%${query}%,content.ilike.%${query}%`)
+          .order("updated_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("lists")
+          .select("id, name")
+          .eq("user_id", user.id)
+          .ilike("name", `%${query}%`)
           .order("updated_at", { ascending: false })
           .limit(5),
       ]);
@@ -90,6 +104,22 @@ const GlobalSearch = () => {
         setItemResults([]);
       }
 
+      // Process lists with item counts
+      const matchedLists = listsRes.data ?? [];
+      if (matchedLists.length > 0) {
+        const countPromises = matchedLists.map(async (l) => {
+          const { count } = await supabase
+            .from("items")
+            .select("id", { count: "exact", head: true })
+            .eq("list_id", l.id)
+            .eq("is_checked", false);
+          return { ...l, item_count: count ?? 0 };
+        });
+        setListResults(await Promise.all(countPromises));
+      } else {
+        setListResults([]);
+      }
+
       setNoteResults(notesRes.data ?? []);
     }, 200);
 
@@ -105,6 +135,15 @@ const GlobalSearch = () => {
     [navigate]
   );
 
+  const handleSelectList = useCallback(
+    (r: ListResult) => {
+      setOpen(false);
+      setQuery("");
+      navigate(`/listen/${r.id}`);
+    },
+    [navigate]
+  );
+
   const handleSelectNote = useCallback(
     (r: NoteResult) => {
       setOpen(false);
@@ -116,7 +155,7 @@ const GlobalSearch = () => {
 
   if (!user) return null;
 
-  const hasResults = itemResults.length > 0 || noteResults.length > 0;
+  const hasResults = itemResults.length > 0 || noteResults.length > 0 || listResults.length > 0;
 
   return (
     <>
@@ -142,6 +181,26 @@ const GlobalSearch = () => {
               ? "Tippe, um zu suchen…"
               : "Keine Ergebnisse gefunden."}
           </CommandEmpty>
+          {listResults.length > 0 && (
+            <CommandGroup heading="Listen">
+              {listResults.map((r) => (
+                <CommandItem
+                  key={r.id}
+                  value={`list-${r.name}-${r.id}`}
+                  onSelect={() => handleSelectList(r)}
+                  className="flex items-center gap-2"
+                >
+                  <List className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span>{r.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {r.item_count} offene Artikel
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
           {itemResults.length > 0 && (
             <CommandGroup heading="Artikel">
               {itemResults.map((r) => (
