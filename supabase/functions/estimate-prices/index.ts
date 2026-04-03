@@ -21,6 +21,36 @@ Deno.serve(async (req) => {
       );
     }
 
+    const productKey = product.trim().toLowerCase();
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Check cache first (entries younger than 7 days)
+    const { data: cached } = await supabase
+      .from("price_estimate_cache")
+      .select("*")
+      .eq("product_key", productKey)
+      .gte("created_at", new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .maybeSingle();
+
+    if (cached) {
+      return new Response(
+        JSON.stringify({
+          product_name: cached.product_name,
+          currency: cached.currency,
+          estimates: cached.estimates,
+          tip: cached.tip,
+          cheapest_price: cached.cheapest_price,
+          cheapest_store: cached.cheapest_store,
+          cached: true,
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       return new Response(
@@ -62,17 +92,17 @@ Antworte NUR mit dem Tool-Call, keine weiteren Erklärungen.`;
                     items: {
                       type: "object",
                       properties: {
-                        store: { type: "string", description: "Name des Geschäfts (z.B. Aldi, Lidl, Migros, Coop, REWE, Edeka, Denner, Hofer)" },
-                        price_low: { type: "number", description: "Untere Preisschätzung in der jeweiligen Währung" },
-                        price_high: { type: "number", description: "Obere Preisschätzung in der jeweiligen Währung" },
-                        unit: { type: "string", description: "Einheit, z.B. 'pro Stück', 'pro kg', 'pro 500g', 'pro Packung'" },
-                        note: { type: "string", description: "Optionaler Hinweis, z.B. 'Eigenmarke' oder 'Bio'" },
+                        store: { type: "string" },
+                        price_low: { type: "number" },
+                        price_high: { type: "number" },
+                        unit: { type: "string" },
+                        note: { type: "string" },
                       },
                       required: ["store", "price_low", "price_high", "unit"],
                       additionalProperties: false,
                     },
                   },
-                  tip: { type: "string", description: "Optionaler Spartipp für dieses Produkt" },
+                  tip: { type: "string", description: "Optionaler Spartipp" },
                 },
                 required: ["product_name", "currency", "estimates"],
                 additionalProperties: false,
@@ -118,8 +148,38 @@ Antworte NUR mit dem Tool-Call, keine weiteren Erklärungen.`;
 
     const priceData = JSON.parse(toolCall.function.arguments);
 
+    // Find cheapest
+    const estimates = priceData.estimates || [];
+    let cheapestPrice: number | null = null;
+    let cheapestStore: string | null = null;
+    for (const est of estimates) {
+      if (cheapestPrice === null || est.price_low < cheapestPrice) {
+        cheapestPrice = est.price_low;
+        cheapestStore = est.store;
+      }
+    }
+
+    // Upsert cache
+    await supabase.from("price_estimate_cache").upsert(
+      {
+        product_key: productKey,
+        product_name: priceData.product_name,
+        currency: priceData.currency,
+        estimates: estimates,
+        tip: priceData.tip || null,
+        cheapest_price: cheapestPrice,
+        cheapest_store: cheapestStore,
+        created_at: new Date().toISOString(),
+      },
+      { onConflict: "product_key" }
+    );
+
     return new Response(
-      JSON.stringify(priceData),
+      JSON.stringify({
+        ...priceData,
+        cheapest_price: cheapestPrice,
+        cheapest_store: cheapestStore,
+      }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (e) {

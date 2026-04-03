@@ -90,6 +90,7 @@ const ListItemRow = ({
   onDelete,
   onRename,
   onPriceChange,
+  cheapestPrice,
 }: {
   item: Item;
   analyzing: boolean;
@@ -97,6 +98,7 @@ const ListItemRow = ({
   onDelete: () => void;
   onRename: (newName: string) => void;
   onPriceChange?: (price: number | null) => void;
+  cheapestPrice?: { price: number; store: string; currency: string } | null;
 }) => {
   const getExpiryColor = () => {
     if (!item.ablauf_datum) return "";
@@ -146,6 +148,11 @@ const ListItemRow = ({
             {item.menge && (
               <span className="text-sm text-muted-foreground shrink-0">
                 {item.menge} {item.einheit}
+              </span>
+            )}
+            {!item.is_checked && cheapestPrice && (
+              <span className="text-[10px] bg-primary/10 text-primary font-medium px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap" title={`Günstigster Preis bei ${cheapestPrice.store}`}>
+                ab {cheapestPrice.currency === "CHF" ? "CHF" : "€"} {cheapestPrice.price.toFixed(2)}
               </span>
             )}
             {item.is_checked && item.preis != null && (

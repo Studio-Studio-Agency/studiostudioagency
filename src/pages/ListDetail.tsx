@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
 import { getCategorySortIndex } from "@/lib/categoryOrder";
-import { usePriceEstimates } from "@/hooks/usePriceEstimates";
+import { usePriceEstimates, getCachedCheapestPrice } from "@/hooks/usePriceEstimates";
 import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
 const ListDetail = () => {
@@ -34,12 +34,24 @@ const ListDetail = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [lastAddedItemName, setLastAddedItemName] = useState("");
   const [showPriceFor, setShowPriceFor] = useState(false);
+  const [itemPrices, setItemPrices] = useState<Record<string, { price: number; store: string; currency: string }>>({}); 
 
   // Price estimates for last added item
   const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
     lastAddedItemName,
     showPriceFor && lastAddedItemName.length >= 2
   );
+
+  // When price data arrives, store cheapest for the item badge
+  useEffect(() => {
+    if (priceData?.cheapest_price != null && priceData.cheapest_store && lastAddedItemName) {
+      const key = lastAddedItemName.trim().toLowerCase();
+      setItemPrices(prev => ({
+        ...prev,
+        [key]: { price: priceData.cheapest_price!, store: priceData.cheapest_store!, currency: priceData.currency },
+      }));
+    }
+  }, [priceData, lastAddedItemName]);
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
@@ -381,6 +393,7 @@ const ListDetail = () => {
                             onToggle={() => toggleCheck(item)}
                             onDelete={() => deleteItem(item.id)}
                             onRename={(n) => renameItem(item.id, n)}
+                            cheapestPrice={itemPrices[item.name.trim().toLowerCase()] || getCachedCheapestPrice(item.name)}
                           />
                         ))}
                       </div>
