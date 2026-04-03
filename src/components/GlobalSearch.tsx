@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/command";
 import { getProductIcon } from "@/lib/productIcons";
 import { toast } from "sonner";
+import { usePriceEstimates } from "@/hooks/usePriceEstimates";
+import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
 interface ItemResult {
   id: string;
@@ -52,6 +54,12 @@ const GlobalSearch = () => {
   const [addingTo, setAddingTo] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Price estimates for the current query
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    query,
+    open && query.trim().length >= 2
+  );
 
   // Cmd+K shortcut
   useEffect(() => {
@@ -342,6 +350,20 @@ const GlobalSearch = () => {
                 </CommandItem>
               ))}
             </CommandGroup>
+          )}
+
+          {/* Price estimates */}
+          {query.trim().length >= 2 && (priceLoading || priceData) && (
+            <>
+              <CommandSeparator />
+              <div className="p-1">
+                <PriceEstimatesDisplay
+                  data={priceData}
+                  loading={priceLoading}
+                  error={priceError}
+                />
+              </div>
+            </>
           )}
         </CommandList>
       </CommandDialog>
