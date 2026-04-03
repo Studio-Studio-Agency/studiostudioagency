@@ -56,6 +56,12 @@ const SettingsPage = () => {
         setAutoDeleteDays(days ? String(days) : "none");
         const budget = (settingsRes.data as any).monthly_budget;
         setMonthlyBudget(budget != null ? String(budget) : "");
+        const catBudgets = (settingsRes.data as any).category_budgets;
+        if (catBudgets && typeof catBudgets === "object") {
+          const mapped: Record<string, string> = {};
+          Object.entries(catBudgets).forEach(([k, v]) => { mapped[k] = String(v); });
+          setCategoryBudgets(mapped);
+        }
       }
       setLoading(false);
     };
