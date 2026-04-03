@@ -262,6 +262,42 @@ export type Database = {
         }
         Relationships: []
       }
+      price_estimate_cache: {
+        Row: {
+          cheapest_price: number | null
+          cheapest_store: string | null
+          created_at: string
+          currency: string
+          estimates: Json
+          id: string
+          product_key: string
+          product_name: string
+          tip: string | null
+        }
+        Insert: {
+          cheapest_price?: number | null
+          cheapest_store?: string | null
+          created_at?: string
+          currency?: string
+          estimates?: Json
+          id?: string
+          product_key: string
+          product_name: string
+          tip?: string | null
+        }
+        Update: {
+          cheapest_price?: number | null
+          cheapest_store?: string | null
+          created_at?: string
+          currency?: string
+          estimates?: Json
+          id?: string
+          product_key?: string
+          product_name?: string
+          tip?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
