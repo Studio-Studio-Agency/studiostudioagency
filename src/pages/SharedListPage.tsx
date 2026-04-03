@@ -91,6 +91,9 @@ const SharedListPage = () => {
     e.currentTarget.value = "";
     try {
       const data = await call("add_item", { name: val });
+      setLastAddedItemName(data.item.name || val);
+      setShowPriceFor(true);
+      setTimeout(() => setShowPriceFor(false), 15000);
       setItems(prev => {
         if (prev.some(i => i.id === data.item.id)) return prev;
         return [...prev, data.item];
