@@ -181,6 +181,26 @@ const GlobalSearch = () => {
               ? "Tippe, um zu suchen…"
               : "Keine Ergebnisse gefunden."}
           </CommandEmpty>
+          {listResults.length > 0 && (
+            <CommandGroup heading="Listen">
+              {listResults.map((r) => (
+                <CommandItem
+                  key={r.id}
+                  value={`list-${r.name}-${r.id}`}
+                  onSelect={() => handleSelectList(r)}
+                  className="flex items-center gap-2"
+                >
+                  <List className="h-4 w-4 text-muted-foreground shrink-0" />
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span>{r.name}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {r.item_count} offene Artikel
+                    </span>
+                  </div>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
           {itemResults.length > 0 && (
             <CommandGroup heading="Artikel">
               {itemResults.map((r) => (
