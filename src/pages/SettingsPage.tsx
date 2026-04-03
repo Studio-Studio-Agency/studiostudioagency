@@ -218,6 +218,35 @@ const SettingsPage = () => {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
+              <Sun className="h-4 w-4" /> Erscheinungsbild
+            </CardTitle>
+            <CardDescription>Wähle dein bevorzugtes Farbschema</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-3 gap-2">
+              {([
+                { value: "light", label: "Hell", icon: Sun },
+                { value: "dark", label: "Dunkel", icon: Moon },
+                { value: "system", label: "System", icon: Monitor },
+              ] as const).map(({ value, label, icon: Icon }) => (
+                <button
+                  key={value}
+                  onClick={() => setTheme(value)}
+                  className={`flex flex-col items-center gap-1.5 rounded-lg border p-3 transition-colors ${
+                    theme === value
+                      ? "border-primary bg-primary/10 text-primary font-medium"
+                      : "border-border text-muted-foreground hover:border-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span className="text-xs">{label}</span>
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Webhook className="h-4 w-4" /> Webhook-API
             </CardTitle>
             <CardDescription>
