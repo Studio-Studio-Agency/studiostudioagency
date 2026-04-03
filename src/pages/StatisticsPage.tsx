@@ -40,7 +40,11 @@ const StatisticsPage = () => {
         supabase.from("user_settings").select("monthly_budget, category_budgets").eq("user_id", user.id).maybeSingle(),
       ]);
       setItems(itemsRes.data || []);
-      if (settingsRes.data) setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
+      if (settingsRes.data) {
+        setMonthlyBudget((settingsRes.data as any).monthly_budget ?? null);
+        const cb = (settingsRes.data as any).category_budgets;
+        if (cb && typeof cb === "object") setCategoryBudgets(cb);
+      }
       setLoading(false);
     };
     load();
