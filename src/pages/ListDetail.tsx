@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
 import { getCategorySortIndex } from "@/lib/categoryOrder";
-import { usePriceEstimates } from "@/hooks/usePriceEstimates";
+import { usePriceEstimates, getCachedCheapestPrice } from "@/hooks/usePriceEstimates";
 import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
 const ListDetail = () => {
