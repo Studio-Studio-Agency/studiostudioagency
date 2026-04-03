@@ -90,6 +90,7 @@ const ListItemRow = ({
   onDelete,
   onRename,
   onPriceChange,
+  cheapestPrice,
 }: {
   item: Item;
   analyzing: boolean;
@@ -97,6 +98,7 @@ const ListItemRow = ({
   onDelete: () => void;
   onRename: (newName: string) => void;
   onPriceChange?: (price: number | null) => void;
+  cheapestPrice?: { price: number; store: string; currency: string } | null;
 }) => {
   const getExpiryColor = () => {
     if (!item.ablauf_datum) return "";
