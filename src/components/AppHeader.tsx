@@ -16,6 +16,7 @@ import FeedbackDialog from "@/components/FeedbackDialog";
 import IOSWaitlistDialog from "@/components/IOSWaitlistDialog";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 import { cn } from "@/lib/utils";
+import GlobalSearch from "@/components/GlobalSearch";
 
 const mainNav = [
   { path: "/listen", icon: List, label: "Listen" },
