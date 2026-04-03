@@ -25,6 +25,7 @@ const ListDetail = () => {
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'red' | 'orange' | 'yellow' | 'green'>('all');
   const [filterKategorie, setFilterKategorie] = useState<string>('all');
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);

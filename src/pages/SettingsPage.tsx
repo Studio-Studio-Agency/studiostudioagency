@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff } from "lucide-react";
+import CategoryOrderSettings from "@/components/CategoryOrderSettings";
 
 const SettingsPage = () => {
   const { user, signOut } = useAuth();
