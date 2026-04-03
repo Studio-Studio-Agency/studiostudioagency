@@ -27,8 +27,8 @@ const BottomNav = () => {
             key={path}
             to={path}
             className={cn(
-              "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-primary-foreground/60 transition-colors",
-              isActive(path) && "text-primary-foreground"
+              "flex flex-col items-center justify-center gap-0.5 flex-1 h-full text-primary-foreground/75 transition-colors",
+              isActive(path) && "text-primary-foreground font-semibold"
             )}
           >
             <Icon className="h-5 w-5" />
