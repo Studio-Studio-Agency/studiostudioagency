@@ -120,6 +120,12 @@ const ListDetail = () => {
       const newItem = data as Item;
       setItems(prev => [...prev, newItem]);
 
+      // Show price estimates for the added item
+      setLastAddedItemName(newItem.name);
+      setShowPriceFor(true);
+      // Auto-hide prices after 15 seconds
+      setTimeout(() => setShowPriceFor(false), 15000);
+
       // Auto-categorize in background
       setAnalyzingId(newItem.id);
       try {
