@@ -69,8 +69,8 @@ const AppHeader = () => {
                 size="sm"
                 asChild
                 className={cn(
-                  "whitespace-nowrap text-xs px-3",
-                  isActive(path) && "bg-accent text-accent-foreground font-semibold"
+                  "whitespace-nowrap text-xs px-3 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10",
+                  isActive(path) && "bg-primary-foreground/15 text-primary-foreground font-semibold"
                 )}
               >
                 <Link to={path}>
