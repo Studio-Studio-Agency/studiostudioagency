@@ -11,8 +11,10 @@ export interface TemplateEntry {
 
 import { template as expiryReminder } from './expiry-reminder.tsx'
 import { template as monthlySummary } from './monthly-summary.tsx'
+import { template as listShare } from './list-share.tsx'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'expiry-reminder': expiryReminder,
   'monthly-summary': monthlySummary,
+  'list-share': listShare,
 }

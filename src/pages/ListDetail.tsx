@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
 import { getCategorySortIndex } from "@/lib/categoryOrder";
+import SendListEmailDialog from "@/components/SendListEmailDialog";
 import { usePriceEstimates, getCachedCheapestPrice } from "@/hooks/usePriceEstimates";
 import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 
@@ -282,6 +283,9 @@ const ListDetail = () => {
             >
               <Download className="h-4 w-4" />
             </Button>
+            {listId && user && (
+              <SendListEmailDialog listId={listId} listName={listName} items={items} />
+            )}
             {listId && user && (
               <RecipeImportDialog listId={listId} userId={user.id} onItemsAdded={fetchData} />
             )}
