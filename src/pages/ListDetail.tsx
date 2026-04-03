@@ -237,6 +237,50 @@ const ListDetail = () => {
           </div>
         </div>
 
+        {/* Search bar */}
+        <div className="flex items-center gap-2 mb-4">
+          {showSearch ? (
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Artikel suchen…"
+                className="pl-9 pr-9"
+                autoFocus
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          ) : (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSearch(true)}
+              className="gap-1.5 text-muted-foreground"
+            >
+              <Search className="h-3.5 w-3.5" />
+              Suchen
+            </Button>
+          )}
+          {showSearch && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+              className="text-xs"
+            >
+              Abbrechen
+            </Button>
+          )}
+        </div>
+
         {loading ? (
           <div className="flex justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
