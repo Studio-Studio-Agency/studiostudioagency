@@ -421,17 +421,75 @@ const StatisticsPage = () => {
               </CardContent>
             </Card>
 
-            {/* Monthly spending */}
-            {monthlySpending.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Monatliche Ausgaben (CHF)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={monthlySpending}>
+            {/* Yearly overview */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" /> Jahresübersicht
+                  </CardTitle>
+                  <div className="flex gap-1">
+                    {availableYears.map(y => (
+                      <button
+                        key={y}
+                        onClick={() => setSelectedYear(y)}
+                        className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                          selectedYear === y
+                            ? "bg-primary text-primary-foreground font-medium"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Ausgaben:</span>{" "}
+                    <span className="font-semibold">{yearTotal > 0 ? `CHF ${yearTotal.toFixed(0)}` : "–"}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Artikel:</span>{" "}
+                    <span className="font-semibold">{yearArticles}</span>
+                  </div>
+                  {monthlyBudget && monthlyBudget > 0 && (
+                    <div>
+                      <span className="text-muted-foreground">Ø/Monat:</span>{" "}
+                      <span className="font-semibold">
+                        CHF {(yearTotal / Math.max(yearlyData.filter(d => d.ausgaben > 0).length, 1)).toFixed(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={yearlyData}>
+                    <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        color: "hsl(var(--foreground))",
+                      }}
+                      formatter={(value: number, name: string) => [
+                        name === "ausgaben" ? `CHF ${value.toFixed(2)}` : `${value} Artikel`,
+                        name === "ausgaben" ? "Ausgaben" : "Artikel",
+                      ]}
+                    />
+                    <Bar dataKey="ausgaben" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="ausgaben" />
+                  </BarChart>
+                </ResponsiveContainer>
+
+                {yearlyData.some(d => d.artikel > 0) && (
+                  <ResponsiveContainer width="100%" height={160}>
+                    <LineChart data={yearlyData}>
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                      <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={30} />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
@@ -439,14 +497,20 @@ const StatisticsPage = () => {
                           borderRadius: 8,
                           color: "hsl(var(--foreground))",
                         }}
-                        formatter={(value: number) => [`CHF ${value.toFixed(2)}`, "Ausgaben"]}
+                        formatter={(value: number) => [`${value} Artikel`, "Gekauft"]}
                       />
-                      <Bar dataKey="total" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                      <Line type="monotone" dataKey="artikel" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 3 }} name="artikel" />
+                    </LineChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
+                )}
+
+                {monthlyBudget && monthlyBudget > 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Monatliches Budget: CHF {monthlyBudget.toFixed(0)} · Jahresbudget: CHF {(monthlyBudget * 12).toFixed(0)}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
       </main>
