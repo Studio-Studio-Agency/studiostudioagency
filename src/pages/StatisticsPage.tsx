@@ -12,6 +12,7 @@ import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
 import { de } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const COLORS = [
   "hsl(var(--primary))",
