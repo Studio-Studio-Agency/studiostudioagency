@@ -30,6 +30,7 @@ const StatisticsPage = () => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
+  const [categoryBudgets, setCategoryBudgets] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (!user) return;
