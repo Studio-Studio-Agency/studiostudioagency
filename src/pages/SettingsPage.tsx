@@ -398,6 +398,29 @@ const SettingsPage = () => {
           </CardContent>
         </Card>
 
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Wallet className="h-4 w-4" /> Monatsbudget
+            </CardTitle>
+            <CardDescription>Warne mich, wenn meine monatlichen Ausgaben diesen Betrag überschreiten</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-2">
+              <Input
+                type="number"
+                min="0"
+                step="10"
+                placeholder="z.B. 500"
+                value={monthlyBudget}
+                onChange={(e) => setMonthlyBudget(e.target.value)}
+                className="max-w-[160px]"
+              />
+              <span className="text-sm text-muted-foreground">CHF</span>
+            </div>
+          </CardContent>
+        </Card>
+
         <CategoryOrderSettings />
 
         <Button onClick={handleSave} disabled={saving} className="w-full">
