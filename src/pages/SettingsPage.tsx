@@ -35,6 +35,7 @@ const SettingsPage = () => {
   const [cameraOpen, setCameraOpen] = useState(false);
   const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
   const [monthlyBudget, setMonthlyBudget] = useState<string>("");
+  const [categoryBudgets, setCategoryBudgets] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!user) return;
