@@ -141,7 +141,7 @@ const ListDetail = () => {
     }
   };
 
-  const toggleCheck = async (item: Item) => {
+  const toggleCheck = useCallback(async (item: Item) => {
     const nowChecked = !item.is_checked;
     await supabase.from("items").update({
       is_checked: nowChecked,
