@@ -1,50 +1,52 @@
-import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { KATEGORIEN } from "@/components/ListItemRow";
-import { MAIN_CATEGORIES, getCustomCategoryOrder, saveCustomCategoryOrder, resetCategoryOrder } from "@/lib/categoryOrder";
-import { GripVertical, RotateCcw, ListOrdered } from "lucide-react";
+import { useCategoryOrder } from "@/lib/categoryOrder";
+import { GripVertical, RotateCcw, ListOrdered, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const CategoryOrderSettings = () => {
   const { toast } = useToast();
-  const [categories, setCategories] = useState<string[]>(MAIN_CATEGORIES);
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
-
-  useEffect(() => {
-    const custom = getCustomCategoryOrder();
-    if (custom) setCategories(custom);
-  }, []);
+  const { categories, loading, saveOrder, resetOrder } = useCategoryOrder();
+  const dragIdx: { current: number | null } = { current: null };
 
   const moveCategory = (from: number, to: number) => {
     if (to < 0 || to >= categories.length) return;
     const next = [...categories];
     const [moved] = next.splice(from, 1);
     next.splice(to, 0, moved);
-    setCategories(next);
-    saveCustomCategoryOrder(next);
+    saveOrder(next);
   };
 
   const handleDragStart = (idx: number) => {
-    setDragIdx(idx);
+    dragIdx.current = idx;
   };
 
   const handleDragOver = (e: React.DragEvent, idx: number) => {
     e.preventDefault();
-    if (dragIdx === null || dragIdx === idx) return;
-    moveCategory(dragIdx, idx);
-    setDragIdx(idx);
+    if (dragIdx.current === null || dragIdx.current === idx) return;
+    moveCategory(dragIdx.current, idx);
+    dragIdx.current = idx;
   };
 
   const handleDragEnd = () => {
-    setDragIdx(null);
+    dragIdx.current = null;
   };
 
   const handleReset = () => {
-    resetCategoryOrder();
-    setCategories([...MAIN_CATEGORIES]);
+    resetOrder();
     toast({ title: "Zurückgesetzt", description: "Standard-Reihenfolge wiederhergestellt." });
   };
+
+  if (loading) {
+    return (
+      <Card>
+        <CardContent className="flex justify-center py-8">
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card>
@@ -53,7 +55,7 @@ const CategoryOrderSettings = () => {
           <ListOrdered className="h-4 w-4" /> Kategorie-Reihenfolge
         </CardTitle>
         <CardDescription>
-          Ziehe die Kategorien in deine bevorzugte Supermarkt-Reihenfolge.
+          Ziehe die Kategorien in deine bevorzugte Supermarkt-Reihenfolge. Wird über alle Geräte synchronisiert.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-2">
@@ -65,11 +67,7 @@ const CategoryOrderSettings = () => {
               onDragStart={() => handleDragStart(idx)}
               onDragOver={(e) => handleDragOver(e, idx)}
               onDragEnd={handleDragEnd}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md border cursor-grab active:cursor-grabbing transition-colors ${
-                dragIdx === idx
-                  ? "bg-accent border-accent"
-                  : "bg-background border-border hover:bg-muted"
-              }`}
+              className="flex items-center gap-2 px-3 py-2 rounded-md border cursor-grab active:cursor-grabbing transition-colors bg-background border-border hover:bg-muted"
             >
               <GripVertical className="h-4 w-4 text-muted-foreground shrink-0" />
               <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
