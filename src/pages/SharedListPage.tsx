@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShoppingCart, Trash2, Users } from "lucide-react";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
+import { usePriceEstimates, getCachedCheapestPrice } from "@/hooks/usePriceEstimates";
+import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const SharedListPage = () => {
@@ -17,7 +19,14 @@ const SharedListPage = () => {
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [activeUsers, setActiveUsers] = useState(1);
+  const [lastAddedItemName, setLastAddedItemName] = useState("");
+  const [showPriceFor, setShowPriceFor] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
+    lastAddedItemName,
+    showPriceFor && lastAddedItemName.length >= 2
+  );
 
   const call = async (action: string, payload?: object) => {
     const { data, error } = await supabase.functions.invoke("shared-list", {
@@ -82,6 +91,9 @@ const SharedListPage = () => {
     e.currentTarget.value = "";
     try {
       const data = await call("add_item", { name: val });
+      setLastAddedItemName(data.item.name || val);
+      setShowPriceFor(true);
+      setTimeout(() => setShowPriceFor(false), 15000);
       setItems(prev => {
         if (prev.some(i => i.id === data.item.id)) return prev;
         return [...prev, data.item];
@@ -177,23 +189,31 @@ const SharedListPage = () => {
                   <div className="flex-1 h-px bg-border" />
                 </div>
               )}
-              {grouped[cat].map(item => (
-                <div key={item.id} className="flex items-center gap-3 py-1.5 group">
-                  <Checkbox checked={false} onCheckedChange={() => toggleItem(item)} />
-                  <span className="flex-1 text-foreground">{item.name}</span>
-                  {item.menge && (
-                    <span className="text-sm text-muted-foreground">
-                      {item.menge} {item.einheit}
-                    </span>
-                  )}
-                  <button
-                    onClick={() => deleteItem(item.id)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              ))}
+              {grouped[cat].map(item => {
+                const cheapest = getCachedCheapestPrice(item.name);
+                return (
+                  <div key={item.id} className="flex items-center gap-3 py-1.5 group">
+                    <Checkbox checked={false} onCheckedChange={() => toggleItem(item)} />
+                    <span className="flex-1 text-foreground">{item.name}</span>
+                    {cheapest && (
+                      <span className="text-[10px] bg-primary/10 text-primary font-medium px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap" title={`Günstigster Preis bei ${cheapest.store}`}>
+                        ab {cheapest.currency === "CHF" ? "CHF" : "€"} {cheapest.price.toFixed(2)}
+                      </span>
+                    )}
+                    {item.menge && (
+                      <span className="text-sm text-muted-foreground">
+                        {item.menge} {item.einheit}
+                      </span>
+                    )}
+                    <button
+                      onClick={() => deleteItem(item.id)}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           ))}
 
@@ -208,6 +228,11 @@ const SharedListPage = () => {
               onKeyDown={handleKeyDown}
             />
           </div>
+
+          {/* Price estimates for last added item */}
+          {showPriceFor && (
+            <PriceEstimatesDisplay data={priceData} loading={priceLoading} error={priceError} />
+          )}
 
           {/* Checked items */}
           {checked.length > 0 && (
