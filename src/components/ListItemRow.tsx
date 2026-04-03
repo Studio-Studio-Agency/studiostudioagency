@@ -89,12 +89,14 @@ const ListItemRow = ({
   onToggle,
   onDelete,
   onRename,
+  onPriceChange,
 }: {
   item: Item;
   analyzing: boolean;
   onToggle: () => void;
   onDelete: () => void;
   onRename: (newName: string) => void;
+  onPriceChange?: (price: number | null) => void;
 }) => {
   const getExpiryColor = () => {
     if (!item.ablauf_datum) return "";
