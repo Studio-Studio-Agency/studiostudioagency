@@ -34,7 +34,7 @@ const StatisticsPage = () => {
     const load = async () => {
       const { data } = await supabase
         .from("items")
-        .select("name, kategorie, checked_at, is_checked, created_at")
+        .select("name, kategorie, checked_at, is_checked, created_at, preis")
         .eq("user_id", user.id);
       setItems(data || []);
       setLoading(false);
