@@ -114,11 +114,12 @@ const StatisticsPage = () => {
   }, [items]);
 
   const exportCSV = useCallback(() => {
-    const header = "Name,Kategorie,Gekauft,Gekauft am,Erstellt am\n";
+    const header = "Name,Kategorie,Preis (CHF),Gekauft,Gekauft am,Erstellt am\n";
     const rows = items.map(i =>
       [
         `"${(i.name || "").replace(/"/g, '""')}"`,
         `"${i.kategorie || "Sonstiges"}"`,
+        i.preis != null ? i.preis.toFixed(2) : "",
         i.is_checked ? "Ja" : "Nein",
         i.checked_at ? format(new Date(i.checked_at), "dd.MM.yyyy HH:mm", { locale: de }) : "",
         format(new Date(i.created_at), "dd.MM.yyyy HH:mm", { locale: de }),
