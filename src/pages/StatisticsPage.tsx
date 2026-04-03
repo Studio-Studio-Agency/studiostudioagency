@@ -158,7 +158,7 @@ const StatisticsPage = () => {
         ) : (
           <div className="space-y-6">
             {/* Summary cards */}
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               <Card>
                 <CardContent className="pt-4 pb-3 text-center">
                   <ShoppingCart className="h-5 w-5 mx-auto mb-1 text-primary" />
@@ -178,6 +178,13 @@ const StatisticsPage = () => {
                   <Tag className="h-5 w-5 mx-auto mb-1 text-primary" />
                   <p className="text-2xl font-bold">{categoryCount}</p>
                   <p className="text-xs text-muted-foreground">Kategorien</p>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <Wallet className="h-5 w-5 mx-auto mb-1 text-primary" />
+                  <p className="text-2xl font-bold">{totalSpent > 0 ? `${totalSpent.toFixed(0)}` : "–"}</p>
+                  <p className="text-xs text-muted-foreground">CHF ausgegeben</p>
                 </CardContent>
               </Card>
             </div>
