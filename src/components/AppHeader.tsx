@@ -52,7 +52,7 @@ const AppHeader = () => {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <header className="border-b bg-card text-card-foreground">
+    <header className="border-b border-primary/20 bg-primary text-primary-foreground">
       <div className="container flex items-center justify-between py-3">
         {/* Left: Logo */}
         <Link to={user ? "/listen" : "/"} className="flex items-center">
