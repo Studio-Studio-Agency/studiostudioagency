@@ -28,6 +28,8 @@ const ListDetail = () => {
   const [filterStatus, setFilterStatus] = useState<'all' | 'red' | 'orange' | 'yellow' | 'green'>('all');
   const [filterKategorie, setFilterKategorie] = useState<string>('all');
   const [collapsedCategories, setCollapsedCategories] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
 
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
