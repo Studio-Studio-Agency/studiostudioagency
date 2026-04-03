@@ -13,6 +13,7 @@ import { Plus, Pencil, Trash2, ShoppingCart, Loader2, ScanLine } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import AppFooter from "@/components/AppFooter";
 import ListSkeleton from "@/components/ListSkeleton";
+import ExpiryBanner from "@/components/ExpiryBanner";
 
 interface ListItem {
   id: string;
