@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2, Wallet } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
+import { KATEGORIEN } from "@/components/ListItemRow";
 import { useTheme } from "next-themes";
 
 const SettingsPage = () => {
