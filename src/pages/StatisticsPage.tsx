@@ -6,8 +6,8 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle } from "lucide-react";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
 import { de } from "date-fns/locale";
@@ -31,6 +31,7 @@ const StatisticsPage = () => {
   const [loading, setLoading] = useState(true);
   const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
   const [categoryBudgets, setCategoryBudgets] = useState<Record<string, number>>({});
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     if (!user) return;
@@ -141,6 +142,30 @@ const StatisticsPage = () => {
       .sort(([a], [b]) => a.localeCompare(b))
       .slice(-6)
       .map(([month, total]) => ({ month, total: Math.round(total * 100) / 100 }));
+  }, [items]);
+
+  const monthNames = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
+
+  const yearlyData = useMemo(() => {
+    const data = monthNames.map((name, idx) => ({ month: name, ausgaben: 0, artikel: 0 }));
+    items.filter(i => i.is_checked && i.checked_at).forEach(item => {
+      const d = new Date(item.checked_at);
+      if (d.getFullYear() !== selectedYear) return;
+      const m = d.getMonth();
+      data[m].artikel++;
+      data[m].ausgaben += item.preis || 0;
+    });
+    data.forEach(d => { d.ausgaben = Math.round(d.ausgaben * 100) / 100; });
+    return data;
+  }, [items, selectedYear]);
+
+  const yearTotal = yearlyData.reduce((s, d) => s + d.ausgaben, 0);
+  const yearArticles = yearlyData.reduce((s, d) => s + d.artikel, 0);
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    items.filter(i => i.checked_at).forEach(i => years.add(new Date(i.checked_at).getFullYear()));
+    if (years.size === 0) years.add(new Date().getFullYear());
+    return Array.from(years).sort((a, b) => b - a);
   }, [items]);
 
   const exportCSV = useCallback(() => {
@@ -396,17 +421,75 @@ const StatisticsPage = () => {
               </CardContent>
             </Card>
 
-            {/* Monthly spending */}
-            {monthlySpending.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-base">Monatliche Ausgaben (CHF)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <BarChart data={monthlySpending}>
+            {/* Yearly overview */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4" /> Jahresübersicht
+                  </CardTitle>
+                  <div className="flex gap-1">
+                    {availableYears.map(y => (
+                      <button
+                        key={y}
+                        onClick={() => setSelectedYear(y)}
+                        className={`px-2.5 py-1 text-xs rounded-md transition-colors ${
+                          selectedYear === y
+                            ? "bg-primary text-primary-foreground font-medium"
+                            : "bg-muted text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {y}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Ausgaben:</span>{" "}
+                    <span className="font-semibold">{yearTotal > 0 ? `CHF ${yearTotal.toFixed(0)}` : "–"}</span>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Artikel:</span>{" "}
+                    <span className="font-semibold">{yearArticles}</span>
+                  </div>
+                  {monthlyBudget && monthlyBudget > 0 && (
+                    <div>
+                      <span className="text-muted-foreground">Ø/Monat:</span>{" "}
+                      <span className="font-semibold">
+                        CHF {(yearTotal / Math.max(yearlyData.filter(d => d.ausgaben > 0).length, 1)).toFixed(0)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <ResponsiveContainer width="100%" height={240}>
+                  <BarChart data={yearlyData}>
+                    <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                    <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "hsl(var(--card))",
+                        border: "1px solid hsl(var(--border))",
+                        borderRadius: 8,
+                        color: "hsl(var(--foreground))",
+                      }}
+                      formatter={(value: number, name: string) => [
+                        name === "ausgaben" ? `CHF ${value.toFixed(2)}` : `${value} Artikel`,
+                        name === "ausgaben" ? "Ausgaben" : "Artikel",
+                      ]}
+                    />
+                    <Bar dataKey="ausgaben" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="ausgaben" />
+                  </BarChart>
+                </ResponsiveContainer>
+
+                {yearlyData.some(d => d.artikel > 0) && (
+                  <ResponsiveContainer width="100%" height={160}>
+                    <LineChart data={yearlyData}>
                       <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                      <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={30} />
                       <Tooltip
                         contentStyle={{
                           backgroundColor: "hsl(var(--card))",
@@ -414,14 +497,20 @@ const StatisticsPage = () => {
                           borderRadius: 8,
                           color: "hsl(var(--foreground))",
                         }}
-                        formatter={(value: number) => [`CHF ${value.toFixed(2)}`, "Ausgaben"]}
+                        formatter={(value: number) => [`${value} Artikel`, "Gekauft"]}
                       />
-                      <Bar dataKey="total" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
-                    </BarChart>
+                      <Line type="monotone" dataKey="artikel" stroke="hsl(var(--accent))" strokeWidth={2} dot={{ r: 3 }} name="artikel" />
+                    </LineChart>
                   </ResponsiveContainer>
-                </CardContent>
-              </Card>
-            )}
+                )}
+
+                {monthlyBudget && monthlyBudget > 0 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Monatliches Budget: CHF {monthlyBudget.toFixed(0)} · Jahresbudget: CHF {(monthlyBudget * 12).toFixed(0)}
+                  </p>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
       </main>
