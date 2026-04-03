@@ -247,53 +247,52 @@ const ListDetail = () => {
                 grouped[cat].push(item);
               });
               // Sort categories: known ones first, Sonstiges last
-              const SUPERMARKT_REIHENFOLGE = [
-                "Obst & Früchte", "Obst", "Früchte",
-                "Gemüse & Salat", "Gemüse", "Salat",
-                "Backwaren",
-                "Milchprodukte",
-                "Fleisch & Fisch", "Fleisch", "Fisch",
-                "Tiefkühl",
-                "Frühstück & Cerealien", "Frühstück",
-                "Konserven & Vorrat", "Konserven",
-                "Gewürze & Saucen", "Gewürze", "Saucen",
-                "Snacks & Süsses", "Snacks", "Süsses",
-                "Getränke",
-                "Haushalt & Reinigung", "Haushalt", "Reinigung",
-                "Pflege & Hygiene", "Pflege", "Hygiene",
-                "Baby & Kind",
-                "Tierbedarf",
-                "Technik & Elektronik", "Technik", "Elektronik",
-                "Sonstiges",
-              ];
               const sortedCats = Object.keys(grouped).sort((a, b) => {
-                const idxA = SUPERMARKT_REIHENFOLGE.indexOf(a);
-                const idxB = SUPERMARKT_REIHENFOLGE.indexOf(b);
-                return (idxA === -1 ? 998 : idxA) - (idxB === -1 ? 998 : idxB);
+                return getCategorySortIndex(a) - getCategorySortIndex(b);
               });
               const hasMultipleCategories = sortedCats.length > 1 || (sortedCats.length === 1 && sortedCats[0] !== "Sonstiges");
 
-              return sortedCats.map(cat => (
-                <div key={cat}>
-                  {hasMultipleCategories && (
-                    <div className="flex items-center gap-2 mt-4 mb-1.5 first:mt-0">
-                      <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
-                      <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{cat}</span>
-                      <div className="flex-1 h-px bg-border" />
-                    </div>
-                  )}
-                  {grouped[cat].map(item => (
-                    <ListItemRow
-                      key={item.id}
-                      item={item}
-                      analyzing={analyzingId === item.id}
-                      onToggle={() => toggleCheck(item)}
-                      onDelete={() => deleteItem(item.id)}
-                      onRename={(n) => renameItem(item.id, n)}
-                    />
-                  ))}
-                </div>
-              ));
+              const toggleCollapse = (cat: string) => {
+                setCollapsedCategories(prev => {
+                  const next = new Set(prev);
+                  if (next.has(cat)) next.delete(cat);
+                  else next.add(cat);
+                  return next;
+                });
+              };
+
+              return sortedCats.map(cat => {
+                const isCollapsed = collapsedCategories.has(cat);
+                return (
+                  <div key={cat}>
+                    {hasMultipleCategories && (
+                      <button
+                        onClick={() => toggleCollapse(cat)}
+                        className="flex items-center gap-2 mt-4 mb-1.5 first:mt-0 w-full text-left group"
+                      >
+                        {isCollapsed
+                          ? <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
+                          : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                        }
+                        <span className="text-base">{KATEGORIEN[cat] || "📦"}</span>
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">{cat}</span>
+                        <span className="text-xs text-muted-foreground">({grouped[cat].length})</span>
+                        <div className="flex-1 h-px bg-border" />
+                      </button>
+                    )}
+                    {!isCollapsed && grouped[cat].map(item => (
+                      <ListItemRow
+                        key={item.id}
+                        item={item}
+                        analyzing={analyzingId === item.id}
+                        onToggle={() => toggleCheck(item)}
+                        onDelete={() => deleteItem(item.id)}
+                        onRename={(n) => renameItem(item.id, n)}
+                      />
+                    ))}
+                  </div>
+                );
+              });
             })()}
 
             {/* Always-visible new line input */}
