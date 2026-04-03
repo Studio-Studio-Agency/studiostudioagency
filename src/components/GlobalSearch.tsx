@@ -39,6 +39,7 @@ const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [itemResults, setItemResults] = useState<ItemResult[]>([]);
   const [noteResults, setNoteResults] = useState<NoteResult[]>([]);
+  const [listResults, setListResults] = useState<ListResult[]>([]);
   const [query, setQuery] = useState("");
   const { user } = useAuth();
   const navigate = useNavigate();
