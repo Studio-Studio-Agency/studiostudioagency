@@ -31,6 +31,7 @@ const StatisticsPage = () => {
   const [loading, setLoading] = useState(true);
   const [monthlyBudget, setMonthlyBudget] = useState<number | null>(null);
   const [categoryBudgets, setCategoryBudgets] = useState<Record<string, number>>({});
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
 
   useEffect(() => {
     if (!user) return;
