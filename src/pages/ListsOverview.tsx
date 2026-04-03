@@ -140,6 +140,8 @@ const ListsOverview = () => {
           </div>
         </div>
 
+        <ExpiryBanner />
+
         {loading ? (
           <ListSkeleton count={3} />
         ) : lists.length === 0 ? (
