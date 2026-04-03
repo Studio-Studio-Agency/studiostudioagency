@@ -10,7 +10,6 @@ Deno.serve(async (req) => {
 
   try {
     const { items, mode } = await req.json();
-    // mode: "recipes" | "seasonal" | "tips"
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -31,7 +30,21 @@ Deno.serve(async (req) => {
     } else if (mode === 'tips') {
       systemPrompt = `Du bist ein Experte für Lebensmittel und Nachhaltigkeit. Gib 3-4 praktische Tipps zur Lagerung und Haltbarkeit für diese Lebensmittel: ${itemList}. Antworte auf Deutsch als JSON-Array mit Objekten: {"title": "...", "description": "...", "emoji": "..."}. NUR das JSON-Array, kein anderer Text.`;
     } else {
-      systemPrompt = `Du bist ein kreativer Koch. Schlage 3-4 Rezepte vor, die man mit diesen Zutaten (oder Teilen davon) kochen kann: ${itemList}. Antworte auf Deutsch als JSON-Array mit Objekten: {"title": "Rezeptname", "description": "Kurze Beschreibung (1-2 Sätze)", "ingredients": ["Zutat1", "Zutat2"], "emoji": "passendes Emoji"}. NUR das JSON-Array, kein anderer Text.`;
+      systemPrompt = `Du bist ein kreativer Koch. Schlage 3-4 Rezepte vor, die man mit diesen Zutaten (oder Teilen davon) kochen kann: ${itemList}. 
+
+Antworte auf Deutsch als JSON-Array mit Objekten:
+{
+  "title": "Rezeptname",
+  "description": "Kurze Beschreibung (1-2 Sätze)",
+  "ingredients": ["Zutat1 (Menge)", "Zutat2 (Menge)"],
+  "steps": ["Schritt 1: ...", "Schritt 2: ...", "Schritt 3: ..."],
+  "servings": "4 Portionen",
+  "time": "30 Min.",
+  "emoji": "passendes Emoji"
+}
+
+Gib vollständige Rezepte mit konkreten Mengenangaben bei den Zutaten und detaillierten Zubereitungsschritten.
+NUR das JSON-Array, kein anderer Text.`;
     }
 
     const aiResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
