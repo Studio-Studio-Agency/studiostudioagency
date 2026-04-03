@@ -344,6 +344,7 @@ export type Database = {
           category_order: Json | null
           claude_api_key: string | null
           email_notifications: boolean | null
+          monthly_budget: number | null
           sprache: string | null
           user_id: string
           webhook_token: string | null
@@ -354,6 +355,7 @@ export type Database = {
           category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null
+          monthly_budget?: number | null
           sprache?: string | null
           user_id: string
           webhook_token?: string | null
@@ -364,6 +366,7 @@ export type Database = {
           category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null
+          monthly_budget?: number | null
           sprache?: string | null
           user_id?: string
           webhook_token?: string | null
