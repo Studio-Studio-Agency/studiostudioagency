@@ -135,6 +135,15 @@ const GlobalSearch = () => {
     [navigate]
   );
 
+  const handleSelectList = useCallback(
+    (r: ListResult) => {
+      setOpen(false);
+      setQuery("");
+      navigate(`/listen/${r.id}`);
+    },
+    [navigate]
+  );
+
   const handleSelectNote = useCallback(
     (r: NoteResult) => {
       setOpen(false);
