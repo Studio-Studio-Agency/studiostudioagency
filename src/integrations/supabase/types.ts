@@ -226,6 +226,7 @@ export type Database = {
       user_settings: {
         Row: {
           calendar_token: string | null
+          category_order: Json | null
           claude_api_key: string | null
           email_notifications: boolean | null
           sprache: string | null
@@ -234,6 +235,7 @@ export type Database = {
         }
         Insert: {
           calendar_token?: string | null
+          category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null
           sprache?: string | null
@@ -242,6 +244,7 @@ export type Database = {
         }
         Update: {
           calendar_token?: string | null
+          category_order?: Json | null
           claude_api_key?: string | null
           email_notifications?: boolean | null
           sprache?: string | null

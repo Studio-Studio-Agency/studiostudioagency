@@ -1,0 +1,1 @@
+ALTER TABLE public.user_settings ADD COLUMN category_order jsonb DEFAULT NULL;
