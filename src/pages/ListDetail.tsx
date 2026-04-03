@@ -34,6 +34,7 @@ const ListDetail = () => {
   const [showSearch, setShowSearch] = useState(false);
   const [lastAddedItemName, setLastAddedItemName] = useState("");
   const [showPriceFor, setShowPriceFor] = useState(false);
+  const [itemPrices, setItemPrices] = useState<Record<string, { price: number; store: string; currency: string }>>({}); 
 
   // Price estimates for last added item
   const { data: priceData, loading: priceLoading, error: priceError } = usePriceEstimates(
