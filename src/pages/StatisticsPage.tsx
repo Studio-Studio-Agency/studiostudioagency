@@ -262,9 +262,14 @@ const StatisticsPage = () => {
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Statistiken</h1>
           {!loading && items.length > 0 && (
-            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5">
-              <Download className="h-3.5 w-3.5" /> CSV Export
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1.5 print:hidden">
+                <Printer className="h-3.5 w-3.5" /> Drucken
+              </Button>
+              <Button variant="outline" size="sm" onClick={exportCSV} className="gap-1.5 print:hidden">
+                <Download className="h-3.5 w-3.5" /> CSV
+              </Button>
+            </div>
           )}
         </div>
 
