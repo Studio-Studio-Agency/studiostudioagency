@@ -7,9 +7,10 @@ import AppFooter from "@/components/AppFooter";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
 import ShareListDialog from "@/components/ShareListDialog";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2, ChevronDown, ChevronRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import RecipeImportDialog from "@/components/RecipeImportDialog";
+import { getCategorySortIndex } from "@/lib/categoryOrder";
 
 const ListDetail = () => {
   const { id: listId } = useParams<{ id: string }>();
