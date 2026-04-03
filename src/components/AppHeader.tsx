@@ -52,7 +52,7 @@ const AppHeader = () => {
   const isActive = (path: string) => location.pathname.startsWith(path);
 
   return (
-    <header className="border-b bg-card text-card-foreground">
+    <header className="border-b border-primary/20 bg-primary text-primary-foreground">
       <div className="container flex items-center justify-between py-3">
         {/* Left: Logo */}
         <Link to={user ? "/listen" : "/"} className="flex items-center">
@@ -69,8 +69,8 @@ const AppHeader = () => {
                 size="sm"
                 asChild
                 className={cn(
-                  "whitespace-nowrap text-xs px-3",
-                  isActive(path) && "bg-accent text-accent-foreground font-semibold"
+                  "whitespace-nowrap text-xs px-3 text-primary-foreground/70 hover:text-primary-foreground hover:bg-primary-foreground/10",
+                  isActive(path) && "bg-primary-foreground/15 text-primary-foreground font-semibold"
                 )}
               >
                 <Link to={path}>
@@ -88,7 +88,7 @@ const AppHeader = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10"
             onClick={() => {
               const next = resolvedTheme === "dark" ? "light" : resolvedTheme === "light" ? "dark" : "light";
               setTheme(next);
@@ -105,21 +105,21 @@ const AppHeader = () => {
             <>
               {/* Desktop: Settings + Avatar */}
               <Link to="/einstellungen" className="hidden md:inline-flex">
-                <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Einstellungen">
+                <Button variant="ghost" size="icon" className="h-8 w-8 text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10" aria-label="Einstellungen">
                   <Settings className="h-4 w-4" />
                 </Button>
               </Link>
               <Link to="/einstellungen" className="hidden md:inline-flex">
-                <Avatar className="h-8 w-8 border border-border">
+                <Avatar className="h-8 w-8 border border-primary-foreground/20">
                   <AvatarImage src={avatarUrl ?? undefined} alt="Avatar" className="object-cover" />
-                  <AvatarFallback className="text-xs bg-muted">{initials}</AvatarFallback>
+                  <AvatarFallback className="text-xs bg-primary-foreground/15 text-primary-foreground">{initials}</AvatarFallback>
                 </Avatar>
               </Link>
 
               {/* Mobile: Hamburger Menu */}
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden" aria-label="Menü öffnen">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10" aria-label="Menü öffnen">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
