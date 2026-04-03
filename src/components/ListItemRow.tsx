@@ -21,6 +21,7 @@ export interface Item {
   name: string;
   menge: number | null;
   einheit: string | null;
+  preis: number | null;
   is_checked: boolean;
   checked_at: string | null;
   ist_lebensmittel: boolean | null;
