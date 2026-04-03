@@ -37,6 +37,7 @@ const SettingsPage = () => {
   const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
   const [monthlyBudget, setMonthlyBudget] = useState<string>("");
   const [categoryBudgets, setCategoryBudgets] = useState<Record<string, string>>({});
+  const [preisRegion, setPreisRegion] = useState("CH");
 
   useEffect(() => {
     if (!user) return;
