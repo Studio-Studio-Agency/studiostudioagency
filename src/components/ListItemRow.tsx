@@ -150,6 +150,11 @@ const ListItemRow = ({
                 {item.menge} {item.einheit}
               </span>
             )}
+            {!item.is_checked && cheapestPrice && (
+              <span className="text-[10px] bg-primary/10 text-primary font-medium px-1.5 py-0.5 rounded-full shrink-0 whitespace-nowrap" title={`Günstigster Preis bei ${cheapestPrice.store}`}>
+                ab {cheapestPrice.currency === "CHF" ? "CHF" : "€"} {cheapestPrice.price.toFixed(2)}
+              </span>
+            )}
             {item.is_checked && item.preis != null && (
               <span className="text-xs text-primary font-medium shrink-0">
                 CHF {item.preis.toFixed(2)}
