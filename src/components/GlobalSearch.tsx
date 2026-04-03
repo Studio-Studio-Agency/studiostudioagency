@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, StickyNote, List } from "lucide-react";
+import { Search, StickyNote, List, Plus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "@/components/ui/command";
 import { getProductIcon } from "@/lib/productIcons";
+import { toast } from "sonner";
 
 interface ItemResult {
   id: string;
@@ -35,12 +37,19 @@ interface ListResult {
   item_count: number;
 }
 
+interface UserList {
+  id: string;
+  name: string;
+}
+
 const GlobalSearch = () => {
   const [open, setOpen] = useState(false);
   const [itemResults, setItemResults] = useState<ItemResult[]>([]);
   const [noteResults, setNoteResults] = useState<NoteResult[]>([]);
   const [listResults, setListResults] = useState<ListResult[]>([]);
+  const [allLists, setAllLists] = useState<UserList[]>([]);
   const [query, setQuery] = useState("");
+  const [addingTo, setAddingTo] = useState<string | null>(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -56,7 +65,18 @@ const GlobalSearch = () => {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  // Search items + notes
+  // Load all lists when dialog opens
+  useEffect(() => {
+    if (!open || !user) return;
+    supabase
+      .from("lists")
+      .select("id, name")
+      .eq("user_id", user.id)
+      .order("updated_at", { ascending: false })
+      .then(({ data }) => setAllLists(data ?? []));
+  }, [open, user]);
+
+  // Search items + notes + lists
   useEffect(() => {
     if (!open || !user || query.length < 1) {
       setItemResults([]);
@@ -90,7 +110,6 @@ const GlobalSearch = () => {
           .limit(5),
       ]);
 
-      // Process items
       const items = itemsRes.data ?? [];
       if (items.length > 0) {
         const listIds = [...new Set(items.map((i) => i.list_id))];
@@ -104,7 +123,6 @@ const GlobalSearch = () => {
         setItemResults([]);
       }
 
-      // Process lists with item counts
       const matchedLists = listsRes.data ?? [];
       if (matchedLists.length > 0) {
         const countPromises = matchedLists.map(async (l) => {
@@ -153,6 +171,27 @@ const GlobalSearch = () => {
     [navigate]
   );
 
+  const handleAddToList = useCallback(
+    async (listId: string, listName: string) => {
+      if (!user || !query.trim()) return;
+      setAddingTo(listId);
+      const { error } = await supabase.from("items").insert({
+        name: query.trim(),
+        list_id: listId,
+        user_id: user.id,
+      });
+      setAddingTo(null);
+      if (error) {
+        toast.error("Fehler beim Hinzufügen");
+      } else {
+        toast.success(`„${query.trim()}" zu ${listName} hinzugefügt`);
+        setOpen(false);
+        setQuery("");
+      }
+    },
+    [user, query]
+  );
+
   if (!user) return null;
 
   const hasResults = itemResults.length > 0 || noteResults.length > 0 || listResults.length > 0;
@@ -181,6 +220,31 @@ const GlobalSearch = () => {
               ? "Tippe, um zu suchen…"
               : "Keine Ergebnisse gefunden."}
           </CommandEmpty>
+
+          {/* Add to list action */}
+          {query.trim().length > 0 && allLists.length > 0 && (
+            <CommandGroup heading="Zur Liste hinzufügen">
+              {allLists.map((l) => (
+                <CommandItem
+                  key={`add-${l.id}`}
+                  value={`add-${query}-${l.name}-${l.id}`}
+                  onSelect={() => handleAddToList(l.id, l.name)}
+                  disabled={addingTo === l.id}
+                  className="flex items-center gap-2"
+                >
+                  <Plus className="h-4 w-4 text-primary shrink-0" />
+                  <span className="truncate">
+                    „{query.trim()}" → <span className="font-medium">{l.name}</span>
+                  </span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          )}
+
+          {hasResults && query.trim().length > 0 && allLists.length > 0 && (
+            <CommandSeparator />
+          )}
+
           {listResults.length > 0 && (
             <CommandGroup heading="Listen">
               {listResults.map((r) => (
