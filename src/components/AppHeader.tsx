@@ -119,7 +119,7 @@ const AppHeader = () => {
               {/* Mobile: Hamburger Menu */}
               <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden" aria-label="Menü öffnen">
+                  <Button variant="ghost" size="icon" className="h-8 w-8 md:hidden text-primary-foreground/80 hover:text-primary-foreground hover:bg-primary-foreground/10" aria-label="Menü öffnen">
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
