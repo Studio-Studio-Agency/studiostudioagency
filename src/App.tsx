@@ -26,6 +26,7 @@ import DatenschutzPage from "./pages/DatenschutzPage";
 import InspirationPage from "./pages/InspirationPage";
 import StatisticsPage from "./pages/StatisticsPage";
 import NotFound from "./pages/NotFound";
+import UnsubscribePage from "./pages/UnsubscribePage";
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
