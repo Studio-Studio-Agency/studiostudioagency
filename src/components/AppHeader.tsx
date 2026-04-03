@@ -87,8 +87,13 @@ const AppHeader = () => {
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            aria-label="Dark Mode umschalten"
+            onClick={() => {
+              const next = resolvedTheme === "dark" ? "light" : resolvedTheme === "light" ? "dark" : "light";
+              setTheme(next);
+            }}
+            onDoubleClick={() => setTheme("system")}
+            aria-label="Dark Mode umschalten (Doppelklick für System)"
+            title={`Theme: ${resolvedTheme === "dark" ? "Dunkel" : "Hell"} (Doppelklick: System)`}
           >
             <Sun className="h-4 w-4 rotate-0 scale-100 transition-transform dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-4 w-4 rotate-90 scale-0 transition-transform dark:rotate-0 dark:scale-100" />

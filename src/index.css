@@ -44,40 +44,40 @@
   }
 
   .dark {
-    --background: 150 15% 8%;
-    --foreground: 0 0% 95%;
-    --card: 150 12% 11%;
-    --card-foreground: 0 0% 95%;
-    --popover: 150 12% 11%;
-    --popover-foreground: 0 0% 95%;
-    --primary: 122 45% 52%;
+    --background: 150 18% 7%;
+    --foreground: 0 0% 96%;
+    --card: 150 14% 10%;
+    --card-foreground: 0 0% 96%;
+    --popover: 150 14% 10%;
+    --popover-foreground: 0 0% 96%;
+    --primary: 122 50% 55%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 150 12% 16%;
-    --secondary-foreground: 0 0% 90%;
-    --muted: 150 10% 16%;
-    --muted-foreground: 150 8% 65%;
-    --accent: 150 12% 16%;
-    --accent-foreground: 0 0% 93%;
-    --destructive: 0 72% 55%;
+    --secondary: 150 14% 15%;
+    --secondary-foreground: 0 0% 92%;
+    --muted: 150 12% 15%;
+    --muted-foreground: 150 6% 70%;
+    --accent: 150 14% 15%;
+    --accent-foreground: 0 0% 94%;
+    --destructive: 0 75% 58%;
     --destructive-foreground: 0 0% 100%;
-    --border: 150 10% 22%;
-    --input: 150 10% 22%;
-    --ring: 122 45% 52%;
-    --sidebar-background: 150 15% 8%;
-    --sidebar-foreground: 0 0% 93%;
-    --sidebar-primary: 122 45% 52%;
+    --border: 150 10% 24%;
+    --input: 150 10% 20%;
+    --ring: 122 50% 55%;
+    --sidebar-background: 150 18% 7%;
+    --sidebar-foreground: 0 0% 94%;
+    --sidebar-primary: 122 50% 55%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 150 12% 16%;
-    --sidebar-accent-foreground: 0 0% 93%;
-    --sidebar-border: 150 10% 22%;
-    --sidebar-ring: 122 45% 52%;
-    --success: 122 45% 52%;
+    --sidebar-accent: 150 14% 15%;
+    --sidebar-accent-foreground: 0 0% 94%;
+    --sidebar-border: 150 10% 24%;
+    --sidebar-ring: 122 50% 55%;
+    --success: 122 50% 55%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 55%;
+    --warning: 38 92% 58%;
     --warning-foreground: 0 0% 100%;
-    --fresh-green: 122 45% 52%;
-    --fresh-yellow: 38 92% 55%;
-    --fresh-red: 0 72% 55%;
+    --fresh-green: 122 50% 55%;
+    --fresh-yellow: 38 92% 58%;
+    --fresh-red: 0 75% 58%;
   }
 }
 
