@@ -42,6 +42,17 @@ const ListDetail = () => {
     showPriceFor && lastAddedItemName.length >= 2
   );
 
+  // When price data arrives, store cheapest for the item badge
+  useEffect(() => {
+    if (priceData?.cheapest_price != null && priceData.cheapest_store && lastAddedItemName) {
+      const key = lastAddedItemName.trim().toLowerCase();
+      setItemPrices(prev => ({
+        ...prev,
+        [key]: { price: priceData.cheapest_price!, store: priceData.cheapest_store!, currency: priceData.currency },
+      }));
+    }
+  }, [priceData, lastAddedItemName]);
+
   // Notepad new-line input
   const inputRef = useRef<HTMLInputElement>(null);
 
