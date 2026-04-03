@@ -285,6 +285,34 @@ const StatisticsPage = () => {
               </CardContent>
             </Card>
 
+            {/* Category budget tracking */}
+            {Object.keys(categoryBudgets).length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Kategorie-Budgets (aktueller Monat)</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  {Object.entries(categoryBudgets).map(([cat, budget]) => {
+                    if (!budget || budget <= 0) return null;
+                    const spent = categorySpending[cat] || 0;
+                    const pct = Math.min((spent / budget) * 100, 100);
+                    const over = spent > budget;
+                    return (
+                      <div key={cat} className="space-y-1">
+                        <div className="flex justify-between text-sm">
+                          <span>{KATEGORIEN[cat] || "📦"} {cat}</span>
+                          <span className={`font-medium ${over ? "text-destructive" : "text-muted-foreground"}`}>
+                            CHF {spent.toFixed(0)} / {budget.toFixed(0)}
+                          </span>
+                        </div>
+                        <Progress value={pct} className={`h-1.5 ${over ? "[&>div]:bg-destructive" : ""}`} />
+                      </div>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+            )}
+
             {/* Weekly chart */}
             <Card>
               <CardHeader>
