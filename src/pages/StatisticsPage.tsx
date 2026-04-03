@@ -311,6 +311,33 @@ const StatisticsPage = () => {
                 )}
               </CardContent>
             </Card>
+
+            {/* Monthly spending */}
+            {monthlySpending.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Monatliche Ausgaben (CHF)</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={monthlySpending}>
+                      <XAxis dataKey="month" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
+                      <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" width={45} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: "hsl(var(--card))",
+                          border: "1px solid hsl(var(--border))",
+                          borderRadius: 8,
+                          color: "hsl(var(--foreground))",
+                        }}
+                        formatter={(value: number) => [`CHF ${value.toFixed(2)}`, "Ausgaben"]}
+                      />
+                      <Bar dataKey="total" fill="hsl(var(--accent))" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
+            )}
           </div>
         )}
       </main>
