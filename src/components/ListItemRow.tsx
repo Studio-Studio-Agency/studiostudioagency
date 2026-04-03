@@ -218,5 +218,5 @@ const ListItemRow = ({
   );
 };
 
-export default ListItemRow;
+export default memo(ListItemRow);
 
