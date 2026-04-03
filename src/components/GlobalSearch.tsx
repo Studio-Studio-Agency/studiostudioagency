@@ -155,7 +155,7 @@ const GlobalSearch = () => {
 
   if (!user) return null;
 
-  const hasResults = itemResults.length > 0 || noteResults.length > 0;
+  const hasResults = itemResults.length > 0 || noteResults.length > 0 || listResults.length > 0;
 
   return (
     <>
