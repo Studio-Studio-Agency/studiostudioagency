@@ -12,7 +12,8 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor } from "lucide-react";
+import { Loader2, Save, User, Bell, LogOut, Camera, ImagePlus, Webhook, Copy, RefreshCw, Eye, EyeOff, Sun, Moon, Monitor, Trash2 } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import CategoryOrderSettings from "@/components/CategoryOrderSettings";
 import { useTheme } from "next-themes";
 
@@ -32,6 +33,7 @@ const SettingsPage = () => {
   const [showToken, setShowToken] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
   const [cameraOpen, setCameraOpen] = useState(false);
+  const [autoDeleteDays, setAutoDeleteDays] = useState<string>("none");
 
   useEffect(() => {
     if (!user) return;
@@ -39,7 +41,7 @@ const SettingsPage = () => {
       setLoading(true);
       const [profileRes, settingsRes] = await Promise.all([
         supabase.from("profiles").select("vorname, avatar_url").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_settings").select("email_notifications, webhook_token").eq("user_id", user.id).maybeSingle(),
+        supabase.from("user_settings").select("email_notifications, webhook_token, auto_delete_days").eq("user_id", user.id).maybeSingle(),
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
@@ -48,6 +50,8 @@ const SettingsPage = () => {
       if (settingsRes.data) {
         setEmailNotifications(settingsRes.data.email_notifications ?? false);
         setWebhookToken((settingsRes.data as any).webhook_token ?? null);
+        const days = (settingsRes.data as any).auto_delete_days;
+        setAutoDeleteDays(days ? String(days) : "none");
       }
       setLoading(false);
     };
@@ -104,7 +108,8 @@ const SettingsPage = () => {
       supabase.from("user_settings").upsert({
         user_id: user.id,
         email_notifications: emailNotifications,
-      }, { onConflict: "user_id" }),
+        auto_delete_days: autoDeleteDays === "none" ? null : parseInt(autoDeleteDays),
+      } as any, { onConflict: "user_id" }),
     ]);
     setSaving(false);
     if (profileRes.error || settingsRes.error) {
@@ -363,6 +368,29 @@ const SettingsPage = () => {
               <p className="font-semibold text-foreground pt-1">🏠 Home Assistant</p>
               <p>Nutze die <code className="text-foreground bg-background/50 px-1 rounded">rest_command</code>-Integration mit der Webhook-URL und deinem Token als JSON-Body.</p>
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Trash2 className="h-4 w-4" /> Auto-Löschung
+            </CardTitle>
+            <CardDescription>Erledigte Artikel nach einer bestimmten Zeit automatisch löschen</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Select value={autoDeleteDays} onValueChange={setAutoDeleteDays}>
+              <SelectTrigger>
+                <SelectValue placeholder="Auswählen…" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">Nie (manuell löschen)</SelectItem>
+                <SelectItem value="3">Nach 3 Tagen</SelectItem>
+                <SelectItem value="7">Nach 7 Tagen</SelectItem>
+                <SelectItem value="14">Nach 14 Tagen</SelectItem>
+                <SelectItem value="30">Nach 30 Tagen</SelectItem>
+              </SelectContent>
+            </Select>
           </CardContent>
         </Card>
 

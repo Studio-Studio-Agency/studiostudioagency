@@ -24,6 +24,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
 import InspirationPage from "./pages/InspirationPage";
+import StatisticsPage from "./pages/StatisticsPage";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 
@@ -66,6 +67,9 @@ const App = () => (
             } />
             <Route path="/inspiration" element={
               <ProtectedRoute><InspirationPage /></ProtectedRoute>
+            } />
+            <Route path="/statistiken" element={
+              <ProtectedRoute><StatisticsPage /></ProtectedRoute>
             } />
             <Route path="/notizen" element={
               <ProtectedRoute><NotesOverview /></ProtectedRoute>

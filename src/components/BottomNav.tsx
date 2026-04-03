@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { List, StickyNote, Calendar, Sparkles } from "lucide-react";
+import { List, StickyNote, Calendar, Sparkles, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -9,6 +9,7 @@ const tabs = [
   { path: "/notizen", icon: StickyNote, label: "Notizen" },
   { path: "/kalender", icon: Calendar, label: "Kalender" },
   { path: "/inspiration", icon: Sparkles, label: "Inspiration" },
+  { path: "/statistiken", icon: BarChart3, label: "Statistik" },
 ];
 
 const BottomNav = () => {

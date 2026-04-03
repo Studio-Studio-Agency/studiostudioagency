@@ -1,0 +1,1 @@
+ALTER TABLE public.user_settings ADD COLUMN auto_delete_days integer DEFAULT NULL;
