@@ -405,6 +405,27 @@ const ListDetail = () => {
               />
             </div>
 
+            {/* Price estimates for last added item */}
+            {showPriceFor && (priceLoading || priceData) && (
+              <div className="ml-8 border border-border rounded-lg overflow-hidden">
+                <PriceEstimatesDisplay
+                  data={priceData}
+                  loading={priceLoading}
+                  error={priceError}
+                />
+                {priceData && (
+                  <div className="flex justify-end px-3 pb-2">
+                    <button
+                      onClick={() => setShowPriceFor(false)}
+                      className="text-[10px] text-muted-foreground hover:text-foreground"
+                    >
+                      Schließen
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Checked items */}
             {checkedItems.length > 0 && (
               <div className="mt-8 pt-4 border-t border-border">
