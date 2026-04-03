@@ -6,12 +6,13 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays } from "lucide-react";
+import { ArrowLeft, Loader2, ShoppingCart, TrendingUp, TrendingDown, Minus, Tag, Download, Wallet, AlertTriangle, CalendarDays, ArrowRightLeft } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { KATEGORIEN } from "@/components/ListItemRow";
 import { startOfWeek, startOfMonth, format, subWeeks, isAfter, isBefore } from "date-fns";
 import { de } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const COLORS = [
   "hsl(var(--primary))",
@@ -167,6 +168,67 @@ const StatisticsPage = () => {
     if (years.size === 0) years.add(new Date().getFullYear());
     return Array.from(years).sort((a, b) => b - a);
   }, [items]);
+
+  // Month comparison
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const prevMonthKey = `${prevMonth.getFullYear()}-${String(prevMonth.getMonth() + 1).padStart(2, "0")}`;
+
+  const [compareA, setCompareA] = useState(currentMonthKey);
+  const [compareB, setCompareB] = useState(prevMonthKey);
+
+  const availableMonths = useMemo(() => {
+    const months = new Set<string>();
+    items.filter(i => i.checked_at).forEach(i => {
+      const d = new Date(i.checked_at);
+      months.add(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`);
+    });
+    if (months.size === 0) {
+      months.add(currentMonthKey);
+      months.add(prevMonthKey);
+    }
+    return Array.from(months).sort((a, b) => b.localeCompare(a));
+  }, [items]);
+
+  const formatMonthKey = (key: string) => {
+    const [y, m] = key.split("-");
+    return `${monthNames[parseInt(m) - 1]} ${y}`;
+  };
+
+  const getMonthStats = useCallback((monthKey: string) => {
+    const [y, m] = monthKey.split("-").map(Number);
+    const monthStart = new Date(y, m - 1, 1);
+    const monthEnd = new Date(y, m, 0, 23, 59, 59);
+    const monthItems = items.filter(i => {
+      if (!i.is_checked || !i.checked_at) return false;
+      const d = new Date(i.checked_at);
+      return d >= monthStart && d <= monthEnd;
+    });
+    const totalItems = monthItems.length;
+    const totalSpent = monthItems.reduce((s, i) => s + (i.preis || 0), 0);
+    const cats: Record<string, { count: number; spent: number }> = {};
+    monthItems.forEach(i => {
+      const cat = i.kategorie || "Sonstiges";
+      if (!cats[cat]) cats[cat] = { count: 0, spent: 0 };
+      cats[cat].count++;
+      cats[cat].spent += i.preis || 0;
+    });
+    const topCategories = Object.entries(cats)
+      .map(([name, s]) => ({ name, ...s }))
+      .sort((a, b) => b.count - a.count);
+    return { totalItems, totalSpent, topCategories };
+  }, [items]);
+
+  const statsA = useMemo(() => getMonthStats(compareA), [compareA, getMonthStats]);
+  const statsB = useMemo(() => getMonthStats(compareB), [compareB, getMonthStats]);
+
+  const allCompareCategories = useMemo(() => {
+    const cats = new Set<string>();
+    statsA.topCategories.forEach(c => cats.add(c.name));
+    statsB.topCategories.forEach(c => cats.add(c.name));
+    return Array.from(cats).sort();
+  }, [statsA, statsB]);
 
   const exportCSV = useCallback(() => {
     const header = "Name,Kategorie,Preis (CHF),Gekauft,Gekauft am,Erstellt am\n";
@@ -508,6 +570,128 @@ const StatisticsPage = () => {
                   <p className="text-xs text-muted-foreground text-center">
                     Monatliches Budget: CHF {monthlyBudget.toFixed(0)} · Jahresbudget: CHF {(monthlyBudget * 12).toFixed(0)}
                   </p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Month comparison */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <ArrowRightLeft className="h-4 w-4" /> Monatsvergleich
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <Select value={compareA} onValueChange={setCompareA}>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableMonths.map(m => (
+                        <SelectItem key={m} value={m}>{formatMonthKey(m)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={compareB} onValueChange={setCompareB}>
+                    <SelectTrigger className="text-sm">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableMonths.map(m => (
+                        <SelectItem key={m} value={m}>{formatMonthKey(m)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Summary comparison */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border p-3 space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">{formatMonthKey(compareA)}</p>
+                    <p className="text-xl font-bold">{statsA.totalItems} <span className="text-sm font-normal text-muted-foreground">Artikel</span></p>
+                    <p className="text-sm font-semibold text-primary">
+                      {statsA.totalSpent > 0 ? `CHF ${statsA.totalSpent.toFixed(0)}` : "–"}
+                    </p>
+                  </div>
+                  <div className="rounded-lg border p-3 space-y-2">
+                    <p className="text-xs font-medium text-muted-foreground">{formatMonthKey(compareB)}</p>
+                    <p className="text-xl font-bold">{statsB.totalItems} <span className="text-sm font-normal text-muted-foreground">Artikel</span></p>
+                    <p className="text-sm font-semibold text-primary">
+                      {statsB.totalSpent > 0 ? `CHF ${statsB.totalSpent.toFixed(0)}` : "–"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Difference indicators */}
+                {(statsA.totalItems > 0 || statsB.totalItems > 0) && (() => {
+                  const itemDiff = statsA.totalItems - statsB.totalItems;
+                  const spentDiff = statsA.totalSpent - statsB.totalSpent;
+                  return (
+                    <div className="flex gap-4 text-sm justify-center">
+                      <div className="flex items-center gap-1">
+                        {itemDiff > 0 ? <TrendingUp className="h-3.5 w-3.5 text-primary" /> :
+                         itemDiff < 0 ? <TrendingDown className="h-3.5 w-3.5 text-destructive" /> :
+                         <Minus className="h-3.5 w-3.5 text-muted-foreground" />}
+                        <span className={itemDiff > 0 ? "text-primary" : itemDiff < 0 ? "text-destructive" : "text-muted-foreground"}>
+                          {itemDiff > 0 ? "+" : ""}{itemDiff} Artikel
+                        </span>
+                      </div>
+                      {(statsA.totalSpent > 0 || statsB.totalSpent > 0) && (
+                        <div className="flex items-center gap-1">
+                          {spentDiff > 0 ? <TrendingUp className="h-3.5 w-3.5 text-destructive" /> :
+                           spentDiff < 0 ? <TrendingDown className="h-3.5 w-3.5 text-primary" /> :
+                           <Minus className="h-3.5 w-3.5 text-muted-foreground" />}
+                          <span className={spentDiff > 0 ? "text-destructive" : spentDiff < 0 ? "text-primary" : "text-muted-foreground"}>
+                            {spentDiff > 0 ? "+" : ""}CHF {spentDiff.toFixed(0)}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                {/* Category comparison table */}
+                {allCompareCategories.length > 0 && (
+                  <div className="space-y-1.5">
+                    <p className="text-xs font-medium text-muted-foreground">Kategorien im Detail</p>
+                    <div className="rounded-lg border overflow-hidden">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b bg-muted/50">
+                            <th className="text-left p-2 font-medium">Kategorie</th>
+                            <th className="text-right p-2 font-medium text-xs">{formatMonthKey(compareA)}</th>
+                            <th className="text-right p-2 font-medium text-xs">{formatMonthKey(compareB)}</th>
+                            <th className="text-right p-2 font-medium text-xs">Diff</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {allCompareCategories.map(cat => {
+                            const a = statsA.topCategories.find(c => c.name === cat);
+                            const b = statsB.topCategories.find(c => c.name === cat);
+                            const countA = a?.count || 0;
+                            const countB = b?.count || 0;
+                            const diff = countA - countB;
+                            return (
+                              <tr key={cat} className="border-b last:border-0">
+                                <td className="p-2 truncate max-w-[120px]">
+                                  <span className="mr-1">{KATEGORIEN[cat] || "📦"}</span>
+                                  {cat}
+                                </td>
+                                <td className="p-2 text-right tabular-nums">{countA}</td>
+                                <td className="p-2 text-right tabular-nums">{countB}</td>
+                                <td className={`p-2 text-right tabular-nums font-medium ${
+                                  diff > 0 ? "text-primary" : diff < 0 ? "text-destructive" : "text-muted-foreground"
+                                }`}>
+                                  {diff > 0 ? "+" : ""}{diff}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
