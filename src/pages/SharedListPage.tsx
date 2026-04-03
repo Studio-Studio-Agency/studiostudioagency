@@ -5,6 +5,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, ShoppingCart, Trash2, Users } from "lucide-react";
 import ListItemRow, { Item, KATEGORIEN } from "@/components/ListItemRow";
+import { usePriceEstimates, getCachedCheapestPrice } from "@/hooks/usePriceEstimates";
+import PriceEstimatesDisplay from "@/components/PriceEstimatesDisplay";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
 
 const SharedListPage = () => {
