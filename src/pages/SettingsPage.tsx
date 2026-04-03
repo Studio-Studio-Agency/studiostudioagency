@@ -64,6 +64,7 @@ const SettingsPage = () => {
           Object.entries(catBudgets).forEach(([k, v]) => { mapped[k] = String(v); });
           setCategoryBudgets(mapped);
         }
+        setPreisRegion((settingsRes.data as any).preis_region ?? "CH");
       }
       setLoading(false);
     };
