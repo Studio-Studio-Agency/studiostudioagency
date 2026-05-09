@@ -68,7 +68,7 @@ NUR das JSON-Array, kein anderer Text.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'google/gemini-2.5-flash-lite',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: mode === 'seasonal' ? `Gib saisonale Tipps für ${month}.` : mode === 'tips' ? `Tipps für: ${itemList}` : `Rezepte mit: ${itemList}` },
