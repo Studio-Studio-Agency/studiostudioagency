@@ -6,7 +6,8 @@ import AppHeader from "@/components/AppHeader";
 import AppFooter from "@/components/AppFooter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChefHat, Loader2, Package, Trash2, RotateCcw } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ChefHat, Loader2, Package, Trash2, RotateCcw, Search, X } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { getProductIcon } from "@/lib/productIcons";
 
@@ -20,6 +21,7 @@ interface PantryItem {
   checked_at: string | null;
   lagerhinweis: string | null;
   list_id: string;
+  kategorie: string | null;
 }
 
 const daysBetween = (iso: string) => {
@@ -30,18 +32,23 @@ const daysBetween = (iso: string) => {
   return Math.round((d.getTime() - today.getTime()) / 86_400_000);
 };
 
+type UrgencyFilter = "all" | "expired" | "urgent" | "week" | "later";
+
 const PantryPage = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [items, setItems] = useState<PantryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [urgency, setUrgency] = useState<UrgencyFilter>("all");
+  const [category, setCategory] = useState<string>("all");
 
   const load = async () => {
     if (!user) return;
     setLoading(true);
     const { data } = await supabase
       .from("items")
-      .select("id,name,menge,einheit,ablauf_datum,haltbarkeit_tage,checked_at,lagerhinweis,list_id")
+      .select("id,name,menge,einheit,ablauf_datum,haltbarkeit_tage,checked_at,lagerhinweis,list_id,kategorie")
       .eq("user_id", user.id)
       .eq("is_checked", true)
       .not("ablauf_datum", "is", null)
@@ -55,19 +62,43 @@ const PantryPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    items.forEach((it) => it.kategorie && set.add(it.kategorie));
+    return Array.from(set).sort();
+  }, [items]);
+
+  const filteredItems = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return items.filter((it) => {
+      if (q && !it.name.toLowerCase().includes(q)) return false;
+      if (category !== "all" && it.kategorie !== category) return false;
+      if (urgency !== "all" && it.ablauf_datum) {
+        const d = daysBetween(it.ablauf_datum);
+        if (urgency === "expired" && d >= 0) return false;
+        if (urgency === "urgent" && (d < 0 || d > 2)) return false;
+        if (urgency === "week" && (d < 3 || d > 7)) return false;
+        if (urgency === "later" && d < 8) return false;
+      }
+      return true;
+    });
+  }, [items, query, category, urgency]);
+
   const groups = useMemo(() => {
+    const expired: PantryItem[] = [];
     const urgent: PantryItem[] = [];
     const week: PantryItem[] = [];
     const later: PantryItem[] = [];
-    items.forEach((it) => {
+    filteredItems.forEach((it) => {
       if (!it.ablauf_datum) return;
       const d = daysBetween(it.ablauf_datum);
-      if (d <= 2) urgent.push(it);
+      if (d < 0) expired.push(it);
+      else if (d <= 2) urgent.push(it);
       else if (d <= 7) week.push(it);
       else later.push(it);
     });
-    return { urgent, week, later };
-  }, [items]);
+    return { expired, urgent, week, later };
+  }, [filteredItems]);
 
   const markUsed = async (id: string) => {
     await supabase.from("items").delete().eq("id", id);
@@ -93,6 +124,21 @@ const PantryPage = () => {
   const cookHref = `/inspiration${
     expiringSoonNames.length ? `?focus=${encodeURIComponent(expiringSoonNames.join(","))}` : ""
   }`;
+
+  const filtersActive = query.trim() !== "" || urgency !== "all" || category !== "all";
+  const resetFilters = () => {
+    setQuery("");
+    setUrgency("all");
+    setCategory("all");
+  };
+
+  const urgencyTabs: { key: UrgencyFilter; label: string }[] = [
+    { key: "all", label: "Alle" },
+    { key: "expired", label: "Abgelaufen" },
+    { key: "urgent", label: "Bald" },
+    { key: "week", label: "Diese Woche" },
+    { key: "later", label: "Noch Zeit" },
+  ];
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-20 md:pb-0">
@@ -130,7 +176,87 @@ const PantryPage = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="space-y-6">
+          <>
+            <div className="space-y-2 mb-5">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="Vorrat durchsuchen…"
+                  className="pl-9 pr-9"
+                />
+                {query && (
+                  <button
+                    type="button"
+                    onClick={() => setQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
+                    aria-label="Suche leeren"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 scrollbar-none">
+                {urgencyTabs.map((t) => (
+                  <button
+                    key={t.key}
+                    onClick={() => setUrgency(t.key)}
+                    className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                      urgency === t.key
+                        ? "bg-primary text-primary-foreground border-primary font-medium"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+
+              {categories.length > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto -mx-1 px-1 pb-1 scrollbar-none">
+                  <button
+                    onClick={() => setCategory("all")}
+                    className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                      category === "all"
+                        ? "bg-secondary text-secondary-foreground border-secondary font-medium"
+                        : "border-border text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    Alle Kategorien
+                  </button>
+                  {categories.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setCategory(c)}
+                      className={`shrink-0 text-xs px-3 py-1.5 rounded-full border transition-colors ${
+                        category === c
+                          ? "bg-secondary text-secondary-foreground border-secondary font-medium"
+                          : "border-border text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {filteredItems.length === 0 ? (
+              <Card>
+                <CardContent className="py-10 text-center text-sm text-muted-foreground space-y-3">
+                  <div>Keine Artikel passen zu den Filtern.</div>
+                  {filtersActive && (
+                    <Button variant="outline" size="sm" onClick={resetFilters}>
+                      Filter zurücksetzen
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-6">
+                <Section title="Abgelaufen" tone="urgent" items={groups.expired} onUsed={markUsed} onExtend={extend} />
             <Section
               title="Bald aufbrauchen"
               tone="urgent"
@@ -152,7 +278,9 @@ const PantryPage = () => {
               onUsed={markUsed}
               onExtend={extend}
             />
-          </div>
+              </div>
+            )}
+          </>
         )}
       </main>
       <div className="mt-auto">
