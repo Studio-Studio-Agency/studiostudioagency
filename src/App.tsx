@@ -25,6 +25,7 @@ import ImpressumPage from "./pages/ImpressumPage";
 import DatenschutzPage from "./pages/DatenschutzPage";
 import InspirationPage from "./pages/InspirationPage";
 import StatisticsPage from "./pages/StatisticsPage";
+import PantryPage from "./pages/PantryPage";
 import NotFound from "./pages/NotFound";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import BottomNav from "./components/BottomNav";
@@ -68,6 +69,9 @@ const App = () => (
             } />
             <Route path="/inspiration" element={
               <ProtectedRoute><InspirationPage /></ProtectedRoute>
+            } />
+            <Route path="/vorrat" element={
+              <ProtectedRoute><PantryPage /></ProtectedRoute>
             } />
             <Route path="/statistiken" element={
               <ProtectedRoute><StatisticsPage /></ProtectedRoute>
