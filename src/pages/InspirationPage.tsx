@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Loader2, ChefHat, Leaf, Lightbulb, RefreshCw, ShoppingCart, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, ChefHat, Leaf, Lightbulb, RefreshCw, ShoppingCart, Plus, ChevronDown, ChevronUp, Package } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 
 interface Suggestion {
@@ -135,15 +136,22 @@ const InspirationPage = () => {
       <main className="container py-6 max-w-2xl flex-1">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Inspiration</h1>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => fetchSuggestions(mode)}
-            disabled={loading}
-            aria-label="Neu laden"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button asChild variant="outline" size="sm" className="gap-1.5">
+              <Link to="/vorrat">
+                <Package className="h-4 w-4" /> Vorrat
+              </Link>
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => fetchSuggestions(mode)}
+              disabled={loading}
+              aria-label="Neu laden"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            </Button>
+          </div>
         </div>
 
         <div className="flex gap-1 mb-6">
