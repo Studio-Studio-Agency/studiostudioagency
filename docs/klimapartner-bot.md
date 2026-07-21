@@ -184,6 +184,23 @@ concrete room. Design:
   arrived. Marker helpers live in `src/lib/klima/photos.ts` (mirrored at
   `_shared/klima/photos.ts`), unit-tested.
 
+## Address validation (Google Geocoding)
+
+Optional — set `GOOGLE_MAPS_API_KEY` as an edge-function secret to enable;
+without it leads simply keep the customer's raw address. On `submit_lead` the
+edge function geocodes the address (region-biased to CH, `language=de`,
+3-second timeout so the stream never stalls):
+
+- the lead stores the **normalized** `formatted_address`;
+- a canton from the geocode result **corrects `qualification.region`**
+  (address beats vague chat statements);
+- `qualification.address_validated` records whether the hit was precise
+  (ROOFTOP / RANGE_INTERPOLATED, no partial match); on an approximate hit the
+  model is told to have the customer confirm street + number.
+
+The response parser is pure and unit-tested (`src/lib/klima/geocode.ts`,
+mirrored at `_shared/klima/geocode.ts`).
+
 ## Funnel tracking (PostHog)
 
 Optional, on by setting the keys (no-op otherwise). No SDK dependency — a thin
