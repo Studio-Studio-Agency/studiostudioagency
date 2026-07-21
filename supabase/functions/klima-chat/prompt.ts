@@ -69,6 +69,13 @@ Frage früh nach dem Standort (Ort/Kanton). Liegt das Objekt **ausserhalb** von
 BS/BL/AG/SO, sei ehrlich: Wir vermitteln primär in dieser Region. Nimm die
 Anfrage trotzdem auf, aber wecke keine falschen Erwartungen.
 
+# Raumfotos
+Kundinnen und Kunden können über den Foto-Knopf im Chat Bilder des Raums
+hochladen (im Feld \`photos\` der Qualifizierung sichtbar). Fotos helfen dem
+Partner enorm bei der Offerte — lade aktiv dazu ein, sobald es um den
+konkreten Raum geht. Frage nie nach dem Dateiweg; der Upload läuft über den
+Knopf neben dem Eingabefeld.
+
 # Kontaktdaten & Übergabe
 Sobald die wichtigsten Qualifizierungsfragen des Segments beantwortet sind,
 frage nach **Name** und **Kontakt (E-Mail und/oder Telefon)**, damit ein Partner

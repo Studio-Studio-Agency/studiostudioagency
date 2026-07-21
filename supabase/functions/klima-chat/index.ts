@@ -9,6 +9,7 @@ import {
 } from "../_shared/klima/qualification.ts";
 import { embed } from "../_shared/klima/embeddings.ts";
 import { captureServer } from "../_shared/klima/posthog.ts";
+import { parsePhotoMarker, isValidPhotoPath } from "../_shared/klima/photos.ts";
 import { buildSystemPrompt } from "./prompt.ts";
 
 const corsHeaders = {
@@ -507,6 +508,21 @@ serve(async (req) => {
           return;
         }
 
+        // Foto-Marker deterministisch verarbeiten (kein LLM nötig): Pfad
+        // validieren (muss zur eigenen Session gehören), fürs Transkript und
+        // Modell durch Klartext ersetzen; der Pfad landet in qualification.photos.
+        const rawPhotoPath = parsePhotoMarker(userMessage);
+        const photoPath =
+          rawPhotoPath && isValidPhotoPath(rawPhotoPath, sessionId) ? rawPhotoPath : null;
+        if (photoPath) {
+          userMessage =
+            "[Der Kunde hat soeben ein Foto des Raums hochgeladen. Bestätige den Erhalt " +
+            "kurz und nutze es als Anlass für die nächste Qualifizierungsfrage.]";
+        } else if (rawPhotoPath) {
+          // Marker mit fremdem/ungültigem Pfad: ignorieren statt speichern.
+          userMessage = "[Foto-Upload fehlgeschlagen — bitte den Kunden, es erneut zu versuchen.]";
+        }
+
         // First contact (no user message, no history) → let the model greet.
         const messages: AnthropicMessage[] = [...priorMessages];
         if (userMessage.trim()) {
@@ -514,7 +530,7 @@ serve(async (req) => {
           await supabase.from("klima_messages").insert({
             conversation_id: conversation.id,
             role: "user",
-            content: userMessage,
+            content: photoPath ? "📷 Foto hochgeladen" : userMessage,
           });
         } else if (priorMessages.length === 0) {
           // seed an opener instruction as a user turn so the model produces a greeting
@@ -529,6 +545,10 @@ serve(async (req) => {
         // --- Mutable local state that tools update ---
         let segment: Segment | null = conversation.segment;
         const qualification: Qualification = { ...(conversation.qualification || {}) };
+        if (photoPath) {
+          const prev = Array.isArray(qualification.photos) ? qualification.photos : [];
+          qualification.photos = [...prev, photoPath];
+        }
         let leadSubmitted:
           | null
           | {

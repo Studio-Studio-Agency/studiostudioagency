@@ -1,6 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import type { Segment } from "./qualification";
 import { track } from "./analytics";
+import {
+  buildPhotoMarker,
+  PHOTO_BUCKET,
+  MAX_PHOTO_BYTES,
+  ALLOWED_PHOTO_TYPES,
+} from "./photos";
 
 export interface ChatMessage {
   id: string;
@@ -55,6 +62,7 @@ export function useKlimaChat() {
   const sessionIdRef = useRef<string>("");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [state, setState] = useState<ChatState>({
     segment: null,
@@ -116,8 +124,15 @@ export function useKlimaChat() {
       setError(null);
       setLoading(true);
       if (text.trim()) {
-        setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
-        track("klima_message_sent", sessionIdRef.current, { length: text.length });
+        // Foto-Marker in der UI als freundliche Nachricht zeigen, nie den Pfad.
+        const isPhoto = text.trim().startsWith("[KLIMA_FOTO:");
+        setMessages((prev) => [
+          ...prev,
+          { id: nextId(), role: "user", content: isPhoto ? "📷 Foto hochgeladen" : text },
+        ]);
+        if (!isPhoto) {
+          track("klima_message_sent", sessionIdRef.current, { length: text.length });
+        }
       }
 
       const assistantIdRef = { id: null as string | null };
@@ -189,6 +204,37 @@ export function useKlimaChat() {
     void send("");
   }, [send]);
 
+  /** Raum-Foto hochladen und dem Gespräch zuordnen. */
+  const sendPhoto = useCallback(
+    async (file: File) => {
+      setError(null);
+      if (!ALLOWED_PHOTO_TYPES.includes(file.type)) {
+        setError("Bitte ein Bild hochladen (JPG, PNG, WebP oder HEIC).");
+        return;
+      }
+      if (file.size > MAX_PHOTO_BYTES) {
+        setError("Das Bild ist zu gross (max. 5 MB).");
+        return;
+      }
+      setUploading(true);
+      try {
+        const ext = (file.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        const path = `${sessionIdRef.current}/${Date.now()}.${ext || "jpg"}`;
+        const { error: upErr } = await supabase.storage
+          .from(PHOTO_BUCKET)
+          .upload(path, file, { contentType: file.type });
+        if (upErr) throw new Error("Upload fehlgeschlagen — bitte erneut versuchen.");
+        track("klima_photo_uploaded", sessionIdRef.current, { bytes: file.size });
+        await send(buildPhotoMarker(path));
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Upload fehlgeschlagen");
+      } finally {
+        setUploading(false);
+      }
+    },
+    [send],
+  );
+
   const reset = useCallback(() => {
     if (typeof window !== "undefined") window.localStorage.removeItem(SESSION_KEY);
     sessionIdRef.current = getSessionId();
@@ -202,5 +248,5 @@ export function useKlimaChat() {
     void send("");
   }, [send]);
 
-  return { messages, loading, error, state, send, reset };
+  return { messages, loading, uploading, error, state, send, sendPhoto, reset };
 }

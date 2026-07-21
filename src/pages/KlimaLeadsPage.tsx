@@ -83,6 +83,27 @@ export default function KlimaLeadsPage() {
     retry: false,
   });
 
+  const photoPaths = useMemo(
+    () =>
+      Array.isArray(selected?.qualification?.photos)
+        ? (selected!.qualification.photos as string[]).filter((p) => typeof p === "string")
+        : [],
+    [selected],
+  );
+
+  const { data: photoUrls } = useQuery({
+    queryKey: ["klima-photos", selected?.id],
+    enabled: photoPaths.length > 0,
+    queryFn: async (): Promise<Record<string, string>> => {
+      const { data, error } = await supabase.functions.invoke<{ urls: Record<string, string> }>(
+        "klima-admin",
+        { body: { action: "photo_urls", paths: photoPaths } },
+      );
+      if (error || !data) throw new Error("Fotos konnten nicht geladen werden");
+      return data.urls;
+    },
+  });
+
   const { data: transcript, isLoading: transcriptLoading } = useQuery({
     queryKey: ["klima-transcript", selected?.conversation_id],
     enabled: !!selected,
@@ -311,14 +332,37 @@ export default function KlimaLeadsPage() {
                       <dd className="inline">{selected.address}</dd>
                     </div>
                   )}
-                  {Object.entries(selected.qualification ?? {}).map(([k, v]) => (
-                    <div key={k}>
-                      <dt className="inline text-muted-foreground">{k}: </dt>
-                      <dd className="inline">{String(v)}</dd>
-                    </div>
-                  ))}
+                  {Object.entries(selected.qualification ?? {})
+                    .filter(([k]) => k !== "photos")
+                    .map(([k, v]) => (
+                      <div key={k}>
+                        <dt className="inline text-muted-foreground">{k}: </dt>
+                        <dd className="inline">{String(v)}</dd>
+                      </div>
+                    ))}
                 </dl>
               </div>
+
+              {photoPaths.length > 0 && (
+                <div>
+                  <h3 className="mb-2 font-semibold">Raumfotos ({photoPaths.length})</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {photoPaths.map((p) =>
+                      photoUrls?.[p] ? (
+                        <a key={p} href={photoUrls[p]} target="_blank" rel="noreferrer">
+                          <img
+                            src={photoUrls[p]}
+                            alt="Raumfoto"
+                            className="h-24 w-24 rounded-lg border object-cover transition-opacity hover:opacity-80"
+                          />
+                        </a>
+                      ) : (
+                        <Skeleton key={p} className="h-24 w-24 rounded-lg" />
+                      ),
+                    )}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <h3 className="mb-2 font-semibold">Gesprächsverlauf</h3>

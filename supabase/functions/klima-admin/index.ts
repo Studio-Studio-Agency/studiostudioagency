@@ -12,6 +12,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  * POST { action: "list" }                              → { leads, conversationCount }
  * POST { action: "conversation", conversationId }      → { messages }
  * POST { action: "update_status", leadId, status }     → { ok }
+ * POST { action: "photo_urls", paths }                 → { urls } (Signed URLs, 1 h)
  */
 
 const corsHeaders = {
@@ -96,6 +97,22 @@ serve(async (req) => {
       const { error } = await db.from("klima_leads").update({ status }).eq("id", leadId);
       if (error) throw error;
       return json({ ok: true });
+    }
+
+    if (body.action === "photo_urls") {
+      const paths: string[] = Array.isArray(body.paths)
+        ? body.paths.filter((p: unknown) => typeof p === "string").slice(0, 20)
+        : [];
+      if (paths.length === 0) return json({ urls: {} });
+      const { data, error } = await db.storage
+        .from("klima-photos")
+        .createSignedUrls(paths, 60 * 60);
+      if (error) throw error;
+      const urls: Record<string, string> = {};
+      for (const item of data ?? []) {
+        if (item.path && item.signedUrl) urls[item.path] = item.signedUrl;
+      }
+      return json({ urls });
     }
 
     return json({ error: "Unbekannte Aktion" }, 400);

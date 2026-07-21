@@ -166,6 +166,24 @@ supabase secrets set KLIMA_ADMIN_EMAILS=studio@alainsz.com
 supabase functions deploy klima-admin
 ```
 
+## Room photo uploads
+
+Customers can attach room photos in the chat (camera button next to the
+input); the bot proactively invites them once the conversation is about a
+concrete room. Design:
+
+- **Storage** — migration `20260721220000_klima_photos.sql`: private bucket
+  `klima-photos`, 5 MB limit, image MIME types only. Anon may **upload only**
+  (never read); staff view photos via 1-hour signed URLs from `klima-admin`
+  (`action: "photo_urls"`), shown as thumbnails in the lead detail dialog.
+- **Flow** — the client uploads to `<sessionId>/<timestamp>.<ext>` and then
+  sends a `[KLIMA_FOTO:<path>]` marker message. The edge function resolves the
+  marker deterministically (no LLM involved): it validates the path belongs to
+  the session (`isValidPhotoPath`), appends it to `qualification.photos`,
+  stores "📷 Foto hochgeladen" in the transcript, and tells the model a photo
+  arrived. Marker helpers live in `src/lib/klima/photos.ts` (mirrored at
+  `_shared/klima/photos.ts`), unit-tested.
+
 ## Funnel tracking (PostHog)
 
 Optional, on by setting the keys (no-op otherwise). No SDK dependency — a thin

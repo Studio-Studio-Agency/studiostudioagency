@@ -59,8 +59,9 @@ export const SEGMENTS: Record<Segment, SegmentMeta> = {
   },
 };
 
-/** A single accumulated answer bag. Values are free-form (string/number/bool). */
-export type Qualification = Record<string, string | number | boolean | null | undefined>;
+/** A single accumulated answer bag. Values are free-form (string/number/bool);
+ *  `photos` holds storage paths of uploaded room photos. */
+export type Qualification = Record<string, string | number | boolean | string[] | null | undefined>;
 
 export interface ScoreResult {
   score: number; // 0-100

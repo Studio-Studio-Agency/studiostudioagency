@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { Send, Snowflake, RotateCcw, CheckCircle2 } from "lucide-react";
+import { Send, Snowflake, RotateCcw, CheckCircle2, Camera, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -25,9 +25,10 @@ function TypingDots() {
 }
 
 export default function KlimaChat({ className }: { className?: string }) {
-  const { messages, loading, error, state, send, reset } = useKlimaChat();
+  const { messages, loading, uploading, error, state, send, sendPhoto, reset } = useKlimaChat();
   const [input, setInput] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -137,6 +138,28 @@ export default function KlimaChat({ className }: { className?: string }) {
 
       {/* Composer */}
       <form onSubmit={onSubmit} className="flex items-center gap-2 border-t bg-background px-3 py-3">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/heic"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (file) void sendPhoto(file);
+          }}
+        />
+        <Button
+          type="button"
+          size="icon"
+          variant="ghost"
+          className="shrink-0"
+          title="Raum-Foto hochladen"
+          disabled={loading || uploading}
+          onClick={() => fileRef.current?.click()}
+        >
+          {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
+        </Button>
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
