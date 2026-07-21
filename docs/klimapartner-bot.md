@@ -53,6 +53,9 @@ urgency, decision authority, serviced region, reachable contact, budget) into a
 leads are never scored `hot` (no partner to route to). See
 `src/lib/klima/qualification.test.ts`.
 
+> **Deployment ohne Lovable** (Windsurf/lokal + eigener Server + Standalone-Build):
+> siehe [`klimapartner-deployment.md`](./klimapartner-deployment.md).
+
 ## Setup
 
 1. **Migration** — apply `supabase/migrations/20260721120000_klimapartner_leads.sql`

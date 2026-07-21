@@ -34,6 +34,8 @@ jobs:
           src/components/klima/
           src/pages/KlimapartnerPage.tsx
           src/pages/KlimaLeadsPage.tsx
+          src/klima-main.tsx
+          vite.klimapartner.config.ts
           supabase/functions/klima-chat/
           supabase/functions/klima-knowledge/
           supabase/functions/klima-admin/
@@ -41,3 +43,6 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Build (Klimapartner standalone)
+        run: npm run build:klimapartner
