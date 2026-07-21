@@ -12,6 +12,7 @@
 CREATE TABLE public.klima_conversations (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id     text NOT NULL UNIQUE,
+  ip_hash        text,                              -- SHA-256 of client IP, for rate limiting (no raw PII)
   segment        text,                              -- 'A' | 'B' | 'C' (null until detected)
   language       text NOT NULL DEFAULT 'de',        -- 'de' | 'fr' | 'gsw'
   region         text,                              -- detected target region
@@ -24,6 +25,7 @@ CREATE TABLE public.klima_conversations (
 
 CREATE INDEX klima_conversations_status_idx  ON public.klima_conversations (status);
 CREATE INDEX klima_conversations_segment_idx ON public.klima_conversations (segment);
+CREATE INDEX klima_conversations_ip_hash_idx ON public.klima_conversations (ip_hash, created_at);
 
 ALTER TABLE public.klima_conversations ENABLE ROW LEVEL SECURITY;
 

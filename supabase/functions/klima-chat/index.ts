@@ -18,6 +18,13 @@ const ANTHROPIC_MODEL = "claude-sonnet-4-5";
 const MAX_TOOL_ITERATIONS = 6;
 const MAX_HISTORY_MESSAGES = 40; // cap transcript replayed to the model
 
+// --- Abuse protection (the endpoint is public and spends API tokens) ---
+const MAX_MESSAGE_CHARS = 2000; // longest plausible customer message
+const MAX_USER_MESSAGES_PER_CONVERSATION = 60; // hard cap per session
+const SESSION_RATE_LIMIT = 15; // user messages ...
+const SESSION_RATE_WINDOW_MIN = 10; // ... per this many minutes
+const IP_NEW_CONVERSATIONS_PER_HOUR = 6; // new sessions per client IP
+
 // ---------------------------------------------------------------------------
 // Anthropic tool schemas
 // ---------------------------------------------------------------------------
@@ -306,6 +313,23 @@ async function notifyPartners(params: {
   await Promise.allSettled(tasks);
 }
 
+/** SHA-256 hex of the client IP — pseudonymous key for rate limiting. */
+async function hashIp(req: Request): Promise<string | null> {
+  const ip = (req.headers.get("x-forwarded-for") ?? "").split(",")[0].trim();
+  if (!ip) return null;
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(ip));
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function jsonError(message: string, status: number): Response {
+  return new Response(JSON.stringify({ error: message }), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Handler
 // ---------------------------------------------------------------------------
@@ -323,6 +347,8 @@ serve(async (req) => {
   let RESEND_API_KEY: string | undefined;
   let LEAD_NOTIFY_EMAIL: string | undefined;
   let LEAD_FROM_EMAIL: string;
+  let conversation: ConversationRow;
+  let priorMessages: AnthropicMessage[];
   try {
     const key = Deno.env.get("ANTHROPIC_API_KEY");
     if (!key) throw new Error("ANTHROPIC_API_KEY not configured");
@@ -343,17 +369,91 @@ serve(async (req) => {
     userMessage = (body.message ?? "").toString();
 
     if (!sessionId) {
-      return new Response(JSON.stringify({ error: "sessionId erforderlich" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonError("sessionId erforderlich", 400);
     }
+    if (userMessage.length > MAX_MESSAGE_CHARS) {
+      return jsonError("Nachricht zu lang — bitte kürzer fassen.", 400);
+    }
+
+    const ipHash = await hashIp(req);
+
+    // --- Load or create the conversation (IP-capped) ---
+    const { data: existing } = await supabase
+      .from("klima_conversations")
+      .select("id, session_id, segment, qualification, status, lead_score")
+      .eq("session_id", sessionId)
+      .maybeSingle();
+
+    if (existing) {
+      conversation = existing as unknown as ConversationRow;
+    } else {
+      if (ipHash) {
+        const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const { count } = await supabase
+          .from("klima_conversations")
+          .select("id", { count: "exact", head: true })
+          .eq("ip_hash", ipHash)
+          .gte("created_at", hourAgo);
+        if ((count ?? 0) >= IP_NEW_CONVERSATIONS_PER_HOUR) {
+          return jsonError(
+            "Zu viele neue Gespräche von dieser Verbindung. Bitte versuchen Sie es später erneut.",
+            429,
+          );
+        }
+      }
+      const { data: created, error } = await supabase
+        .from("klima_conversations")
+        .insert({ session_id: sessionId, ip_hash: ipHash })
+        .select("id, session_id, segment, qualification, status, lead_score")
+        .single();
+      if (error) throw error;
+      conversation = created as unknown as ConversationRow;
+    }
+
+    // --- Per-session rate limits (only real user messages count) ---
+    if (userMessage.trim()) {
+      const { count: total } = await supabase
+        .from("klima_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conversation.id)
+        .eq("role", "user");
+      if ((total ?? 0) >= MAX_USER_MESSAGES_PER_CONVERSATION) {
+        return jsonError(
+          "Dieses Gespräch hat sein Limit erreicht. Bitte starten Sie ein neues Gespräch oder kontaktieren Sie uns direkt.",
+          429,
+        );
+      }
+
+      const windowStart = new Date(Date.now() - SESSION_RATE_WINDOW_MIN * 60 * 1000).toISOString();
+      const { count: recent } = await supabase
+        .from("klima_messages")
+        .select("id", { count: "exact", head: true })
+        .eq("conversation_id", conversation.id)
+        .eq("role", "user")
+        .gte("created_at", windowStart);
+      if ((recent ?? 0) >= SESSION_RATE_LIMIT) {
+        return jsonError(
+          "Einen Moment bitte — Sie schreiben gerade sehr schnell. Versuchen Sie es in ein paar Minuten erneut.",
+          429,
+        );
+      }
+    }
+
+    // --- Load prior transcript (text only) ---
+    const { data: history } = await supabase
+      .from("klima_messages")
+      .select("role, content")
+      .eq("conversation_id", conversation.id)
+      .order("created_at", { ascending: true })
+      .limit(MAX_HISTORY_MESSAGES);
+
+    priorMessages = (history ?? []).map((m) => ({
+      role: m.role === "assistant" ? "assistant" : "user",
+      content: m.content as string,
+    }));
   } catch (e) {
     console.error("klima-chat setup error:", e);
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Ungültige Anfrage" }),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
+    return jsonError(e instanceof Error ? e.message : "Ungültige Anfrage", 400);
   }
 
   // --- Stream the response as Server-Sent Events ---
@@ -364,36 +464,8 @@ serve(async (req) => {
         controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
       try {
-        // --- Load or create the conversation ---
-        let { data: conv } = await supabase
-          .from("klima_conversations")
-          .select("id, session_id, segment, qualification, status, lead_score")
-          .eq("session_id", sessionId)
-          .maybeSingle();
-
-        if (!conv) {
-          const { data: created, error } = await supabase
-            .from("klima_conversations")
-            .insert({ session_id: sessionId })
-            .select("id, session_id, segment, qualification, status, lead_score")
-            .single();
-          if (error) throw error;
-          conv = created;
-        }
-        const conversation = conv as unknown as ConversationRow;
-
-        // --- Load prior transcript (text only) ---
-        const { data: history } = await supabase
-          .from("klima_messages")
-          .select("role, content")
-          .eq("conversation_id", conversation.id)
-          .order("created_at", { ascending: true })
-          .limit(MAX_HISTORY_MESSAGES);
-
-        const priorMessages: AnthropicMessage[] = (history ?? []).map((m) => ({
-          role: m.role === "assistant" ? "assistant" : "user",
-          content: m.content as string,
-        }));
+        // Conversation + prior transcript were loaded (and rate-checked)
+        // before the stream opened.
 
         // Returning visitor reopening the widget (empty opener + existing
         // history): the UI has lost its local transcript but the session lives

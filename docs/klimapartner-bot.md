@@ -92,8 +92,28 @@ inside the same request. Event types:
 
 The browser reads the stream with `fetch` + `ReadableStream.getReader()` in
 `useKlimaChat` (not `supabase.functions.invoke`, which buffers the whole body).
-Pre-stream failures (bad body, missing `sessionId`) still return a plain JSON
-error with the appropriate status code.
+Pre-stream failures (bad body, missing `sessionId`, rate limits) still return a
+plain JSON error with the appropriate status code.
+
+## Abuse protection
+
+The endpoint is public and spends Anthropic tokens, so it enforces DB-backed
+limits **before** opening the stream (plain `400`/`429` JSON errors):
+
+| Limit | Value | Keyed on |
+|-------|-------|----------|
+| Message length | 2 000 chars | request body |
+| Message rate | 15 user messages / 10 min | conversation |
+| Conversation cap | 60 user messages total | conversation |
+| New conversations | 6 / hour | SHA-256 of client IP (`ip_hash`, no raw PII) |
+
+Constants live at the top of `supabase/functions/klima-chat/index.ts`.
+
+## CI
+
+`.github/workflows/ci.yml` runs on every PR: `npm ci`, type-check, tests, a
+lint pass scoped to the chatbot code (full-repo lint has pre-existing errors on
+`main`), and the production build.
 
 ## Notes & possible follow-ups
 

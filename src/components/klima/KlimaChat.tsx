@@ -143,6 +143,7 @@ export default function KlimaChat({ className }: { className?: string }) {
           placeholder="Ihre Nachricht…"
           className="flex-1"
           disabled={loading}
+          maxLength={2000}
           aria-label="Nachricht"
         />
         <Button type="submit" size="icon" disabled={loading || !input.trim()} className="shrink-0">
