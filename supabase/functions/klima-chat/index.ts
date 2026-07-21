@@ -8,6 +8,7 @@ import {
   type Qualification,
 } from "../_shared/klima/qualification.ts";
 import { embed } from "../_shared/klima/embeddings.ts";
+import { captureServer } from "../_shared/klima/posthog.ts";
 import { buildSystemPrompt } from "./prompt.ts";
 
 const corsHeaders = {
@@ -747,6 +748,24 @@ serve(async (req) => {
                 .eq("id", leadId);
             }
             notified = true;
+          }
+
+          // Serverseitige Funnel-Events (Adblocker-immun); nur beim ersten Mal.
+          if (!existingLead) {
+            await captureServer("klima_lead_submitted", sessionId, {
+              segment,
+              tier: scored.tier,
+              score: scored.score,
+              region,
+            });
+          }
+          if (notified) {
+            await captureServer("klima_lead_notified", sessionId, {
+              segment,
+              tier: scored.tier,
+              score: scored.score,
+              region,
+            });
           }
         }
 

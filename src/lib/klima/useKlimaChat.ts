@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Segment } from "./qualification";
+import { track } from "./analytics";
 
 export interface ChatMessage {
   id: string;
@@ -63,8 +64,23 @@ export function useKlimaChat() {
     qualified: false,
   });
   const started = useRef(false);
+  // Funnel-Meilensteine nur je einmal pro Session melden.
+  const segmentTracked = useRef(false);
+  const qualifiedTracked = useRef(false);
 
   const applyEvent = useCallback((evt: StreamEvent, assistantIdRef: { id: string | null }) => {
+    if ((evt.type === "state" || evt.type === "done") && evt.segment && !segmentTracked.current) {
+      segmentTracked.current = true;
+      track("klima_segment_detected", sessionIdRef.current, { segment: evt.segment });
+    }
+    if (evt.type === "done" && evt.qualified && !qualifiedTracked.current) {
+      qualifiedTracked.current = true;
+      track("klima_lead_qualified", sessionIdRef.current, {
+        segment: evt.segment,
+        tier: evt.tier,
+        score: evt.leadScore,
+      });
+    }
     if (evt.type === "token") {
       const text = evt.text;
       setMessages((prev) => {
@@ -101,6 +117,7 @@ export function useKlimaChat() {
       setLoading(true);
       if (text.trim()) {
         setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
+        track("klima_message_sent", sessionIdRef.current, { length: text.length });
       }
 
       const assistantIdRef = { id: null as string | null };
@@ -153,6 +170,9 @@ export function useKlimaChat() {
         }
       } catch (e) {
         setError(e instanceof Error ? e.message : "Verbindungsfehler");
+        track("klima_chat_error", sessionIdRef.current, {
+          message: e instanceof Error ? e.message : "unknown",
+        });
       } finally {
         setLoading(false);
       }
@@ -165,6 +185,7 @@ export function useKlimaChat() {
     sessionIdRef.current = getSessionId();
     if (started.current) return;
     started.current = true;
+    track("klima_chat_opened", sessionIdRef.current);
     void send("");
   }, [send]);
 
@@ -175,6 +196,9 @@ export function useKlimaChat() {
     setState({ segment: null, leadScore: 0, tier: "cold", completion: 0, qualified: false });
     setError(null);
     started.current = true;
+    segmentTracked.current = false;
+    qualifiedTracked.current = false;
+    track("klima_chat_opened", sessionIdRef.current, { reset: true });
     void send("");
   }, [send]);
 

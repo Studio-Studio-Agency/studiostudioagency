@@ -166,6 +166,26 @@ supabase secrets set KLIMA_ADMIN_EMAILS=studio@alainsz.com
 supabase functions deploy klima-admin
 ```
 
+## Funnel tracking (PostHog)
+
+Optional, on by setting the keys (no-op otherwise). No SDK dependency — a thin
+wrapper over PostHog's capture HTTP API (`src/lib/klima/analytics.ts` client-
+side, `_shared/klima/posthog.ts` server-side), EU host by default. The chat
+`sessionId` is the `distinct_id`, so client and server events join into one
+funnel:
+
+| Event | Sent by | When |
+|-------|---------|------|
+| `klima_chat_opened` | client | widget mounted / reset |
+| `klima_message_sent` | client | user sends a message |
+| `klima_segment_detected` | client | segment first known (A/B/C) |
+| `klima_lead_qualified` | client | conversation reaches qualified state |
+| `klima_lead_submitted` | edge function | lead row first created |
+| `klima_lead_notified` | edge function | partners notified (Slack/Resend) |
+
+Config: `VITE_POSTHOG_KEY` + `VITE_POSTHOG_HOST` (frontend build),
+`POSTHOG_API_KEY` + `POSTHOG_HOST` (edge function secrets).
+
 ## CI
 
 `.github/workflows/ci.yml` runs on every PR: `npm ci`, type-check, tests, a
