@@ -114,13 +114,14 @@ export default function KlimaChat({ className }: { className?: string }) {
             </div>
           </div>
         ))}
-        {loading && (
-          <div className="flex justify-start">
-            <div className="rounded-2xl rounded-bl-sm bg-muted px-4">
-              <TypingDots />
+        {loading &&
+          (messages.length === 0 || messages[messages.length - 1].role === "user") && (
+            <div className="flex justify-start">
+              <div className="rounded-2xl rounded-bl-sm bg-muted px-4">
+                <TypingDots />
+              </div>
             </div>
-          </div>
-        )}
+          )}
         {state.qualified && !loading && (
           <div className="flex items-center justify-center gap-2 pt-2 text-xs text-emerald-600">
             <CheckCircle2 className="h-4 w-4" />

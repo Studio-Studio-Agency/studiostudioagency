@@ -76,10 +76,27 @@ leads are never scored `hot` (no partner to route to). See
 
 4. **Frontend** — no new build vars; visit `/klimapartner`.
 
+## Token streaming
+
+Replies stream token-by-token. The edge function calls Anthropic with
+`stream: true` and re-emits the response as **Server-Sent Events**
+(`Content-Type: text/event-stream`); tool calls are still resolved server-side
+inside the same request. Event types:
+
+| Event | Payload | Meaning |
+|-------|---------|---------|
+| `token` | `{ text }` | append to the current assistant message |
+| `state` | `{ segment, leadScore, tier, completion }` | mid-stream qualification progress (after `record_qualification`) |
+| `done` | `{ segment, leadScore, tier, completion, qualified, notified }` | final state; stream ends |
+| `error` | `{ error }` | failure (message already localized) |
+
+The browser reads the stream with `fetch` + `ReadableStream.getReader()` in
+`useKlimaChat` (not `supabase.functions.invoke`, which buffers the whole body).
+Pre-stream failures (bad body, missing `sessionId`) still return a plain JSON
+error with the appropriate status code.
+
 ## Notes & possible follow-ups
 
-- Turn-based request/response (one Claude call per user turn, tool loop resolved
-  server-side). Token streaming (SSE) is a natural UX enhancement.
 - Vector search (pgvector) for a product/FAQ knowledge base, Google Places
   address validation, room-photo uploads to Supabase Storage, and PostHog funnel
   events are all scoped out of this first slice and can layer onto the same

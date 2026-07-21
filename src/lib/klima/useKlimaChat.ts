@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import type { Segment } from "./qualification";
 
 export interface ChatMessage {
@@ -16,18 +15,24 @@ export interface ChatState {
   qualified: boolean;
 }
 
-interface EdgeResponse {
-  reply: string;
-  segment: Segment | null;
-  leadScore: number;
-  tier: "hot" | "warm" | "cold";
-  completion: number;
-  qualified: boolean;
-  notified: boolean;
-  error?: string;
-}
+type StreamEvent =
+  | { type: "token"; text: string }
+  | { type: "state"; segment: Segment | null; leadScore: number; tier: ChatState["tier"]; completion: number }
+  | {
+      type: "done";
+      segment: Segment | null;
+      leadScore: number;
+      tier: ChatState["tier"];
+      completion: number;
+      qualified: boolean;
+      notified: boolean;
+    }
+  | { type: "error"; error: string };
 
 const SESSION_KEY = "klima_chat_session_id";
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/klima-chat`;
 
 function getSessionId(): string {
   if (typeof window === "undefined") return "server";
@@ -59,33 +64,101 @@ export function useKlimaChat() {
   });
   const started = useRef(false);
 
-  const send = useCallback(async (text: string) => {
-    setError(null);
-    setLoading(true);
-    if (text.trim()) {
-      setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
-    }
-    try {
-      const { data, error: fnError } = await supabase.functions.invoke<EdgeResponse>("klima-chat", {
-        body: { sessionId: sessionIdRef.current, message: text },
+  const applyEvent = useCallback((evt: StreamEvent, assistantIdRef: { id: string | null }) => {
+    if (evt.type === "token") {
+      const text = evt.text;
+      setMessages((prev) => {
+        if (assistantIdRef.id === null) {
+          assistantIdRef.id = nextId();
+          return [...prev, { id: assistantIdRef.id, role: "assistant", content: text }];
+        }
+        return prev.map((m) => (m.id === assistantIdRef.id ? { ...m, content: m.content + text } : m));
       });
-      if (fnError) throw fnError;
-      if (!data || data.error) throw new Error(data?.error || "Keine Antwort erhalten");
-
-      setMessages((prev) => [...prev, { id: nextId(), role: "assistant", content: data.reply }]);
+    } else if (evt.type === "state") {
+      setState((s) => ({
+        ...s,
+        segment: evt.segment,
+        leadScore: evt.leadScore,
+        tier: evt.tier,
+        completion: evt.completion,
+      }));
+    } else if (evt.type === "done") {
       setState({
-        segment: data.segment,
-        leadScore: data.leadScore,
-        tier: data.tier,
-        completion: data.completion,
-        qualified: data.qualified,
+        segment: evt.segment,
+        leadScore: evt.leadScore,
+        tier: evt.tier,
+        completion: evt.completion,
+        qualified: evt.qualified,
       });
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Verbindungsfehler");
-    } finally {
-      setLoading(false);
+    } else if (evt.type === "error") {
+      setError(evt.error);
     }
   }, []);
+
+  const send = useCallback(
+    async (text: string) => {
+      setError(null);
+      setLoading(true);
+      if (text.trim()) {
+        setMessages((prev) => [...prev, { id: nextId(), role: "user", content: text }]);
+      }
+
+      const assistantIdRef = { id: null as string | null };
+      try {
+        const resp = await fetch(FUNCTION_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${SUPABASE_ANON}`,
+            apikey: SUPABASE_ANON,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ sessionId: sessionIdRef.current, message: text }),
+        });
+
+        if (!resp.ok || !resp.body) {
+          let msg = `Verbindungsfehler (${resp.status})`;
+          try {
+            const j = await resp.json();
+            if (j?.error) msg = j.error;
+          } catch {
+            /* non-JSON body */
+          }
+          throw new Error(msg);
+        }
+
+        const reader = resp.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        for (;;) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          let sep: number;
+          while ((sep = buffer.indexOf("\n\n")) !== -1) {
+            const raw = buffer.slice(0, sep);
+            buffer = buffer.slice(sep + 2);
+            const data = raw
+              .split("\n")
+              .filter((l) => l.startsWith("data:"))
+              .map((l) => l.slice(5).trim())
+              .join("");
+            if (!data) continue;
+            try {
+              applyEvent(JSON.parse(data) as StreamEvent, assistantIdRef);
+            } catch {
+              /* ignore malformed event */
+            }
+          }
+        }
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Verbindungsfehler");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [applyEvent],
+  );
 
   // Greet on mount (empty message → server produces an opener).
   useEffect(() => {

@@ -115,11 +115,22 @@ function sanitizeForApi(msgs: AnthropicMessage[]): AnthropicMessage[] {
   return out;
 }
 
-async function callAnthropic(
+interface StreamResult {
+  content: Array<Record<string, unknown>>;
+  stopReason: string | null;
+}
+
+/**
+ * Call Anthropic with `stream: true`, forwarding user-visible text deltas to
+ * `onText` as they arrive, while reconstructing the full content blocks (text +
+ * tool_use with parsed input) and the stop reason so the tool loop can continue.
+ */
+async function streamAnthropic(
   apiKey: string,
   system: string,
   messages: AnthropicMessage[],
-) {
+  onText: (delta: string) => void,
+): Promise<StreamResult> {
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
@@ -133,16 +144,83 @@ async function callAnthropic(
       system,
       tools,
       messages,
+      stream: true,
     }),
   });
 
-  if (!res.ok) {
-    const text = await res.text();
+  if (!res.ok || !res.body) {
+    const text = res.body ? await res.text() : "";
     const err = new Error(`Anthropic error ${res.status}: ${text}`) as Error & { status?: number };
     err.status = res.status;
     throw err;
   }
-  return await res.json();
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  const blocks: Array<Record<string, unknown>> = [];
+  const toolJson: Record<number, string> = {};
+  let stopReason: string | null = null;
+
+  const handleEvent = (evt: Record<string, unknown>) => {
+    const type = evt.type as string;
+    if (type === "content_block_start") {
+      const index = evt.index as number;
+      const block = { ...(evt.content_block as Record<string, unknown>) };
+      if (block.type === "text" && typeof block.text !== "string") block.text = "";
+      if (block.type === "tool_use") toolJson[index] = "";
+      blocks[index] = block;
+    } else if (type === "content_block_delta") {
+      const index = evt.index as number;
+      const delta = evt.delta as Record<string, unknown>;
+      if (delta.type === "text_delta") {
+        const t = delta.text as string;
+        const block = blocks[index];
+        if (block) block.text = `${(block.text as string) ?? ""}${t}`;
+        onText(t);
+      } else if (delta.type === "input_json_delta") {
+        toolJson[index] = (toolJson[index] ?? "") + (delta.partial_json as string);
+      }
+    } else if (type === "content_block_stop") {
+      const index = evt.index as number;
+      const block = blocks[index];
+      if (block && block.type === "tool_use") {
+        try {
+          block.input = toolJson[index] ? JSON.parse(toolJson[index]) : {};
+        } catch {
+          block.input = {};
+        }
+      }
+    } else if (type === "message_delta") {
+      const delta = evt.delta as Record<string, unknown> | undefined;
+      if (delta && typeof delta.stop_reason === "string") stopReason = delta.stop_reason;
+    }
+  };
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    let sep: number;
+    while ((sep = buffer.indexOf("\n\n")) !== -1) {
+      const rawEvent = buffer.slice(0, sep);
+      buffer = buffer.slice(sep + 2);
+      const dataStr = rawEvent
+        .split("\n")
+        .filter((l) => l.startsWith("data:"))
+        .map((l) => l.slice(5).trim())
+        .join("");
+      if (!dataStr || dataStr === "[DONE]") continue;
+      try {
+        handleEvent(JSON.parse(dataStr));
+      } catch {
+        // ignore malformed / keep-alive lines
+      }
+    }
+  }
+
+  return { content: blocks.filter(Boolean), stopReason };
 }
 
 async function notifyPartners(params: {
@@ -236,22 +314,33 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // --- Pre-stream validation (may still return a plain JSON error) ---
+  let supabase: ReturnType<typeof createClient>;
+  let ANTHROPIC_API_KEY: string;
+  let sessionId: string;
+  let userMessage: string;
+  let SLACK_WEBHOOK_URL: string | undefined;
+  let RESEND_API_KEY: string | undefined;
+  let LEAD_NOTIFY_EMAIL: string | undefined;
+  let LEAD_FROM_EMAIL: string;
   try {
-    const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY not configured");
+    const key = Deno.env.get("ANTHROPIC_API_KEY");
+    if (!key) throw new Error("ANTHROPIC_API_KEY not configured");
+    ANTHROPIC_API_KEY = key;
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, serviceKey);
+    supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
-    const SLACK_WEBHOOK_URL = Deno.env.get("KLIMA_SLACK_WEBHOOK_URL") || undefined;
-    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || undefined;
-    const LEAD_NOTIFY_EMAIL = Deno.env.get("KLIMA_LEAD_NOTIFY_EMAIL") || undefined;
-    const LEAD_FROM_EMAIL = Deno.env.get("KLIMA_LEAD_FROM_EMAIL") || "leads@klimapartner-basel.ch";
+    SLACK_WEBHOOK_URL = Deno.env.get("KLIMA_SLACK_WEBHOOK_URL") || undefined;
+    RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") || undefined;
+    LEAD_NOTIFY_EMAIL = Deno.env.get("KLIMA_LEAD_NOTIFY_EMAIL") || undefined;
+    LEAD_FROM_EMAIL = Deno.env.get("KLIMA_LEAD_FROM_EMAIL") || "leads@klimapartner-basel.ch";
 
     const body = await req.json();
-    const sessionId: string = body.sessionId;
-    const userMessage: string = (body.message ?? "").toString();
+    sessionId = body.sessionId;
+    userMessage = (body.message ?? "").toString();
 
     if (!sessionId) {
       return new Response(JSON.stringify({ error: "sessionId erforderlich" }), {
@@ -259,282 +348,319 @@ serve(async (req) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+  } catch (e) {
+    console.error("klima-chat setup error:", e);
+    return new Response(
+      JSON.stringify({ error: e instanceof Error ? e.message : "Ungültige Anfrage" }),
+      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+    );
+  }
 
-    // --- Load or create the conversation ---
-    let { data: conv } = await supabase
-      .from("klima_conversations")
-      .select("id, session_id, segment, qualification, status, lead_score")
-      .eq("session_id", sessionId)
-      .maybeSingle();
+  // --- Stream the response as Server-Sent Events ---
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      const emit = (obj: unknown) =>
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(obj)}\n\n`));
 
-    if (!conv) {
-      const { data: created, error } = await supabase
-        .from("klima_conversations")
-        .insert({ session_id: sessionId })
-        .select("id, session_id, segment, qualification, status, lead_score")
-        .single();
-      if (error) throw error;
-      conv = created;
-    }
-    const conversation = conv as ConversationRow;
+      try {
+        // --- Load or create the conversation ---
+        let { data: conv } = await supabase
+          .from("klima_conversations")
+          .select("id, session_id, segment, qualification, status, lead_score")
+          .eq("session_id", sessionId)
+          .maybeSingle();
 
-    // --- Load prior transcript (text only) ---
-    const { data: history } = await supabase
-      .from("klima_messages")
-      .select("role, content")
-      .eq("conversation_id", conversation.id)
-      .order("created_at", { ascending: true })
-      .limit(MAX_HISTORY_MESSAGES);
+        if (!conv) {
+          const { data: created, error } = await supabase
+            .from("klima_conversations")
+            .insert({ session_id: sessionId })
+            .select("id, session_id, segment, qualification, status, lead_score")
+            .single();
+          if (error) throw error;
+          conv = created;
+        }
+        const conversation = conv as unknown as ConversationRow;
 
-    const priorMessages: AnthropicMessage[] = (history ?? []).map((m) => ({
-      role: m.role === "assistant" ? "assistant" : "user",
-      content: m.content,
-    }));
+        // --- Load prior transcript (text only) ---
+        const { data: history } = await supabase
+          .from("klima_messages")
+          .select("role, content")
+          .eq("conversation_id", conversation.id)
+          .order("created_at", { ascending: true })
+          .limit(MAX_HISTORY_MESSAGES);
 
-    // Returning visitor reopening the widget (empty opener + existing history):
-    // the UI has lost its local transcript but the session lives on. Don't call
-    // the model with a conversation that ends on an assistant turn — greet back
-    // and echo the current qualification state.
-    if (!userMessage.trim() && priorMessages.length > 0) {
-      const scored = scoreLead(conversation.segment, conversation.qualification || {});
-      return new Response(
-        JSON.stringify({
-          reply:
-            "Willkommen zurück! Wie kann ich Ihnen mit Ihrem Klima-Projekt weiterhelfen?",
-          segment: conversation.segment,
+        const priorMessages: AnthropicMessage[] = (history ?? []).map((m) => ({
+          role: m.role === "assistant" ? "assistant" : "user",
+          content: m.content as string,
+        }));
+
+        // Returning visitor reopening the widget (empty opener + existing
+        // history): the UI has lost its local transcript but the session lives
+        // on. Don't call the model with a conversation that ends on an assistant
+        // turn — greet back (streamed as a single token) and echo current state.
+        if (!userMessage.trim() && priorMessages.length > 0) {
+          const scored = scoreLead(conversation.segment, conversation.qualification || {});
+          emit({
+            type: "token",
+            text: "Willkommen zurück! Wie kann ich Ihnen mit Ihrem Klima-Projekt weiterhelfen?",
+          });
+          emit({
+            type: "done",
+            segment: conversation.segment,
+            leadScore: scored.score,
+            tier: scored.tier,
+            completion: scored.completion,
+            qualified:
+              conversation.status === "qualified" || conversation.status === "handed_off",
+            notified: false,
+          });
+          return;
+        }
+
+        // First contact (no user message, no history) → let the model greet.
+        const messages: AnthropicMessage[] = [...priorMessages];
+        if (userMessage.trim()) {
+          messages.push({ role: "user", content: userMessage });
+          await supabase.from("klima_messages").insert({
+            conversation_id: conversation.id,
+            role: "user",
+            content: userMessage,
+          });
+        } else if (priorMessages.length === 0) {
+          // seed an opener instruction as a user turn so the model produces a greeting
+          messages.push({
+            role: "user",
+            content:
+              "[Ein Besucher hat den Chat geöffnet. Begrüsse ihn kurz und freundlich als " +
+              "Klima-Berater von Klimapartner Basel und frage, wie du helfen kannst.]",
+          });
+        }
+
+        // --- Mutable local state that tools update ---
+        let segment: Segment | null = conversation.segment;
+        const qualification: Qualification = { ...(conversation.qualification || {}) };
+        let leadSubmitted:
+          | null
+          | {
+              contact_name?: string;
+              email?: string;
+              phone?: string;
+              address?: string;
+              summary?: string;
+            } = null;
+
+        // --- Streaming tool-use loop ---
+        const convo = sanitizeForApi(messages);
+        let fullText = "";
+        for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
+          const system = buildSystemPrompt({ segment, qualification });
+          const { content, stopReason } = await streamAnthropic(
+            ANTHROPIC_API_KEY,
+            system,
+            convo,
+            (delta) => {
+              fullText += delta;
+              emit({ type: "token", text: delta });
+            },
+          );
+
+          const toolUses = content.filter((b) => b.type === "tool_use");
+          if (stopReason !== "tool_use" || toolUses.length === 0) {
+            break;
+          }
+
+          // Execute each requested tool, collect tool_result blocks.
+          const toolResults: Array<Record<string, unknown>> = [];
+          for (const tu of toolUses) {
+            const name = tu.name as string;
+            const input = (tu.input ?? {}) as Record<string, unknown>;
+            let result: Record<string, unknown> = { ok: true };
+
+            if (name === "set_segment") {
+              const s = input.segment as Segment;
+              if (s === "A" || s === "B" || s === "C") segment = s;
+              result = { ok: true, segment };
+            } else if (name === "record_qualification") {
+              const fields = (input.fields ?? {}) as Record<string, unknown>;
+              for (const [k, v] of Object.entries(fields)) {
+                if (v === null || v === undefined) continue;
+                qualification[k] = v as string | number | boolean;
+              }
+              if (qualification.region) {
+                qualification.region = resolveRegion(String(qualification.region));
+              }
+              const scored = scoreLead(segment, qualification);
+              result = {
+                ok: true,
+                score: scored.score,
+                missing_required: scored.missingRequired,
+              };
+              // Let the UI reflect qualification progress mid-stream.
+              emit({
+                type: "state",
+                segment,
+                leadScore: scored.score,
+                tier: scored.tier,
+                completion: scored.completion,
+              });
+            } else if (name === "submit_lead") {
+              leadSubmitted = {
+                contact_name: input.contact_name as string,
+                email: input.email as string | undefined,
+                phone: input.phone as string | undefined,
+                address: input.address as string | undefined,
+                summary: input.summary as string | undefined,
+              };
+              if (leadSubmitted.email) qualification.email = leadSubmitted.email;
+              if (leadSubmitted.phone) qualification.phone = leadSubmitted.phone;
+              const scored = scoreLead(segment, qualification);
+              result = { ok: true, tier: scored.tier, score: scored.score };
+            } else {
+              result = { ok: false, error: `unknown tool ${name}` };
+            }
+
+            toolResults.push({
+              type: "tool_result",
+              tool_use_id: tu.id as string,
+              content: JSON.stringify(result),
+            });
+          }
+
+          // Append assistant tool_use turn + user tool_result turn, then loop.
+          convo.push({ role: "assistant", content });
+          convo.push({ role: "user", content: toolResults });
+        }
+
+        let assistantText = fullText.trim();
+        if (!assistantText) {
+          assistantText =
+            "Entschuldigung, da ist gerade etwas schiefgelaufen. Können Sie das bitte kurz wiederholen?";
+          emit({ type: "token", text: assistantText });
+        }
+
+        // --- Persist assistant reply ---
+        await supabase.from("klima_messages").insert({
+          conversation_id: conversation.id,
+          role: "assistant",
+          content: assistantText,
+        });
+
+        // --- Score + persist conversation state ---
+        const scored = scoreLead(segment, qualification);
+        const region = qualification.region ? String(qualification.region) : null;
+        let status = conversation.status === "handed_off" ? "handed_off" : "active";
+        if (leadSubmitted) status = "qualified";
+
+        await supabase
+          .from("klima_conversations")
+          .update({
+            segment,
+            region,
+            qualification,
+            lead_score: scored.score,
+            status,
+          })
+          .eq("id", conversation.id);
+
+        // --- Lead upsert + partner notification ---
+        let notified = false;
+        if (leadSubmitted && segment) {
+          const { data: existingLead } = await supabase
+            .from("klima_leads")
+            .select("id, status, notified_at")
+            .eq("conversation_id", conversation.id)
+            .maybeSingle();
+
+          const leadPayload = {
+            conversation_id: conversation.id,
+            segment,
+            region,
+            contact_name: leadSubmitted.contact_name ?? null,
+            email: leadSubmitted.email ?? null,
+            phone: leadSubmitted.phone ?? null,
+            address: leadSubmitted.address ?? null,
+            qualification,
+            lead_score: scored.score,
+            tier: scored.tier,
+          };
+
+          let leadId = existingLead?.id as string | undefined;
+          if (existingLead) {
+            await supabase.from("klima_leads").update(leadPayload).eq("id", existingLead.id);
+          } else {
+            const { data: inserted } = await supabase
+              .from("klima_leads")
+              .insert(leadPayload)
+              .select("id")
+              .single();
+            leadId = inserted?.id as string | undefined;
+          }
+
+          // Notify once, only for reachable, in-region, non-cold leads.
+          const alreadyNotified = !!existingLead?.notified_at;
+          const reachable = !!(leadSubmitted.email || leadSubmitted.phone);
+          if (!alreadyNotified && reachable && scored.tier !== "cold" && region && region !== "other") {
+            await notifyPartners({
+              slackUrl: SLACK_WEBHOOK_URL,
+              resendKey: RESEND_API_KEY,
+              notifyEmail: LEAD_NOTIFY_EMAIL,
+              fromEmail: LEAD_FROM_EMAIL,
+              lead: {
+                segment,
+                tier: scored.tier,
+                score: scored.score,
+                region,
+                contact_name: leadSubmitted.contact_name,
+                email: leadSubmitted.email,
+                phone: leadSubmitted.phone,
+                address: leadSubmitted.address,
+                qualification,
+                summary: leadSubmitted.summary,
+              },
+            });
+            if (leadId) {
+              await supabase
+                .from("klima_leads")
+                .update({ status: "notified", notified_at: new Date().toISOString() })
+                .eq("id", leadId);
+            }
+            notified = true;
+          }
+        }
+
+        emit({
+          type: "done",
+          segment,
           leadScore: scored.score,
           tier: scored.tier,
           completion: scored.completion,
-          qualified: conversation.status === "qualified" || conversation.status === "handed_off",
-          notified: false,
-        }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-
-    // First contact (no user message, no history) → let the model greet.
-    const messages: AnthropicMessage[] = [...priorMessages];
-    if (userMessage.trim()) {
-      messages.push({ role: "user", content: userMessage });
-      await supabase.from("klima_messages").insert({
-        conversation_id: conversation.id,
-        role: "user",
-        content: userMessage,
-      });
-    } else if (priorMessages.length === 0) {
-      // seed an opener instruction as a user turn so the model produces a greeting
-      messages.push({
-        role: "user",
-        content:
-          "[Ein Besucher hat den Chat geöffnet. Begrüsse ihn kurz und freundlich als " +
-          "Klima-Berater von Klimapartner Basel und frage, wie du helfen kannst.]",
-      });
-    }
-
-    // --- Mutable local state that tools update ---
-    let segment: Segment | null = conversation.segment;
-    const qualification: Qualification = { ...(conversation.qualification || {}) };
-    let leadSubmitted:
-      | null
-      | {
-          contact_name?: string;
-          email?: string;
-          phone?: string;
-          address?: string;
-          summary?: string;
-        } = null;
-
-    // --- Tool-use loop ---
-    const convo = sanitizeForApi(messages);
-    let assistantText = "";
-    for (let i = 0; i < MAX_TOOL_ITERATIONS; i++) {
-      const system = buildSystemPrompt({ segment, qualification });
-      const data = await callAnthropic(ANTHROPIC_API_KEY, system, convo);
-
-      const content: Array<Record<string, unknown>> = data.content ?? [];
-      const textBlocks = content.filter((b) => b.type === "text");
-      if (textBlocks.length) {
-        assistantText = textBlocks.map((b) => b.text).join("\n").trim();
-      }
-
-      const toolUses = content.filter((b) => b.type === "tool_use");
-      if (data.stop_reason !== "tool_use" || toolUses.length === 0) {
-        break;
-      }
-
-      // Execute each requested tool, collect tool_result blocks.
-      const toolResults: Array<Record<string, unknown>> = [];
-      for (const tu of toolUses) {
-        const name = tu.name as string;
-        const input = (tu.input ?? {}) as Record<string, unknown>;
-        let result: Record<string, unknown> = { ok: true };
-
-        if (name === "set_segment") {
-          const s = input.segment as Segment;
-          if (s === "A" || s === "B" || s === "C") segment = s;
-          result = { ok: true, segment };
-        } else if (name === "record_qualification") {
-          const fields = (input.fields ?? {}) as Record<string, unknown>;
-          for (const [k, v] of Object.entries(fields)) {
-            if (v === null || v === undefined) continue;
-            qualification[k] = v as string | number | boolean;
-          }
-          if (qualification.region) {
-            qualification.region = resolveRegion(String(qualification.region));
-          }
-          const scored = scoreLead(segment, qualification);
-          result = {
-            ok: true,
-            score: scored.score,
-            missing_required: scored.missingRequired,
-          };
-        } else if (name === "submit_lead") {
-          leadSubmitted = {
-            contact_name: input.contact_name as string,
-            email: input.email as string | undefined,
-            phone: input.phone as string | undefined,
-            address: input.address as string | undefined,
-            summary: input.summary as string | undefined,
-          };
-          if (leadSubmitted.email) qualification.email = leadSubmitted.email;
-          if (leadSubmitted.phone) qualification.phone = leadSubmitted.phone;
-          const scored = scoreLead(segment, qualification);
-          result = { ok: true, tier: scored.tier, score: scored.score };
-        } else {
-          result = { ok: false, error: `unknown tool ${name}` };
-        }
-
-        toolResults.push({
-          type: "tool_result",
-          tool_use_id: tu.id,
-          content: JSON.stringify(result),
+          qualified: !!leadSubmitted,
+          notified,
         });
+      } catch (e) {
+        console.error("klima-chat stream error:", e);
+        const status = (e as { status?: number } | null)?.status;
+        const msg =
+          status === 429
+            ? "Gerade sind viele Anfragen unterwegs — bitte einen Moment."
+            : e instanceof Error
+              ? e.message
+              : "Unbekannter Fehler";
+        emit({ type: "error", error: msg });
+      } finally {
+        controller.close();
       }
+    },
+  });
 
-      // Append assistant tool_use turn + user tool_result turn, then loop.
-      convo.push({ role: "assistant", content });
-      convo.push({ role: "user", content: toolResults });
-    }
-
-    if (!assistantText) {
-      assistantText =
-        "Entschuldigung, da ist gerade etwas schiefgelaufen. Können Sie das bitte kurz wiederholen?";
-    }
-
-    // --- Persist assistant reply ---
-    await supabase.from("klima_messages").insert({
-      conversation_id: conversation.id,
-      role: "assistant",
-      content: assistantText,
-    });
-
-    // --- Score + persist conversation state ---
-    const scored = scoreLead(segment, qualification);
-    const region = qualification.region ? String(qualification.region) : null;
-    let status = conversation.status === "handed_off" ? "handed_off" : "active";
-    if (leadSubmitted) status = "qualified";
-
-    await supabase
-      .from("klima_conversations")
-      .update({
-        segment,
-        region,
-        qualification,
-        lead_score: scored.score,
-        status,
-      })
-      .eq("id", conversation.id);
-
-    // --- Lead upsert + partner notification ---
-    let notified = false;
-    if (leadSubmitted && segment) {
-      const { data: existingLead } = await supabase
-        .from("klima_leads")
-        .select("id, status, notified_at")
-        .eq("conversation_id", conversation.id)
-        .maybeSingle();
-
-      const leadPayload = {
-        conversation_id: conversation.id,
-        segment,
-        region,
-        contact_name: leadSubmitted.contact_name ?? null,
-        email: leadSubmitted.email ?? null,
-        phone: leadSubmitted.phone ?? null,
-        address: leadSubmitted.address ?? null,
-        qualification,
-        lead_score: scored.score,
-        tier: scored.tier,
-      };
-
-      let leadId = existingLead?.id;
-      if (existingLead) {
-        await supabase.from("klima_leads").update(leadPayload).eq("id", existingLead.id);
-      } else {
-        const { data: inserted } = await supabase
-          .from("klima_leads")
-          .insert(leadPayload)
-          .select("id")
-          .single();
-        leadId = inserted?.id;
-      }
-
-      // Notify once, only for reachable, in-region, non-cold leads.
-      const alreadyNotified = !!existingLead?.notified_at;
-      const reachable = !!(leadSubmitted.email || leadSubmitted.phone);
-      if (!alreadyNotified && reachable && scored.tier !== "cold" && region && region !== "other") {
-        await notifyPartners({
-          slackUrl: SLACK_WEBHOOK_URL,
-          resendKey: RESEND_API_KEY,
-          notifyEmail: LEAD_NOTIFY_EMAIL,
-          fromEmail: LEAD_FROM_EMAIL,
-          lead: {
-            segment,
-            tier: scored.tier,
-            score: scored.score,
-            region,
-            contact_name: leadSubmitted.contact_name,
-            email: leadSubmitted.email,
-            phone: leadSubmitted.phone,
-            address: leadSubmitted.address,
-            qualification,
-            summary: leadSubmitted.summary,
-          },
-        });
-        if (leadId) {
-          await supabase
-            .from("klima_leads")
-            .update({ status: "notified", notified_at: new Date().toISOString() })
-            .eq("id", leadId);
-        }
-        notified = true;
-      }
-    }
-
-    return new Response(
-      JSON.stringify({
-        reply: assistantText,
-        segment,
-        leadScore: scored.score,
-        tier: scored.tier,
-        completion: scored.completion,
-        qualified: !!leadSubmitted,
-        notified,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
-  } catch (e) {
-    console.error("klima-chat error:", e);
-    const status = (e as { status?: number } | null)?.status;
-    if (status === 429) {
-      return new Response(
-        JSON.stringify({ error: "Gerade sind viele Anfragen unterwegs — bitte einen Moment." }),
-        { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-      );
-    }
-    return new Response(
-      JSON.stringify({ error: e instanceof Error ? e.message : "Unbekannter Fehler" }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
-    );
-  }
+  return new Response(stream, {
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream; charset=utf-8",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+      "X-Accel-Buffering": "no",
+    },
+  });
 });
