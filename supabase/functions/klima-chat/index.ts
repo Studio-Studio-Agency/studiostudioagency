@@ -7,6 +7,7 @@ import {
   type Segment,
   type Qualification,
 } from "../_shared/klima/qualification.ts";
+import { embed } from "../_shared/klima/embeddings.ts";
 import { buildSystemPrompt } from "./prompt.ts";
 
 const corsHeaders = {
@@ -61,6 +62,21 @@ const tools = [
         },
       },
       required: ["fields"],
+    },
+  },
+  {
+    name: "search_knowledge",
+    description:
+      "FAQ-/Wissensdatenbank durchsuchen (Kosten, Förderung, Bewilligung, Technik, Ablauf, " +
+      "Lautstärke, Stromverbrauch, Wartung). Nutze dieses Tool, BEVOR du Sachfragen aus dem " +
+      "Gedächtnis beantwortest. Antworte auf Basis der Treffer; ohne Treffer antworte " +
+      "vorsichtig-allgemein und verweise auf die Offerte des Partners.",
+    input_schema: {
+      type: "object",
+      properties: {
+        query: { type: "string", description: "Suchanfrage auf Deutsch, z. B. 'Kosten Split-Gerät'" },
+      },
+      required: ["query"],
     },
   },
   {
@@ -576,6 +592,39 @@ serve(async (req) => {
                 tier: scored.tier,
                 completion: scored.completion,
               });
+            } else if (name === "search_knowledge") {
+              const query = String(input.query ?? "").trim();
+              const vector = query ? await embed(query) : null;
+              if (!vector) {
+                result = {
+                  ok: true,
+                  matches: [],
+                  note: "Wissensdatenbank nicht verfügbar — antworte vorsichtig-allgemein.",
+                };
+              } else {
+                const { data: matches, error } = await supabase.rpc("match_klima_knowledge", {
+                  query_embedding: vector,
+                  match_count: 4,
+                  min_similarity: 0.5,
+                });
+                if (error) {
+                  console.error("match_klima_knowledge error:", error);
+                  result = {
+                    ok: true,
+                    matches: [],
+                    note: "Suche fehlgeschlagen — antworte vorsichtig-allgemein.",
+                  };
+                } else {
+                  result = {
+                    ok: true,
+                    matches: ((matches ?? []) as Array<Record<string, unknown>>).map((m) => ({
+                      title: m.title,
+                      content: m.content,
+                      category: m.category,
+                    })),
+                  };
+                }
+              }
             } else if (name === "submit_lead") {
               leadSubmitted = {
                 contact_name: input.contact_name as string,

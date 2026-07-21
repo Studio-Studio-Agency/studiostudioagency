@@ -31,3 +31,5 @@ project_id = "itxpdoppymvbotsiutea"
     verify_jwt = false
   [functions.klima-chat]
     verify_jwt = false
+  [functions.klima-knowledge]
+    verify_jwt = true

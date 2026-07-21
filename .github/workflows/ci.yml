@@ -34,6 +34,8 @@ jobs:
           src/components/klima/
           src/pages/KlimapartnerPage.tsx
           supabase/functions/klima-chat/
+          supabase/functions/klima-knowledge/
+          supabase/functions/_shared/klima/
 
       - name: Build
         run: npm run build

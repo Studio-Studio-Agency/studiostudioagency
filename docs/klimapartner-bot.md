@@ -39,6 +39,7 @@ built on the stack's established patterns:
 |------|--------|
 | `set_segment` | records detected segment (A/B/C) |
 | `record_qualification` | merges newly-learned facts into `qualification` (region normalized) |
+| `search_knowledge` | pgvector similarity search over the FAQ knowledge base |
 | `submit_lead` | creates/updates `klima_leads`, scores + tiers it, notifies partners |
 
 The model never re-asks known facts: accumulated `qualification` and the detected
@@ -109,6 +110,43 @@ limits **before** opening the stream (plain `400`/`429` JSON errors):
 
 Constants live at the top of `supabase/functions/klima-chat/index.ts`.
 
+## FAQ knowledge base (pgvector)
+
+The bot grounds factual answers (Kosten, Förderung, Bewilligung, Technik, …)
+in a pgvector knowledge base instead of improvising:
+
+- **Schema** — migration `20260721210000_klima_knowledge.sql`: `vector`
+  extension, `klima_knowledge` table (`vector(384)` embeddings, HNSW index),
+  and the `match_klima_knowledge(query_embedding, match_count, min_similarity)`
+  cosine-search function. RLS on, service-role only.
+- **Embeddings** — the Supabase Edge runtime's built-in `gte-small` model
+  (`_shared/klima/embeddings.ts`), so no extra API key is needed. If the AI
+  session is unavailable (e.g. local dev), search degrades gracefully and the
+  prompt tells the model to answer conservatively.
+- **Chat integration** — the `search_knowledge` tool; the system prompt
+  instructs the model to search before answering factual questions and never
+  to invent figures that aren't in the results.
+- **Ingestion** — edge function `klima-knowledge` (requires the service-role
+  key as Bearer token):
+
+  ```bash
+  supabase functions deploy klima-knowledge
+  # seed the built-in sample entries
+  curl -X POST "$SUPABASE_URL/functions/v1/klima-knowledge" \
+    -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"seed": true}'
+  # or upsert custom entries (title is the upsert key)
+  curl -X POST "$SUPABASE_URL/functions/v1/klima-knowledge" \
+    -H "Authorization: Bearer $SERVICE_ROLE_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{"entries": [{"title": "…", "content": "…", "category": "kosten"}]}'
+  ```
+
+  ⚠️ The seed entries in `klima-knowledge/seed-data.ts` are deliberately
+  hedged **sample content** — review and replace with verified figures and
+  current cantonal rules before go-live.
+
 ## CI
 
 `.github/workflows/ci.yml` runs on every PR: `npm ci`, type-check, tests, a
@@ -117,7 +155,6 @@ lint pass scoped to the chatbot code (full-repo lint has pre-existing errors on
 
 ## Notes & possible follow-ups
 
-- Vector search (pgvector) for a product/FAQ knowledge base, Google Places
-  address validation, room-photo uploads to Supabase Storage, and PostHog funnel
-  events are all scoped out of this first slice and can layer onto the same
-  conversation/lead tables.
+- Google Places address validation, room-photo uploads to Supabase Storage,
+  PostHog funnel events, and an internal leads dashboard are scoped out of this
+  slice and can layer onto the same conversation/lead tables.
