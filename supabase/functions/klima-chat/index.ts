@@ -10,6 +10,7 @@ import {
 import { embed } from "../_shared/klima/embeddings.ts";
 import { captureServer } from "../_shared/klima/posthog.ts";
 import { parsePhotoMarker, isValidPhotoPath } from "../_shared/klima/photos.ts";
+import { parseGeocodeResponse, type GeocodeAddress } from "../_shared/klima/geocode.ts";
 import { buildSystemPrompt } from "./prompt.ts";
 
 const corsHeaders = {
@@ -329,6 +330,28 @@ async function notifyPartners(params: {
   }
 
   await Promise.allSettled(tasks);
+}
+
+/**
+ * Adresse via Google Geocoding API validieren/normalisieren. Optional:
+ * ohne GOOGLE_MAPS_API_KEY (oder bei Fehlern/Timeout) → null, der Lead
+ * behält dann die unveränderte Kundenangabe. 3-Sekunden-Timeout, damit
+ * der Stream nie an der Validierung hängt.
+ */
+async function geocodeAddress(address: string): Promise<GeocodeAddress | null> {
+  const key = Deno.env.get("GOOGLE_MAPS_API_KEY");
+  if (!key || !address.trim()) return null;
+  try {
+    const url =
+      "https://maps.googleapis.com/maps/api/geocode/json" +
+      `?address=${encodeURIComponent(address)}&region=ch&language=de&key=${key}`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) return null;
+    return parseGeocodeResponse(await res.json());
+  } catch (e) {
+    console.error("geocode failed:", e);
+    return null;
+  }
 }
 
 /** SHA-256 hex of the client IP — pseudonymous key for rate limiting. */
@@ -656,8 +679,33 @@ serve(async (req) => {
               };
               if (leadSubmitted.email) qualification.email = leadSubmitted.email;
               if (leadSubmitted.phone) qualification.phone = leadSubmitted.phone;
+
+              // Adresse validieren/normalisieren (optional, no-op ohne Key).
+              // Ein präziser Treffer korrigiert auch die Region — der Kanton
+              // aus der Adresse schlägt eine vage Chat-Angabe.
+              let addressNote: string | undefined;
+              if (leadSubmitted.address) {
+                const geo = await geocodeAddress(leadSubmitted.address);
+                if (geo) {
+                  leadSubmitted.address = geo.formattedAddress;
+                  qualification.address_validated = geo.precise;
+                  const geoRegion = geo.canton ? resolveRegion(geo.canton) : "other";
+                  if (geoRegion !== "other") qualification.region = geoRegion;
+                  if (!geo.precise) {
+                    addressNote =
+                      "Adresse nur ungefähr erkannt — bitte Strasse und Hausnummer bestätigen lassen.";
+                  }
+                }
+              }
+
               const scored = scoreLead(segment, qualification);
-              result = { ok: true, tier: scored.tier, score: scored.score };
+              result = {
+                ok: true,
+                tier: scored.tier,
+                score: scored.score,
+                ...(leadSubmitted.address ? { normalized_address: leadSubmitted.address } : {}),
+                ...(addressNote ? { note: addressNote } : {}),
+              };
             } else {
               result = { ok: false, error: `unknown tool ${name}` };
             }
