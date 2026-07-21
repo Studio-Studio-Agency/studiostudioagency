@@ -29,6 +29,7 @@ import PantryPage from "./pages/PantryPage";
 import NotFound from "./pages/NotFound";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import KlimapartnerPage from "./pages/KlimapartnerPage";
+import KlimaLeadsPage from "./pages/KlimaLeadsPage";
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
@@ -87,6 +88,10 @@ const App = () => (
             <Route path="/teilen/:token" element={<SharedListPage />} />
             {/* Klimapartner Basel — public lead-qualification chatbot */}
             <Route path="/klimapartner" element={<KlimapartnerPage />} />
+            {/* Internal lead dashboard: login + KLIMA_ADMIN_EMAILS allowlist */}
+            <Route path="/klimapartner/leads" element={
+              <ProtectedRoute><KlimaLeadsPage /></ProtectedRoute>
+            } />
             <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />

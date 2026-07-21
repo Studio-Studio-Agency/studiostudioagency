@@ -33,8 +33,10 @@ jobs:
           src/lib/klima/
           src/components/klima/
           src/pages/KlimapartnerPage.tsx
+          src/pages/KlimaLeadsPage.tsx
           supabase/functions/klima-chat/
           supabase/functions/klima-knowledge/
+          supabase/functions/klima-admin/
           supabase/functions/_shared/klima/
 
       - name: Build

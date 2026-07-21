@@ -147,6 +147,25 @@ in a pgvector knowledge base instead of improvising:
   hedged **sample content** — review and replace with verified figures and
   current cantonal rules before go-live.
 
+## Lead dashboard
+
+Internal view for sales/partner staff at **`/klimapartner/leads`**:
+
+- KPI cards (total, hot/warm/cold, new this week, chat→lead conversion),
+  filterable lead table (tier / segment / status), per-lead detail dialog with
+  the full qualification and chat transcript, and inline status updates
+  (Neu → Benachrichtigt → Zugeteilt → Gewonnen/Verloren).
+- **Access**: the route requires app login; data access additionally requires
+  the user's email to be listed in the `KLIMA_ADMIN_EMAILS` secret
+  (comma-separated). All reads/writes go through the `klima-admin` edge
+  function (`verify_jwt` + allowlist + service role) — the lead tables stay
+  RLS-locked with no client policies.
+
+```bash
+supabase secrets set KLIMA_ADMIN_EMAILS=studio@alainsz.com
+supabase functions deploy klima-admin
+```
+
 ## CI
 
 `.github/workflows/ci.yml` runs on every PR: `npm ci`, type-check, tests, a
