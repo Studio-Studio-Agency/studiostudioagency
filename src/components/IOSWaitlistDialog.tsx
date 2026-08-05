@@ -17,10 +17,11 @@ const IOSWaitlistDialog = () => {
 
   useEffect(() => {
     const fetchWaitlistCount = async () => {
-      const { count } = await supabase
-        .from("ios_waitlist")
-        .select("*", { count: "exact", head: true });
-      setWaitlistCount(count || 0);
+      const { data } = await supabase
+        .from("ios_waitlist_stats")
+        .select("total")
+        .maybeSingle();
+      setWaitlistCount(data?.total || 0);
     };
     fetchWaitlistCount();
   }, []);

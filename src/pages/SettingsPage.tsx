@@ -49,7 +49,7 @@ const SettingsPage = () => {
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
-        setAvatarUrl(profileRes.data.avatar_url ?? null);
+        setAvatarUrl(await resolveAvatarUrl(profileRes.data.avatar_url));
       }
       if (settingsRes.data) {
         setEmailNotifications(settingsRes.data.email_notifications ?? false);
@@ -96,19 +96,18 @@ const SettingsPage = () => {
       return;
     }
 
-    const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`;
+    const signedUrl = await resolveAvatarUrl(filePath);
 
     const { error: updateError } = await supabase
       .from("profiles")
-      .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
+      .update({ avatar_url: filePath, updated_at: new Date().toISOString() })
       .eq("user_id", user.id);
 
     setUploading(false);
     if (updateError) {
       toast({ title: "Fehler", description: "Avatar konnte nicht gespeichert werden.", variant: "destructive" });
     } else {
-      setAvatarUrl(urlWithCacheBust);
+      setAvatarUrl(signedUrl ? `${signedUrl}&t=${Date.now()}` : null);
       toast({ title: "Avatar aktualisiert" });
     }
   };

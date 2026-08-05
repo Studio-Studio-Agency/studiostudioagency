@@ -40,9 +40,9 @@ const AppHeader = () => {
       .select("avatar_url, vorname")
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (data) {
-          setAvatarUrl(data.avatar_url ?? null);
+          setAvatarUrl(await resolveAvatarUrl(data.avatar_url));
           setVorname(data.vorname ?? "");
         }
       });
