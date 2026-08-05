@@ -140,6 +140,21 @@ export type Database = {
         }
         Relationships: []
       }
+      ios_waitlist_stats: {
+        Row: {
+          id: number
+          total: number
+        }
+        Insert: {
+          id?: number
+          total?: number
+        }
+        Update: {
+          id?: number
+          total?: number
+        }
+        Relationships: []
+      }
       items: {
         Row: {
           ablauf_datum: string | null
