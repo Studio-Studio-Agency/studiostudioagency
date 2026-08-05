@@ -44,10 +44,12 @@ const SendListEmailDialog = ({ listName, listId, items, senderName }: SendListEm
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
+      // Signed, time-limited download link (bucket is private)
+      const { data: urlData, error: signError } = await supabase.storage
         .from("list-exports")
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 60 * 60 * 24 * 7);
+
+      if (signError || !urlData?.signedUrl) throw signError ?? new Error("Link konnte nicht erstellt werden");
 
       // Send email
       const { error: emailError } = await supabase.functions.invoke("send-transactional-email", {
@@ -58,8 +60,9 @@ const SendListEmailDialog = ({ listName, listId, items, senderName }: SendListEm
           templateData: {
             senderName: senderName || undefined,
             listName,
+            listId,
             itemCount: items.length,
-            downloadUrl: urlData.publicUrl,
+            downloadUrl: urlData.signedUrl,
           },
         },
       });
