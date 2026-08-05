@@ -30,9 +30,30 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth note: verify_jwt = true only proves *some* valid project key was used
+// (the public anon key qualifies). To prevent this endpoint from being an open
+// relay, we additionally require either the service role key (internal callers
+// such as cron jobs) or a real signed-in user JWT.
+async function authorizeCaller(
+  req: Request,
+  supabaseUrl: string,
+  serviceKey: string,
+): Promise<{ kind: 'service' } | { kind: 'user'; userId: string } | null> {
+  const authHeader = req.headers.get('Authorization') ?? ''
+  const token = authHeader.replace('Bearer ', '').trim()
+  if (!token) return null
+  if (token === serviceKey) return { kind: 'service' }
+
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY')
+  if (!anonKey) return null
+  const client = createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: `Bearer ${token}` } },
+  })
+  const { data, error } = await client.auth.getClaims(token)
+  const sub = data?.claims?.sub as string | undefined
+  if (error || !sub) return null
+  return { kind: 'user', userId: sub }
+}
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -49,6 +70,17 @@ Deno.serve(async (req) => {
       JSON.stringify({ error: 'Server configuration error' }),
       {
         status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+  }
+
+  const caller = await authorizeCaller(req, supabaseUrl, supabaseServiceKey)
+  if (!caller) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      {
+        status: 401,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
