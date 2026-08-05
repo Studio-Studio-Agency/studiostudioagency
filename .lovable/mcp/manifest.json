@@ -1,0 +1,201 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.1",
+  "path": "/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://itxpdoppymvbotsiutea.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "goodgoods-ai-deine-ki-gest-tzte-einkaufsliste",
+      "version": "0.1.0",
+      "title": "GoodGoods AI - Deine KI-gestützte Einkaufsliste"
+    },
+    "tools": [
+      {
+        "name": "list_shopping_lists",
+        "title": "Einkaufslisten auflisten",
+        "description": "Listet alle Einkaufslisten der angemeldeten Person mit Anzahl offener Artikel auf.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_items",
+        "title": "Artikel einer Liste",
+        "description": "Zeigt die Artikel einer Einkaufsliste, optional nur offene oder nur abgehakte.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID der Einkaufsliste (aus list_shopping_lists)."
+            },
+            "status": {
+              "type": "string",
+              "enum": [
+                "alle",
+                "offen",
+                "abgehakt"
+              ],
+              "default": "offen",
+              "description": "Filter nach Status."
+            }
+          },
+          "required": [
+            "list_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "create_shopping_list",
+        "title": "Einkaufsliste erstellen",
+        "description": "Erstellt eine neue Einkaufsliste für die angemeldete Person.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name der Liste, z. B. 'Wocheneinkauf'."
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "add_item",
+        "title": "Artikel hinzufügen",
+        "description": "Fügt einer Einkaufsliste einen neuen Artikel hinzu.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID der Einkaufsliste."
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Name des Artikels, z. B. 'Milch'."
+            },
+            "menge": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "Menge, z. B. 2."
+            },
+            "einheit": {
+              "type": "string",
+              "description": "Einheit, z. B. 'Stück', 'g', 'l'."
+            },
+            "kategorie": {
+              "type": "string",
+              "description": "Kategorie, z. B. 'Milchprodukte'."
+            }
+          },
+          "required": [
+            "list_id",
+            "name"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "check_item",
+        "title": "Artikel abhaken",
+        "description": "Hakt einen Artikel ab (wandert damit in den Vorrat) oder macht das Abhaken rückgängig.",
+        "annotations": {
+          "readOnlyHint": false,
+          "destructiveHint": false,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "item_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID des Artikels."
+            },
+            "checked": {
+              "type": "boolean",
+              "default": true,
+              "description": "true = abhaken, false = zurück auf die Liste."
+            }
+          },
+          "required": [
+            "item_id"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "pantry_status",
+        "title": "Vorrat & Ablaufdaten",
+        "description": "Zeigt den aktuellen Vorrat (abgehakte Artikel) sortiert nach Ablaufdatum – ideal für 'Was läuft bald ab?'.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "tage": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 90,
+              "default": 7,
+              "description": "Nur Artikel, die in den nächsten X Tagen ablaufen."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
