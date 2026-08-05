@@ -61,12 +61,12 @@ const LandingPage = () => {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, rotate: -8 }}
-            animate={{ opacity: 1, scale: 1, rotate: 3 }}
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.15, duration: 0.6, type: "spring", bounce: 0.4 }}
             className="flex justify-center mb-6 relative z-10"
           >
-            <img src={goodgoodsHeroLogo.url} alt="GoodGoods" className="h-36 md:h-48 drop-shadow-2xl hover:scale-110 hover:rotate-0 transition-all duration-500 cursor-pointer" />
+            <img src={goodgoodsHeroLogo.url} alt="GoodGoods" className="h-36 md:h-48 drop-shadow-2xl hover:scale-110 transition-all duration-500 cursor-pointer" />
           </motion.div>
 
           <motion.h1
