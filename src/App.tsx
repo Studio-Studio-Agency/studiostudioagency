@@ -30,6 +30,7 @@ import NotFound from "./pages/NotFound";
 import UnsubscribePage from "./pages/UnsubscribePage";
 import KlimapartnerPage from "./pages/KlimapartnerPage";
 import KlimaLeadsPage from "./pages/KlimaLeadsPage";
+import OAuthConsent from "./pages/OAuthConsent";
 import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
@@ -95,6 +96,7 @@ const App = () => (
             <Route path="/datenschutz" element={<DatenschutzPage />} />
             <Route path="/impressum" element={<ImpressumPage />} />
             <Route path="/unsubscribe" element={<UnsubscribePage />} />
+            <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <BottomNav />
