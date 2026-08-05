@@ -8,7 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, type Easing } from "framer-motion";
 import { useTheme } from "next-themes";
 import goodgoodsLogo from "@/assets/goodgoods-logo-new.png";
-import goodgoodsHeroLogo from "@/assets/goodgoods-hero-logo.png.asset.json";
+import goodgoodsHeroBag from "@/assets/goodgoods-hero-bag.jpg.asset.json";
 import AppFooter from "@/components/AppFooter";
 
 const ease: Easing = [0.25, 0.1, 0.25, 1];
