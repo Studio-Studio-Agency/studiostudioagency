@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useTheme } from "next-themes";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -40,9 +41,9 @@ const AppHeader = () => {
       .select("avatar_url, vorname")
       .eq("user_id", user.id)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (data) {
-          setAvatarUrl(data.avatar_url ?? null);
+          setAvatarUrl(await resolveAvatarUrl(data.avatar_url));
           setVorname(data.vorname ?? "");
         }
       });

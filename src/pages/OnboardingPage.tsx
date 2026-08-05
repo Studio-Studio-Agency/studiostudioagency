@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveAvatarUrl } from "@/lib/avatar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -43,7 +44,7 @@ const OnboardingPage = () => {
       ]);
       if (profileRes.data) {
         setVorname(profileRes.data.vorname ?? "");
-        setAvatarUrl(profileRes.data.avatar_url ?? null);
+        setAvatarUrl(await resolveAvatarUrl(profileRes.data.avatar_url));
       }
       if (settingsRes.data) setCalendarToken(settingsRes.data.calendar_token ?? null);
     };
@@ -74,9 +75,8 @@ const OnboardingPage = () => {
       setUploading(false);
       return;
     }
-    const { data: { publicUrl } } = supabase.storage.from("avatars").getPublicUrl(filePath);
-    await supabase.from("profiles").update({ avatar_url: publicUrl }).eq("user_id", user.id);
-    setAvatarUrl(`${publicUrl}?t=${Date.now()}`);
+    await supabase.from("profiles").update({ avatar_url: filePath }).eq("user_id", user.id);
+    setAvatarUrl(await resolveAvatarUrl(filePath));
     setUploading(false);
     toast({ title: "Avatar gespeichert! 🎉" });
   };

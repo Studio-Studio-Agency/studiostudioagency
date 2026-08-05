@@ -189,8 +189,8 @@ const WaitlistSection = () => {
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    supabase.from("ios_waitlist").select("*", { count: "exact", head: true })
-      .then(({ count }) => setCount(count || 0));
+    supabase.from("ios_waitlist_stats").select("total").maybeSingle()
+      .then(({ data }) => setCount(data?.total || 0));
   }, [done]);
 
   const handleSubmit = async (e: React.FormEvent) => {
