@@ -157,6 +157,65 @@ Deno.serve(async (req) => {
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
+  // Extra guard for user-initiated sends: only allow the templates a user may
+  // trigger, and verify they own the referenced resource.
+  if (caller.kind === 'user') {
+    if (templateName !== 'list-share') {
+      return new Response(
+        JSON.stringify({ error: 'Not allowed' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    const listId = typeof templateData.listId === 'string' ? templateData.listId : null
+    const downloadUrl = typeof templateData.downloadUrl === 'string' ? templateData.downloadUrl : ''
+    const { data: ownedList } = listId
+      ? await supabase
+          .from('lists')
+          .select('id, name')
+          .eq('id', listId)
+          .eq('user_id', caller.userId)
+          .maybeSingle()
+      : { data: null }
+
+    if (!ownedList) {
+      return new Response(
+        JSON.stringify({ error: 'Not allowed' }),
+        {
+          status: 403,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    if (
+      !downloadUrl.startsWith(`${supabaseUrl}/storage/v1/`) ||
+      !downloadUrl.includes(`/list-exports/${listId}/`)
+    ) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid download link' }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
+    // Only pass through server-verified fields for user-triggered sends.
+    templateData = {
+      senderName:
+        typeof templateData.senderName === 'string'
+          ? templateData.senderName.slice(0, 80)
+          : undefined,
+      listName: ownedList.name,
+      itemCount: Number(templateData.itemCount) || 0,
+      downloadUrl,
+    }
+  }
+
   // 2. Check suppression list (fail-closed: if we can't verify, don't send)
   const { data: suppressed, error: suppressionError } = await supabase
     .from('suppressed_emails')
