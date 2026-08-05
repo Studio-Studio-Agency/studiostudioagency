@@ -66,7 +66,7 @@ const LandingPage = () => {
             transition={{ delay: 0.15, duration: 0.6, type: "spring", bounce: 0.4 }}
             className="flex justify-center mb-6 relative z-10"
           >
-            <img src={goodgoodsHeroLogo.url} alt="GoodGoods" className="h-36 md:h-48 drop-shadow-2xl hover:scale-110 transition-all duration-500 cursor-pointer" />
+            <img src={goodgoodsHeroBag.url} alt="GoodGoods" className="h-48 md:h-64 drop-shadow-2xl hover:scale-105 transition-all duration-500 cursor-pointer rounded-3xl" />
           </motion.div>
 
           <motion.h1
