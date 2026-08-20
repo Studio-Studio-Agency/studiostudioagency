@@ -7,7 +7,8 @@
 export const site = {
   name: 'Vaulteer',
   legalName: 'Vaulteer GmbH',
-  url: 'https://vaulteer.ch',
+  /** Aus astro.config.mjs (SITE_URL). Nicht hier haendisch setzen. */
+  url: import.meta.env.SITE,
   locale: 'de-CH',
   email: '[TODO: E-Mail-Adresse]',
   phone: '[TODO: Telefonnummer]',
@@ -19,6 +20,30 @@ export const site = {
     country: 'CH',
   },
 } as const;
+
+/**
+ * Basispfad. Die Seite laeuft in der Vorschau unter einem Unterverzeichnis
+ * (/vaulteer), spaeter unter einer eigenen Domain (/). Jeder interne Link
+ * laeuft deshalb durch withBase() — nie ein nacktes href="/leistungen".
+ *
+ * Astro setzt import.meta.env.BASE_URL aus dem base-Wert der Konfiguration.
+ */
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+export function withBase(path: string): string {
+  if (/^(https?:|mailto:|tel:|#)/.test(path)) return path;
+  const clean = path.startsWith('/') ? path : `/${path}`;
+  return `${BASE}${clean}` || '/';
+}
+
+/** Gegenstueck: Basispfad von einem Pfad abziehen, fuer Aktiv-Vergleiche. */
+export function stripBase(pathname: string): string {
+  const stripped = BASE && pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname;
+  return stripped.replace(/\/$/, '') || '/';
+}
+
+/** Vorschau darf nicht in den Suchindex. Wird ueber SITE_INDEXABLE gesetzt. */
+export const indexable: boolean = import.meta.env.SITE_INDEXABLE === true;
 
 export type NavItem = {
   href: string;

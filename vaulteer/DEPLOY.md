@@ -3,21 +3,44 @@
 Die Website ist statisch. Es gibt keinen Server, keine Datenbank, keinen
 Build-Schritt beim Hoster.
 
+## Zwei Ziele
+
+Die Seite laeuft zuerst als Vorschau in einem Unterverzeichnis, spaeter unter
+einer eigenen Domain. Beides ist derselbe Code, unterschieden nur ueber drei
+Umgebungsvariablen.
+
+| | Vorschau | Live |
+|---|---|---|
+| Adresse | `https://dev.studiostudio.ch/vaulteer` | `https://vaulteer.ch` |
+| `SITE_URL` | `https://dev.studiostudio.ch` | `https://vaulteer.ch` |
+| `BASE_PATH` | `/vaulteer` | `/` |
+| `SITE_INDEXABLE` | nicht gesetzt | `true` |
+| Suchindex | gesperrt | freigegeben |
+| Befehl | `npm run build` | `npm run build:live` |
+
+Die Vorschau ist die Voreinstellung. Wer nichts setzt, baut die Vorschau —
+und riskiert damit nicht versehentlich einen indexierten Zwischenstand.
+
 ## Build
 
 ```sh
 npm ci
-npm run build
+npm run build        # Vorschau: dev.studiostudio.ch/vaulteer
+npm run build:live   # Live: vaulteer.ch
 ```
 
-Ergebnis: **`dist/`**. Dieses Verzeichnis wird hochgeladen — sein *Inhalt*
-gehoert in das Web-Wurzelverzeichnis des Hosters, nicht der Ordner selbst.
+Ergebnis: **`dist/`**. Der *Inhalt* dieses Verzeichnisses wird hochgeladen,
+nicht der Ordner selbst.
 
 Vorher lokal pruefen:
 
 ```sh
-npm run preview   # http://localhost:4321
+npm run preview   # http://localhost:4321/vaulteer
 ```
+
+Alle internen Links laufen ueber `withBase()` aus `src/config/site.ts`. Ein
+nacktes `href="/leistungen"` bricht in der Vorschau — im Code deshalb immer
+`href={withBase('/leistungen')}`.
 
 ## Hosting
 
@@ -43,24 +66,53 @@ nicht in einem US-CDN liegen.
 
 ### Upload
 
-Den genauen Zielpfad nennt die Verwaltung des gewaehlten Hosters. Das Muster
-ist ueberall gleich: der *Inhalt* von `dist/` kommt in das
-Web-Wurzelverzeichnis.
+**Vorschau** — in das Unterverzeichnis `vaulteer/` des Web-Wurzelverzeichnisses
+von `dev.studiostudio.ch`:
 
 ```sh
+npm run build
+rsync -avz --delete dist/ BENUTZER@HOST:PFAD_ZUR_DOMAIN/vaulteer/
+```
+
+**Live** — in das Web-Wurzelverzeichnis der eigenen Domain:
+
+```sh
+npm run build:live
 rsync -avz --delete dist/ BENUTZER@HOST:PFAD_ZUM_WURZELVERZEICHNIS/
 ```
 
-`--delete` raeumt Dateien weg, die im Build nicht mehr vorkommen. Alternativ
-ueber den Dateimanager oder FTP des Hosters.
+Den genauen Zielpfad nennt die Verwaltung des Hosters. `--delete` raeumt
+Dateien weg, die im Build nicht mehr vorkommen — auf dem Vorschau-Host
+betrifft das nur `vaulteer/`, weil rsync nur dieses Verzeichnis anfasst.
+Alternativ ueber den Dateimanager oder FTP.
+
+### Die Vorschau gehoert geschuetzt
+
+`dev.studiostudio.ch/vaulteer` steht auf einer fremden, oeffentlich
+erreichbaren Domain. Drei Ebenen sichern sie ab, und die erste ist die
+wichtigste:
+
+1. **Passwortschutz** auf dem Vorschau-Host (HTTP-Basic-Auth oder das Panel
+   des Hosters). Das ist die einzige Massnahme, die wirklich aussperrt.
+2. **`noindex, nofollow`** auf jeder Seite. Baut der Build automatisch ein,
+   solange `SITE_INDEXABLE` nicht gesetzt ist.
+3. **`robots.txt`** mit `Disallow: /`.
+
+Zu Punkt 3 eine Einschraenkung, die oft uebersehen wird: robots.txt gilt
+immer fuer die ganze Domain. Ein Crawler liest
+`dev.studiostudio.ch/robots.txt`, nicht
+`dev.studiostudio.ch/vaulteer/robots.txt`. Die vom Build erzeugte Datei
+landet im Unterverzeichnis und bleibt dort wirkungslos. Wirksam ist sie erst
+im Wurzelverzeichnis der Domain — und dort gehoert sie mit `studiostudio.ch`
+abgestimmt, nicht blind ueberschrieben.
 
 ## Servereinstellungen
 
 - **HTTPS erzwingen** und HSTS aktivieren.
 - **Saubere URLs:** Der Build erzeugt pro Seite ein Verzeichnis mit
   `index.html`. Ein Apache-Hoster liefert das ohne Zusatzkonfiguration aus.
-- **404:** `dist/404.html` als Fehlerseite eintragen
-  (`ErrorDocument 404 /404.html` in `.htaccess`).
+- **404:** `dist/404.html` als Fehlerseite eintragen. In der Vorschau
+  `ErrorDocument 404 /vaulteer/404.html`, live `ErrorDocument 404 /404.html`.
 - **Caching:** `_astro/*` traegt einen Hash im Dateinamen und darf lange
   gecacht werden; HTML-Dateien nicht.
 
@@ -101,7 +153,10 @@ Endpunkt bekommt.
 ## Vor dem Livegang
 
 - [ ] Hoster gewaehlt, Serverstandort und Rechtsraum geprueft
-- [ ] `site` in `astro.config.mjs` auf die endgueltige Domain gesetzt
+- [ ] mit `npm run build:live` gebaut, nicht mit `npm run build`
+- [ ] `robots.txt` und `noindex` im Live-Build geprueft (beide freigegeben)
+- [ ] Vorschau unter `dev.studiostudio.ch/vaulteer` abgeschaltet oder
+      weitergeleitet, damit sie nicht als Doppel bestehen bleibt
 - [ ] alle `[TODO: ...]` in `src/config/site.ts` ersetzt
 - [ ] alle Bild-Platzhalter ersetzt (siehe `IMAGE-BRIEF.md`)
 - [ ] Kontaktformular auf einen echten Endpunkt gelegt

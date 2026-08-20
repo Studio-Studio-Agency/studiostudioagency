@@ -5,10 +5,31 @@ fuer Schweizer KMU, Beratung zu Datensouveraenitaet.
 
 ```sh
 npm install
-npm run dev      # Entwicklungsserver auf http://localhost:4321
-npm run build    # statische Ausgabe nach dist/
-npm run preview  # Ausgabe lokal pruefen
+npm run dev        # Entwicklungsserver auf http://localhost:4321/vaulteer
+npm run build      # Vorschau-Build: dev.studiostudio.ch/vaulteer
+npm run build:live # Live-Build: vaulteer.ch
+npm run preview    # Ausgabe lokal pruefen
 ```
+
+Die Seite laeuft zuerst unter **`dev.studiostudio.ch/vaulteer`**, also in
+einem Unterverzeichnis einer fremden Domain. Host, Basispfad und
+Indexierbarkeit stehen deshalb in drei Umgebungsvariablen und nicht fest im
+Code:
+
+| | Vorschau (Standard) | Live |
+|---|---|---|
+| `SITE_URL` | `https://dev.studiostudio.ch` | `https://vaulteer.ch` |
+| `BASE_PATH` | `/vaulteer` | `/` |
+| `SITE_INDEXABLE` | nicht gesetzt | `true` |
+
+Zwei Regeln, die daraus folgen:
+
+- **Interne Links immer ueber `withBase()`** aus `src/config/site.ts`. Ein
+  nacktes `href="/leistungen"` zeigt in der Vorschau ins Leere.
+- **Die Vorschau ist nicht indexierbar.** Solange `SITE_INDEXABLE` fehlt,
+  traegt jede Seite `noindex, nofollow` und `robots.txt` sperrt alles. Das
+  verhindert, dass ein unfertiger Stand unter fremder Domain in den Index
+  gerat und der spaeteren eigenen Domain Rang wegnimmt.
 
 Deployment: siehe [DEPLOY.md](./DEPLOY.md). Bildauftraege: siehe
 [IMAGE-BRIEF.md](./IMAGE-BRIEF.md).
@@ -218,7 +239,7 @@ Buttonvarianten, Farbtokens, Icons, Platzhalter und Raster. Sie steht auf
 | 5 | Branchenseiten | wartet auf `content-brief.md` |
 | 6 | Wissensbereich | wartet auf `content-brief.md` |
 | 7 | Ueber uns, Kontakt, Rechtliches, 404 | wartet auf `content-brief.md` |
-| 8 | Sitemap, JSON-LD, Meta, Pruefung | teilweise: Sitemap, robots.txt und OG-Grundlage stehen |
+| 8 | Sitemap, JSON-LD, Meta, Pruefung | teilweise: Sitemap, robots.txt, OG-Grundlage und die Trennung Vorschau/Live stehen |
 
 ## Qualitaetsziele
 

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:live": "SITE_URL=https://vaulteer.ch BASE_PATH=/ SITE_INDEXABLE=true astro build",
     "preview": "astro preview",
     "check": "astro check"
   },

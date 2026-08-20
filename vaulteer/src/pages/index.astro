@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import Eyebrow from '../components/Eyebrow.astro';
+import { withBase } from '../config/site';
 
 /**
  * Platzhalter. Die Startseite wird in Schritt 2 vollstaendig nach
@@ -25,7 +26,7 @@ import Eyebrow from '../components/Eyebrow.astro';
       content-brief.md — diese Datei liegt noch nicht im Projekt.
     </p>
     <div class="mt-10 flex flex-wrap gap-4">
-      <Button href="/styleguide" variant="primary">Musterseite ansehen</Button>
+      <Button href={withBase('/styleguide')} variant="primary">Musterseite ansehen</Button>
     </div>
   </section>
 </BaseLayout>

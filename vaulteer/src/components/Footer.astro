@@ -1,6 +1,6 @@
 ---
 import Wordmark from './Wordmark.astro';
-import { nav, footerLegal, site } from '../config/site';
+import { nav, footerLegal, site, withBase } from '../config/site';
 
 /**
  * Fusszeile auf --ink. Enthaelt die vollstaendige Sitemap, damit auch die
@@ -24,14 +24,14 @@ const year = new Date().getFullYear();
           {
             nav.map((item) => (
               <li>
-                <a href={item.href} class="type-eyebrow text-paper link-rule">
+                <a href={withBase(item.href)} class="type-eyebrow text-paper link-rule">
                   {item.label}
                 </a>
                 {item.children && (
                   <ul class="mt-3 flex flex-col gap-1.5">
                     {item.children.map((child) => (
                       <li>
-                        <a href={child.href} class="type-small text-paper-muted link-rule">
+                        <a href={withBase(child.href)} class="type-small text-paper-muted link-rule">
                           {child.label}
                         </a>
                       </li>
@@ -66,7 +66,7 @@ const year = new Date().getFullYear();
         {
           footerLegal.map((item) => (
             <li>
-              <a href={item.href} class="type-small text-paper-muted link-rule">
+              <a href={withBase(item.href)} class="type-small text-paper-muted link-rule">
                 {item.label}
               </a>
             </li>
