@@ -21,9 +21,20 @@ npm run preview   # http://localhost:4321
 
 ## Hosting
 
-Zielhoster ist ein Schweizer Anbieter, z. B. **Infomaniak** (Rechenzentren in
-Genf und Winterthur, Schweizer Recht). Ein einfaches Webhosting genuegt;
-Node.js wird auf dem Server nicht gebraucht.
+**Der Hoster ist noch nicht gewaehlt.** Der Brief nennt «einen Schweizer
+Hoster (Infomaniak oder aehnlich)» — das ist eine Richtung, keine
+Entscheidung. Diese Anleitung ist deshalb anbieterneutral.
+
+Anforderungen an den Hoster, mehr braucht es nicht:
+
+- statisches Webhosting, kein Node.js auf dem Server
+- eigene Domain mit HTTPS
+- Zugang per SFTP oder rsync
+- eigene Fehlerseite und eigene Header konfigurierbar (`.htaccess` oder Panel)
+- Serverstandort Schweiz, Betreiber dem Schweizer Recht unterstellt
+
+Der letzte Punkt ist der einzige, der wirklich Auswahl bedeutet. Er gehoert
+beim jeweiligen Anbieter geprueft, nicht hier behauptet.
 
 Bewusst **nicht** eingerichtet sind Vercel und Netlify. Beides sind
 US-Anbieter, deren Nutzung dem Produktversprechen des Auftraggebers
@@ -32,11 +43,12 @@ nicht in einem US-CDN liegen.
 
 ### Upload
 
-Bei Infomaniak liegt das Wurzelverzeichnis unter `/web` (bzw. dem in der
-Verwaltung gesetzten Pfad):
+Den genauen Zielpfad nennt die Verwaltung des gewaehlten Hosters. Das Muster
+ist ueberall gleich: der *Inhalt* von `dist/` kommt in das
+Web-Wurzelverzeichnis.
 
 ```sh
-rsync -avz --delete dist/ BENUTZER@HOST:/home/clients/KUNDENNUMMER/sites/vaulteer.ch/
+rsync -avz --delete dist/ BENUTZER@HOST:PFAD_ZUM_WURZELVERZEICHNIS/
 ```
 
 `--delete` raeumt Dateien weg, die im Build nicht mehr vorkommen. Alternativ
@@ -88,6 +100,7 @@ Endpunkt bekommt.
 
 ## Vor dem Livegang
 
+- [ ] Hoster gewaehlt, Serverstandort und Rechtsraum geprueft
 - [ ] `site` in `astro.config.mjs` auf die endgueltige Domain gesetzt
 - [ ] alle `[TODO: ...]` in `src/config/site.ts` ersetzt
 - [ ] alle Bild-Platzhalter ersetzt (siehe `IMAGE-BRIEF.md`)

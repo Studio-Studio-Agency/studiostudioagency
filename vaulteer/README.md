@@ -79,7 +79,8 @@ OpenStreetMap-Link, der in einem neuen Tab oeffnet. Kein iframe.
 so weit ist:
 
 1. **Eigener Endpunkt beim Schweizer Hoster.** Ein kleines PHP- oder
-   Node-Skript bei Infomaniak nimmt den POST entgegen und versendet per SMTP.
+   Node-Skript auf dem eigenen Webhosting nimmt den POST entgegen und
+   versendet per SMTP.
    Daten verlassen die Schweiz nicht. Als Spamschutz ein Honeypot-Feld und eine
    Zeitmessung — kein reCAPTCHA.
 2. **EU-gehosteter Dienst**, z. B. Formspark oder ein selbstgehostetes
