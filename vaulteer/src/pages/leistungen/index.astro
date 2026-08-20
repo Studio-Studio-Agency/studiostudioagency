@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { withBase } from '../../config/site';
+---
+
+<BaseLayout
+  title="Leistungen"
+  description="Lokale KI-Systeme, Beratung Datensouveränität und KI-Software-Entwicklung für Schweizer KMU. Aus Basel."
+>
+  <PageHeader
+    eyebrow="Leistungen"
+    title="Drei Wege, je nach Ausgangslage."
+    lead="Die drei Angebote sind kein gleichwertiges Trio. Die lokalen KI-Systeme sind das Kerngeschäft. Beratung ist der Einstieg mit geringem Risiko, Entwicklung der Ausbau für Betriebe, denen Standard nicht reicht."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-3">
+      <Eyebrow>Kern</Eyebrow>
+      <p class="type-small text-ink-muted mt-4 measure">
+        Hauptgeschäft. Aufbau und laufender Betrieb.
+      </p>
+    </div>
+    <div class="col-span-full lg:col-span-9 mt-8 lg:mt-0">
+      <h2 class="type-display">Lokale KI-Systeme</h2>
+      <p class="type-lead text-ink-muted mt-8 measure-wide">
+        Analyse, Modellauswahl, Aufbau, Einführung und laufender Betrieb. Von der
+        ersten Abklärung bis zum System, mit dem Ihr Team täglich arbeitet.
+      </p>
+      <ul class="mt-10 grid gap-x-8 gap-y-3 sm:grid-cols-2 max-w-3xl">
+        <li class="type-small border-t border-line pt-3">Dokumente durchsuchen und befragen</li>
+        <li class="type-small border-t border-line pt-3">Entwürfe auf Basis Ihrer Vorlagen</li>
+        <li class="type-small border-t border-line pt-3">Rollen und Berechtigungen</li>
+        <li class="type-small border-t border-line pt-3">Protokollierung aller Abfragen</li>
+        <li class="type-small border-t border-line pt-3">On-Premise oder Schweizer Rechenzentrum</li>
+        <li class="type-small border-t border-line pt-3">Betrieb, Wartung, Schulung</li>
+      </ul>
+      <div class="mt-10">
+        <Button href={withBase('/leistungen/local-ai')} variant="primary">Zur Kernleistung</Button>
+      </div>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <article class="col-span-full md:col-span-6 md:pr-8">
+      <Eyebrow>Einstieg</Eyebrow>
+      <h2 class="type-h2 mt-4">Beratung Datensouveränität</h2>
+      <p class="type-body text-ink-muted mt-6 measure">
+        Workshops, Assessments und Seminare. Wo liegen Ihre Daten heute? Welche
+        Alternativen zu US-Anbietern gibt es? Was ist realistisch, was ist
+        Symbolpolitik?
+      </p>
+      <p class="mt-8">
+        <a href={withBase('/leistungen/consulting')} class="type-body link-rule font-bold">
+          Zur Beratung
+        </a>
+      </p>
+    </article>
+
+    <article class="col-span-full md:col-span-6 md:pl-8 md:border-l md:border-line mt-12 md:mt-0">
+      <Eyebrow>Ausbau</Eyebrow>
+      <h2 class="type-h2 mt-4">KI-Software-Entwicklung</h2>
+      <p class="type-body text-ink-muted mt-6 measure">
+        Wenn Standard nicht reicht: massgeschneiderte Anwendungen für Ihre
+        Prozesse. Entwickelt in der Schweiz, betrieben in der Schweiz.
+      </p>
+      <p class="mt-8">
+        <a href={withBase('/leistungen/development')} class="type-body link-rule font-bold">
+          Zur Entwicklung
+        </a>
+      </p>
+    </article>
+  </section>
+</BaseLayout>

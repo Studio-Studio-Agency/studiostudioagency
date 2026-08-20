@@ -37,22 +37,29 @@ const items: FaqItem[] = only
     <h2 class="type-h2 mt-4">{heading}</h2>
   </div>
   <div class="col-span-full md:col-span-7 md:col-start-6 mt-10 md:mt-0">
-    <dl>
+    <div class="faq-liste">
       {items.map((item) => (
-        <details class="faq-item border-t border-line">
+        <details class="border-t border-line">
           <summary>
-            <dt class="type-h3">{item.question}</dt>
-            <span class="faq-marker" aria-hidden="true"></span>
+            <h3 class="type-h3">{item.question}</h3>
+            <span class="faq-marker" aria-hidden="true" />
           </summary>
-          <dd class="type-body text-ink-muted measure pb-6">{item.answer}</dd>
+          <div class="type-body text-ink-muted measure pb-6">{item.answer}</div>
         </details>
       ))}
-    </dl>
+    </div>
   </div>
 </section>
 
 <style>
-  dl {
+  /*
+    Kein <dl>: eine Definitionsliste darf nur dt/dd enthalten, <details> ist
+    dort ungueltig. <details>/<summary> mit einer Ueberschrift im summary ist
+    die gueltige und zugleich zugaenglichere Fassung — das Aufklappen bringt
+    der Browser mit, und die Fragen bleiben ueber die Ueberschriftennavigation
+    erreichbar.
+  */
+  .faq-liste {
     border-bottom: 1px solid var(--color-line);
   }
 
@@ -76,7 +83,7 @@ const items: FaqItem[] = only
     outline-offset: 2px;
   }
 
-  dt {
+  summary h3 {
     flex: 1 1 auto;
   }
 

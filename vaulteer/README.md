@@ -36,22 +36,21 @@ Deployment: siehe [DEPLOY.md](./DEPLOY.md). Bildauftraege: siehe
 
 ---
 
-## Offener Punkt: `content-brief.md` fehlt
+## Inhaltsquelle
 
-Der Auftrag verweist auf eine Datei `content-brief.md` im Projektverzeichnis,
-die Positionierung, Sitemap, saemtliche Texte, SEO-Angaben und die
-Preisstruktur enthaelt. **Diese Datei liegt nicht im Repository** — weder im
-Arbeitsverzeichnis noch in der Git-Historie.
+Saemtliche Texte stammen aus dem Content-Brief des Auftraggebers und sind
+woertlich uebernommen — nicht gekuerzt, nicht geglaettet, nicht umformuliert.
+Wo der Brief nur Stichpunkte liefert (Branchenseiten Treuhand,
+Gesundheitswesen, Industrie), sind diese zu Saetzen ausformuliert, ohne neue
+Sachbehauptungen einzufuehren. Wo Substanz fehlt, steht `[TODO: Text
+ergaenzen]`.
 
-Gebaut ist deshalb bisher Schritt 1 (Fundament), der ohne Inhalte auskommt.
-Die Schritte 2 bis 8 haengen vollstaendig an dieser Datei. Sie werden
-umgesetzt, sobald der Brief vorliegt. Erfundene Ersatztexte waeren hier das
-falsche Mittel: Die Zielgruppe sind Anwaelte, Treuhaender und Aerzte, und
-Sachbehauptungen zu Rechtslage, Preisen oder Leistungsumfang duerfen nicht aus
-einem Sprachmodell stammen.
+**Der Brief selbst liegt nicht im Repository.** Er kam ueber den Chatverlauf.
+Er gehoert als `content-brief.md` hierher committet, damit spaetere Aenderungen
+eine Quelle haben, gegen die sie sich pruefen lassen.
 
-Alle Stellen, an denen Stammdaten fehlen, sind mit `[TODO: ...]` markiert und
-zentral in `src/config/site.ts` gebuendelt.
+Offene Stammdaten sind mit `[TODO: ...]` markiert, in `src/config/site.ts`
+gebuendelt und in `TODO.md` gesammelt.
 
 ---
 
@@ -208,44 +207,101 @@ JavaScript-Datei aus.**
 ## Projektstruktur
 
 ```
-src/
-  components/     Wordmark, Header, Footer, Button, Eyebrow,
-                  SectionRule, ImagePlaceholder
-  config/
-    site.ts       Stammdaten und Navigation — hier stehen die [TODO]-Marken
-    images.ts     Slot-Verzeichnis fuer das Platzhaltersystem
-  content/        Wissensbereich (MDX), ab Schritt 6
-  layouts/
-    BaseLayout.astro   Rahmen, Meta, JSON-LD, Kopf- und Fusszeile
-  pages/
-  styles/
-    global.css    Alle Tokens, die Typoskala, Raster, Buttons, Bewegung
-public/
-  favicon.svg, og-default.svg, og-default.png, robots.txt
+vaulteer/
+├─ src/
+│  ├─ components/     Button, Eyebrow, SectionRule, Faq, PriceTable,
+│  │                  ImagePlaceholder, PageHeader, SectorPage, LegalPage,
+│  │                  Header, Footer, Wordmark
+│  ├─ config/
+│  │  ├─ site.ts      Stammdaten, Navigation, withBase(), Indexierbarkeit
+│  │  ├─ faq.ts       FAQ aus Teil 13 — Quelle fuer Text UND JSON-LD
+│  │  ├─ images.ts    Slot-Verzeichnis der Bildplatzhalter
+│  │  └─ schema.ts    JSON-LD: Organization, LocalBusiness, FAQPage, Article
+│  ├─ content/wissen/ Fachbeitraege (MDX), Schema in src/content.config.ts
+│  ├─ layouts/        BaseLayout mit Rahmen, Meta, JSON-LD
+│  ├─ pages/          20 Seiten, siehe Sitemap im Brief
+│  └─ styles/         global.css: Tokens, Typoskala, Utilities
+├─ IMAGE-BRIEF.md     Bildauftraege je Slot
+├─ TODO.md            Was vor dem Livegang von aussen kommen muss
+└─ DEPLOY.md          Build und Upload, Vorschau und Live
 ```
 
-`/styleguide` ist die interne Musterseite: alle Textstile, beide
-Buttonvarianten, Farbtokens, Icons, Platzhalter und Raster. Sie steht auf
-`noindex` und taucht nicht in der Navigation auf.
+### Zwei Stellen, an denen eine Aenderung zwei Dinge gleichzeitig richtig haelt
+
+- **`src/config/faq.ts`** speist den sichtbaren FAQ-Text und das
+  FAQPage-JSON-LD. Sie koennen nicht auseinanderlaufen — was in strukturierten
+  Daten steht, steht auch auf der Seite. Das ist nicht nur sauber, sondern
+  Vorgabe von Google.
+- **`src/config/images.ts`** speist die Platzhalter im Layout und den
+  Bildauftrag. Ein neuer Slot wird an einer Stelle eingetragen.
 
 ## Stand der Umsetzung
 
 | Schritt | Umfang | Stand |
 |---|---|---|
 | 1 | Fundament: Rahmen, Tokens, Typoskala, Kopf, Fuss, Musterseite | fertig |
-| 2 | Startseite | wartet auf `content-brief.md` |
-| 3 | Leistungsseiten | wartet auf `content-brief.md` |
-| 4 | Vorgehen und Preise | Baustein `PriceTable` steht und ist geprueft; Zahlen und Struktur warten auf `content-brief.md` |
-| 5 | Branchenseiten | wartet auf `content-brief.md` |
-| 6 | Wissensbereich | Collection und Schema stehen, Musterbeitrag als Entwurf; Texte warten auf `content-brief.md` |
-| 7 | Ueber uns, Kontakt, Rechtliches, 404 | 404 fertig; die uebrigen warten auf `content-brief.md` |
-| 8 | Sitemap, JSON-LD, Meta, Pruefung | teilweise: Sitemap, robots.txt, OG-Grundlage und die Trennung Vorschau/Live stehen |
+| 2 | Startseite, alle acht Sektionen | fertig |
+| 3 | Leistungsuebersicht und drei Leistungsseiten | fertig |
+| 4 | Vorgehen und Preise | fertig |
+| 5 | Branchenuebersicht und vier Branchenseiten | fertig; drei `[TODO: Text ergaenzen]` in den Geruest-Seiten |
+| 6 | Wissensbereich, Collection, Beitragsvorlage | fertig; Pillar-Artikel liegt als Entwurf mit Gliederung |
+| 7 | Ueber uns, Kontakt, Impressum, Datenschutz, AGB, 404 | fertig; Rechtstexte bewusst leer, siehe unten |
+| 8 | Sitemap, robots.txt, JSON-LD, Meta, Pruefung | fertig |
 
-## Qualitaetsziele
+20 Seiten. Was noch fehlt, steht in `TODO.md` — und zwar ausschliesslich das,
+was von aussen kommen muss: Stammdaten, Team, Bilder, Rechtstexte, Logo.
 
-- Lighthouse mobil: Performance, Accessibility, Best Practices, SEO je >= 95
-- Startseite ohne Bilder unter 100 KB — aktuell 9 KB HTML, 14 KB CSS, 0 KB JS
-- vollstaendig tastaturbedienbar, Fokusring in `--signal` mit 2 px Offset
-- semantisches HTML, Ueberschriftenhierarchie ohne Spruenge
-- `lang="de-CH"`, Schweizer Orthografie, kein Eszett
-- geprueft bei 320, 768, 1024, 1440 und 1920 px
+### Rechtstexte sind absichtlich leer
+
+Impressum, Datenschutzerklaerung und AGB zeigen nur die erforderlichen
+Abschnitte und stehen auf `noindex`. Der Brief verlangt fuer zwei davon eine
+anwaltliche Pruefung und schliesst Generator-Text ausdruecklich aus. Bei einem
+Anbieter fuer Datensouveraenitaet ist eine fehlerhafte Datenschutzerklaerung
+geschaeftsschaedigend, nicht nur formal falsch — generierter Platzhaltertext
+waere hier das groessere Risiko als eine sichtbar leere Seite.
+
+## Qualitaetsziele — gemessen
+
+Gemessen am Live-Build (`npm run build:live`), Lighthouse 13.4.1,
+Mobil-Voreinstellung:
+
+| Seite | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| Startseite | 100 | 100 | 100 | 100 |
+| `/leistungen/local-ai` | 100 | 100 | 100 | 100 |
+| `/vorgehen` | 100 | 100 | 100 | 100 |
+
+Alle 20 Seiten wurden zusaetzlich auf Desktop geprueft: durchgehend 100 fuer
+Performance, Accessibility und Best Practices.
+
+Hinweis zum SEO-Wert: Im **Vorschau**-Build liegt er bei 63, weil jede Seite
+`noindex` traegt. Das ist gewollt und kein Mangel — die Vorschau gehoert nicht
+in den Suchindex.
+
+Weiter geprueft:
+
+- **Gewicht der Startseite** ohne Bilder: 8 KB HTML, 5 KB CSS, **0 KB
+  JavaScript** (gzip). Grenze laut Brief: 100 KB.
+- **Keine einzige Verbindung zu einer Drittdomain.** Alle 19 Seiten im Browser
+  aufgerufen und jeden Request mitgeschnitten: ausschliesslich `localhost`.
+- **Tastatur:** erstes Tab-Ziel ist der Sprunglink, Fokusring `#FF3B14`, 2 px,
+  2 px Offset.
+- **Breiten 320, 768, 1024, 1440, 1920 px:** kein horizontaler Scroll.
+- **Semantik:** genau ein `<h1>` je Seite, keine Ueberschriftenspruenge,
+  `lang="de-CH"`, alle Titles <= 60 und Descriptions <= 155 Zeichen.
+
+### Drei Befunde aus der Pruefung, die behoben wurden
+
+1. **`container-grid` war kein Raster.** Die Utility setzte nur Breite und
+   Innenabstand. Saemtliche `col-span-*`-Klassen liefen ins Leere,
+   Ueberschrift und Fliesstext lagen uebereinander. Das 12-Spalten-Raster
+   steht jetzt als eigene Utility `grid-12` daneben.
+2. **FAQ-Markup war ungueltig.** `<details>` stand in einer `<dl>`, was der
+   HTML-Standard nicht erlaubt. Ohne `<dl>` neu gebaut — Accessibility von 92
+   auf 100.
+3. **Kontrast auf getoenter Flaeche.** `--ink-muted` und `--signal-deep` sind
+   im Brief als Werte fuer **Weiss** definiert und dort AA-konform. Auf
+   `--paper-shade` fallen sie auf 4.47:1 beziehungsweise 4.42:1 und verfehlen
+   AA knapp. Statt an jeder Stelle eine andere Klasse zu waehlen, entscheidet
+   jetzt die Flaeche: `.bg-paper-shade` dunkelt beide Werte eine Spur ab. Die
+   Brief-Tokens selbst bleiben unveraendert.

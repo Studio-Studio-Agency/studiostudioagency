@@ -1,0 +1,61 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { withBase } from '../../config/site';
+
+const branchen = [
+  {
+    href: '/anwendungsfaelle/anwaltskanzleien',
+    eyebrow: 'Recht',
+    title: 'Anwaltskanzleien und Notariate',
+    text: 'Das Anwaltsgeheimnis nach Art. 321 StGB kennt keine Ausnahme für praktische Hilfsmittel. Mandatsbezogene Zugriffstrennung bildet Chinese Walls technisch ab.',
+  },
+  {
+    href: '/anwendungsfaelle/treuhand',
+    eyebrow: 'Treuhand',
+    title: 'Treuhand und Steuerberatung',
+    text: 'Mandantendaten, Lohndaten und Bilanzen. Ein System, das im Abschlussgeschäft Kapazität schafft, amortisiert sich in einer Saison.',
+  },
+  {
+    href: '/anwendungsfaelle/gesundheitswesen',
+    eyebrow: 'Gesundheit',
+    title: 'Arztpraxen und Gesundheitsbetriebe',
+    text: 'Besonders schützenswerte Personendaten nach revDSG. Ausschliesslich administrative und dokumentarische Entlastung, keine Entscheidungsunterstützung.',
+  },
+  {
+    href: '/anwendungsfaelle/industrie',
+    eyebrow: 'Industrie',
+    title: 'Industrie und Ingenieurwesen',
+    text: 'Konstruktionsdaten, Rezepturen, Prozessparameter. Zulieferer der Life-Science-Industrie unterliegen oft vertraglich zugesicherten IT-Sicherheitsanforderungen.',
+  },
+];
+---
+
+<BaseLayout
+  title="Anwendungsfälle"
+  description="Lokale KI-Systeme für Anwaltskanzleien, Treuhandbetriebe, Gesundheitsbetriebe und Industrie-KMU in der Schweiz."
+>
+  <PageHeader
+    eyebrow="Anwendungsfälle"
+    title="Vier Branchen, vier Ausgangslagen."
+    lead="Was ein lokales KI-System leisten muss, hängt davon ab, welche Regeln für Ihre Daten gelten. Vier Branchen, in denen wir das im Detail kennen."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    {
+      branchen.map((b) => (
+        <article class="col-span-full md:col-span-6 border-t border-line pt-8 mt-10 first:mt-0 md:mt-0 md:[&:nth-child(n+3)]:mt-14">
+          <Eyebrow>{b.eyebrow}</Eyebrow>
+          <h2 class="type-h3 mt-4">
+            <a href={withBase(b.href)} class="link-rule">{b.title}</a>
+          </h2>
+          <p class="type-body text-ink-muted mt-4 measure">{b.text}</p>
+        </article>
+      ))
+    }
+  </section>
+</BaseLayout>

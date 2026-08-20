@@ -1,0 +1,190 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { withBase } from '../../config/site';
+import { article } from '../../config/schema';
+
+export async function getStaticPaths() {
+  // Entwuerfe werden gebaut, aber stehen auf noindex und tauchen nicht in der
+  // Uebersicht auf — so laesst sich ein Entwurf per Direktlink gegenlesen.
+  const beitraege = await getCollection('wissen');
+  return beitraege.map((beitrag) => ({ params: { slug: beitrag.id }, props: { beitrag } }));
+}
+
+const { beitrag } = Astro.props;
+const { Content, headings } = await render(beitrag);
+
+// Inhaltsverzeichnis nur bei langen Beitraegen. Bei drei Abschnitten kostet es
+// mehr Aufmerksamkeit, als es spart.
+const toc = headings.filter((h) => h.depth === 2);
+const zeigeToc = toc.length >= 4;
+
+const siteUrl = Astro.site!.href.replace(/\/$/, '');
+const schema = [
+  article({
+    siteUrl,
+    url: new URL(Astro.url.pathname, Astro.site).href,
+    headline: beitrag.data.title,
+    description: beitrag.data.description,
+    publishDate: beitrag.data.publishDate,
+    updatedDate: beitrag.data.updatedDate,
+  }),
+];
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout
+  title={beitrag.data.title}
+  description={beitrag.data.description}
+  ogType="article"
+  noindex={beitrag.data.draft}
+  schema={schema}
+>
+  <article>
+    <header class="container-grid grid-12 pt-16 pb-12 md:pt-24 md:pb-16">
+      <div class="col-span-full lg:col-span-8">
+        <Eyebrow>{beitrag.data.topic}</Eyebrow>
+        <h1 class="type-h1 mt-4">{beitrag.data.title}</h1>
+        <p class="type-lead text-ink-muted mt-8 measure-wide">{beitrag.data.description}</p>
+        <p class="type-small text-ink-muted mt-8 tabular">
+          <time datetime={beitrag.data.publishDate.toISOString().slice(0, 10)}>
+            {formatDate(beitrag.data.publishDate)}
+          </time>
+          {beitrag.data.updatedDate && (
+            <span>
+              <span aria-hidden="true"> · </span>aktualisiert{' '}
+              <time datetime={beitrag.data.updatedDate.toISOString().slice(0, 10)}>
+                {formatDate(beitrag.data.updatedDate)}
+              </time>
+            </span>
+          )}
+          <span aria-hidden="true"> · </span>{beitrag.data.readingTime} Minuten
+        </p>
+        {
+          beitrag.data.draft && (
+            <p class="type-small font-bold text-ink mt-8 border-l-2 border-signal pl-4">
+              Entwurf. Dieser Beitrag ist unfertig und nicht veröffentlicht.
+            </p>
+          )
+        }
+      </div>
+    </header>
+
+    <SectionRule />
+
+    <div class="container-grid grid-12 section-md">
+      {
+        zeigeToc && (
+          <nav class="col-span-full lg:col-span-3 mb-12 lg:mb-0" aria-labelledby="toc-titel">
+            <p id="toc-titel" class="type-eyebrow text-ink-muted">
+              Inhalt
+            </p>
+            <ol class="mt-5 flex flex-col gap-2 lg:sticky lg:top-8">
+              {toc.map((h, i) => (
+                <li class="grid grid-cols-[1.75rem_1fr]">
+                  <span class="type-small text-ink-muted tabular">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                  <a href={`#${h.slug}`} class="type-small link-rule">
+                    {h.text}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <div class:list={['prose', zeigeToc ? 'col-span-full lg:col-span-8 lg:col-start-5' : 'col-span-full lg:col-span-8']}>
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-sm">
+    <div class="col-span-full">
+      <a href={withBase('/wissen')} class="type-body link-rule">Alle Beiträge</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style is:global>
+  /*
+    Typografie im Beitragstext. Der Fliesstext bleibt bei maximal 68 Zeichen,
+    Ueberschriften duerfen breiter laufen.
+  */
+  .prose > * {
+    max-width: 34rem;
+  }
+
+  .prose > h2 {
+    font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+    margin-top: 4rem;
+    margin-bottom: 1.5rem;
+    max-width: 44rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .prose > h2:first-child {
+    margin-top: 0;
+  }
+
+  .prose > h3 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    line-height: 1.25;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .prose > p {
+    font-size: 1.0625rem;
+    line-height: 1.62;
+    margin-bottom: 1.5rem;
+  }
+
+  .prose > ul,
+  .prose > ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.25rem;
+  }
+
+  .prose > ul {
+    list-style: square;
+  }
+
+  .prose > ol {
+    list-style: decimal;
+  }
+
+  .prose li {
+    font-size: 1.0625rem;
+    line-height: 1.62;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose > blockquote {
+    border-left: 2px solid var(--color-signal);
+    padding-left: 1.5rem;
+    margin: 2.5rem 0;
+    font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  .prose a {
+    text-decoration: underline;
+    text-decoration-color: var(--color-signal);
+    text-underline-offset: 3px;
+  }
+</style>

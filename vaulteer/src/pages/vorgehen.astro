@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Button from '../components/Button.astro';
+import SectionRule from '../components/SectionRule.astro';
+import PriceTable from '../components/PriceTable.astro';
+import Faq from '../components/Faq.astro';
+import { withBase } from '../config/site';
+import { faq } from '../config/faq';
+import { faqPage } from '../config/schema';
+
+const faqAuswahl = ['Was kostet der Einstieg?', 'Wie lange dauert es bis zum laufenden System?'];
+const schema = [faqPage(faq.filter((f) => faqAuswahl.includes(f.question)))];
+
+const schritte = [
+  {
+    nr: '0',
+    title: 'Standortbestimmung',
+    meta: 'Kostenlos, 45 Minuten.',
+    text: 'Ein Gespräch, telefonisch oder bei Ihnen. Wir klären Ihre Ausgangslage, die kritischen Datenkategorien und ob es überhaupt einen sinnvollen Anwendungsfall gibt. Etwa ein Drittel dieser Gespräche endet mit unserer Empfehlung, vorläufig nichts zu tun. Das ist beabsichtigt.',
+  },
+  {
+    nr: '1',
+    title: 'Assessment',
+    meta: '1–2 Wochen, ab CHF 4’800.',
+    text: 'Erhebung Ihrer bestehenden Systeme, Auswahl und Priorisierung der Anwendungsfälle, Hardware-Dimensionierung, Kostenrahmen. Ergebnis ist ein schriftlicher Bericht, den Sie auch dann behalten, wenn Sie mit einem anderen Anbieter weiterarbeiten.',
+  },
+  {
+    nr: '2',
+    title: 'Pilot',
+    meta: '4–6 Wochen, ab CHF 12’000.',
+    text: 'Ein System, ein bis zwei Anwendungsfälle, fünf bis zehn Testnutzende. Sie messen den tatsächlichen Nutzen, bevor Sie in den Vollausbau investieren. Der Pilotbetrag wird bei Weiterführung an die Umsetzung angerechnet.',
+  },
+  {
+    nr: '3',
+    title: 'Umsetzung',
+    meta: 'Ab CHF 15’000, Fixpreis nach Assessment.',
+    text: 'Aufbau des produktiven Systems, Anbindung Ihrer Datenquellen, Berechtigungskonzept, Schulung.',
+  },
+  {
+    nr: '4',
+    title: 'Betrieb',
+    meta: 'Ab CHF 490 pro Monat.',
+    text: 'Überwachung, Aktualisierungen, Sicherheits-Patches, Störungsbehebung, laufende Anpassung. Kündigungsfrist drei Monate. Keine Mindestlaufzeit über das erste Jahr hinaus.',
+  },
+];
+---
+
+<BaseLayout
+  title="Vorgehen und Preise"
+  description="Klar abgegrenzte Schritte mit fixen Preisen. Standortbestimmung, Assessment, Pilot, Umsetzung, Betrieb — mit Richtwerten für Schweizer KMU."
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Vorgehen"
+    title="Vorgehen und Preise"
+    lead="Wir arbeiten in klar abgegrenzten Schritten mit fixen Preisen. Sie entscheiden nach jedem Schritt, ob es weitergeht."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-4">
+      <Eyebrow>Ablauf</Eyebrow>
+      <h2 class="type-h2 mt-4">Der Ablauf</h2>
+    </div>
+    <ol class="col-span-full lg:col-span-7 lg:col-start-6 mt-10 lg:mt-0 border-t border-line">
+      {schritte.map((s) => (
+        <li class="border-b border-line py-7 grid grid-cols-[3rem_1fr] gap-x-6">
+          <span class="type-h2 text-signal-deep tabular leading-none">{s.nr}</span>
+          <div class="min-w-0">
+            <h3 class="type-h3">{s.title}</h3>
+            <p class="type-small text-ink font-bold mt-1 tabular">{s.meta}</p>
+            <p class="type-body text-ink-muted mt-3 measure">{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="col-span-full lg:col-span-7 lg:col-start-6 type-body mt-8 measure">
+      Hardware- und Hostingkosten werden separat und ohne Aufschlag
+      weiterverrechnet. Wir verdienen an unserer Arbeit, nicht an Ihrer Hardware.
+    </p>
+  </section>
+
+  <section class="bg-paper-shade">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-4">
+        <Eyebrow>Richtwerte</Eyebrow>
+        <h2 class="type-h2 mt-4">Was ein Projekt realistisch kostet</h2>
+        <p class="type-body text-ink-muted mt-6 measure">
+          Diese Zahlen sind Richtwerte und keine Offerte. Sie stehen hier, weil
+          Preisintransparenz Zeit auf beiden Seiten kostet.
+        </p>
+      </div>
+
+      <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-12 lg:mt-0 flex flex-col gap-14">
+        <PriceTable
+          caption="Kleine Kanzlei oder Praxis, 5–10 Mitarbeitende"
+          columns={['Position', 'Einmalig', 'Monatlich']}
+          rows={[
+            { label: 'Assessment', cells: ['CHF 4’800', '—'] },
+            { label: 'Umsetzung', cells: ['CHF 15’000–22’000', '—'] },
+            { label: 'Hosting', cells: ['—', 'ab CHF 400'] },
+            { label: 'Betreuung', cells: ['—', 'CHF 490'] },
+          ]}
+        />
+
+        <PriceTable
+          caption="Mittleres KMU, 20–50 Mitarbeitende"
+          columns={['Position', 'Einmalig', 'Monatlich']}
+          rows={[
+            { label: 'Assessment', cells: ['CHF 6’800', '—'] },
+            { label: 'Pilot', cells: ['CHF 12’000', '—'] },
+            { label: 'Umsetzung', cells: ['CHF 28’000–45’000', '—'] },
+            { label: 'Betrieb', cells: ['—', 'ab CHF 1’200'] },
+          ]}
+        />
+
+        <div>
+          <p class="type-eyebrow text-ink">Grösserer Betrieb mit mehreren Anwendungsfällen</p>
+          <p class="type-body text-ink-muted mt-4 measure">Individuell nach Assessment.</p>
+        </div>
+
+        <p class="type-body measure">
+          Wenn Ihr Budget deutlich darunter liegt, sagen Sie es im Erstgespräch —
+          dann finden wir entweder einen reduzierten Einstieg oder wir sind nicht
+          der richtige Partner.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Faq only={faqAuswahl} />
+
+  <section class="bg-signal">
+    <div class="container-grid grid-12 section-sm">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-ink">Beginnen Sie mit Schritt 0.</h2>
+        <p class="type-lead text-ink mt-6 measure-wide">
+          Kostenlos, 45 Minuten, ohne Verpflichtung.
+        </p>
+        <div class="mt-8">
+          <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

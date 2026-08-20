@@ -87,6 +87,12 @@ body {
   line-height: 1.62;
   color: var(--color-ink);
   background: var(--color-paper);
+  /*
+    Deutsche Komposita ("Standortbestimmung", "Datensouveraenitaet") sind
+    laenger als eine schmale Rasterspalte bei 320 px. Ohne das laufen sie aus
+    der Zelle heraus und die Seite scrollt horizontal.
+  */
+  overflow-wrap: break-word;
   /* Der Inhalt bleibt innerhalb der Umgrenzung. */
   padding: var(--frame-inset);
   -webkit-font-smoothing: antialiased;
@@ -116,6 +122,22 @@ h1, h2, h3, h4 {
 }
 
 /* Auf dunklem Grund bleibt Signalorange als Fokusfarbe sichtbar. */
+/*
+  --ink-muted ist im Brief als "Sekundaertext auf Weiss" definiert und dort mit
+  4.6:1 AA-konform. Auf --paper-shade faellt derselbe Wert auf 4.47:1 und
+  verfehlt AA knapp.
+
+  Statt an jeder Stelle eine andere Klasse zu waehlen — was man beim naechsten
+  Abschnitt wieder vergisst — entscheidet die Flaeche: auf getoentem Grund wird
+  der Wert eine Spur abgedunkelt. Die Rolle bleibt sekundaer, der Kontrast
+  stimmt (4.8:1 auf --paper-shade).
+*/
+.bg-paper-shade {
+  --color-ink-muted: #696971;
+  /* Dasselbe fuer --signal-deep: 4.6:1 auf Weiss, 4.42:1 auf getoentem Grund. */
+  --color-signal-deep: #C82800;
+}
+
 .on-ink :focus-visible {
   outline-color: var(--color-signal);
 }
