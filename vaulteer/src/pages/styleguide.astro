@@ -1,0 +1,229 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionRule from '../components/SectionRule.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Button from '../components/Button.astro';
+import ImagePlaceholder from '../components/ImagePlaceholder.astro';
+import { Server, FileSearch, Users, ScrollText, RefreshCw, MapPin } from '@lucide/astro';
+
+/**
+ * Interne Musterseite. Zeigt alle Textstile, beide Buttonvarianten, die
+ * Farbtokens, das Raster und das Platzhaltersystem. Nicht Teil der Sitemap,
+ * per noindex ausgeschlossen.
+ */
+
+const scale = [
+  { name: 'Display — H1 Startseite', cls: 'type-display', spec: 'clamp(2.75rem, 7vw, 5.5rem) / 700 / -0.035em / 0.94' },
+  { name: 'H1 — Unterseiten', cls: 'type-h1', spec: 'clamp(2.25rem, 5vw, 3.75rem) / 700 / -0.03em / 1.0' },
+  { name: 'H2', cls: 'type-h2', spec: 'clamp(1.75rem, 3.2vw, 2.75rem) / 700 / -0.025em / 1.08' },
+  { name: 'H3', cls: 'type-h3', spec: '1.375rem / 700 / -0.015em / 1.25' },
+  { name: 'Lead', cls: 'type-lead', spec: 'clamp(1.125rem, 1.6vw, 1.375rem) / 400 / -0.01em / 1.5' },
+  { name: 'Body', cls: 'type-body', spec: '1.0625rem / 400 / 0 / 1.62' },
+  { name: 'Small', cls: 'type-small', spec: '0.9375rem / 400 / 0 / 1.55' },
+  { name: 'Eyebrow / Label', cls: 'type-eyebrow', spec: '0.75rem / 700 / 0.09em / 1.2 / uppercase' },
+];
+
+const tokens = [
+  { name: '--ink', hex: '#17171A', use: 'Primaertext, dunkle Sektionsflaechen' },
+  { name: '--ink-soft', hex: '#2B2B31', use: 'Karten und Flaechen auf dunklem Grund' },
+  { name: '--ink-muted', hex: '#6E6E76', use: 'Sekundaertext auf Weiss (4.9:1)' },
+  { name: '--paper', hex: '#FFFFFF', use: 'Standardgrund' },
+  { name: '--paper-muted', hex: '#A9A9AF', use: 'Sekundaertext auf Anthrazit (7.6:1)' },
+  { name: '--paper-shade', hex: '#F2F1EE', use: 'Sektionswechsel' },
+  { name: '--line', hex: '#E2E1DD', use: 'Trennlinien auf hellem Grund' },
+  { name: '--line-dark', hex: '#3A3A41', use: 'Trennlinien auf dunklem Grund' },
+  { name: '--signal', hex: '#FF3B14', use: 'Flaechen, Linien, Marker. Nicht als Fliesstext auf Weiss.' },
+  { name: '--signal-deep', hex: '#D62B00', use: 'Orange als Text auf Weiss (4.6:1)' },
+];
+
+const icons = [
+  { Icon: Server, label: 'server — lokaler Betrieb' },
+  { Icon: FileSearch, label: 'file-search — Dokumentensuche' },
+  { Icon: Users, label: 'users — Berechtigungen' },
+  { Icon: ScrollText, label: 'scroll-text — Protokollierung' },
+  { Icon: RefreshCw, label: 'refresh-cw — Wartung' },
+  { Icon: MapPin, label: 'map-pin — Standort' },
+];
+---
+
+<BaseLayout
+  title="Musterseite Designsystem"
+  description="Interne Referenz: Typoskala, Farbtokens, Buttons, Raster und Platzhaltersystem."
+  noindex
+>
+  <!-- Kopf -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Intern — nicht Teil der Sitemap</Eyebrow>
+    <h1 class="type-display mt-6">Designsystem</h1>
+    <p class="type-lead measure-wide mt-8 text-ink-muted">
+      Alle Textstile, beide Buttonvarianten, die Farbtokens und das
+      Platzhaltersystem an einem Ort. Wer eine Seite baut, prueft hier, ob sie
+      dem System entspricht.
+    </p>
+  </section>
+
+  <SectionRule />
+
+  <!-- Typoskala -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 01 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Typoskala</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      Nur zwei Gewichte: 400 und 700. Kein 500, kein 600. Flattersatz rechts
+      durchgehend, Zeilenlaenge im Fliesstext maximal 68 Zeichen.
+    </p>
+
+    <div class="mt-14 flex flex-col gap-12">
+      {
+        scale.map((row) => (
+          <div class="border-t border-line pt-6">
+            <div class="flex flex-wrap items-baseline justify-between gap-3">
+              <p class="type-eyebrow text-signal-deep">{row.name}</p>
+              <p class="type-small tabular text-ink-muted">{row.spec}</p>
+            </div>
+            <p class:list={[row.cls, 'mt-5']}>
+              Lokale KI-Systeme fuer Schweizer KMU
+            </p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <!-- Buttons -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 02 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Buttons</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      Primaer traegt dunkle Schrift auf Signalorange — 5.9:1 und damit
+      AA-konform. Weisse Schrift auf Orange waere es nicht.
+    </p>
+
+    <div class="mt-12 flex flex-wrap items-center gap-4">
+      <Button href="#" variant="primary">Erstgespraech vereinbaren</Button>
+      <Button href="#" variant="secondary">Vorgehen ansehen</Button>
+    </div>
+
+    <div class="mt-10 flex flex-wrap items-center gap-4 bg-ink p-10 on-ink">
+      <Button href="#" variant="primary">Erstgespraech vereinbaren</Button>
+      <Button href="#" variant="secondary-inverse">Vorgehen ansehen</Button>
+    </div>
+
+    <p class="type-small measure mt-8 text-ink-muted">
+      Links im Fliesstext: <a href="#" class="link-rule font-bold">orange Unterstreichung waechst von links</a>,
+      160 ms. Auszeichnung in Orange auf Weiss immer in
+      <span class="text-signal-deep font-bold">--signal-deep</span>, nie in --signal.
+    </p>
+  </section>
+
+  <SectionRule />
+
+  <!-- Farbe -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 03 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Farbtokens</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      Orange ist Akzent, nicht Grundfarbe: nie mehr als etwa fuenf Prozent
+      Flaeche pro Bildschirm. Ausnahme ist genau eine Sektion pro Seite.
+    </p>
+
+    <ul class="mt-12 grid gap-px bg-line sm:grid-cols-2 lg:grid-cols-5">
+      {
+        tokens.map((token) => (
+          <li class="bg-paper p-5">
+            <span
+              class="block h-16 w-full border border-line"
+              style={`background:${token.hex}`}
+              aria-hidden="true"
+            />
+            <p class="type-eyebrow mt-4">{token.name}</p>
+            <p class="type-small tabular mt-1 text-ink-muted">{token.hex}</p>
+            <p class="type-small mt-2 text-ink-muted">{token.use}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <SectionRule />
+
+  <!-- Icons -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 04 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Icons</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      Lucide, lokal gebuendelt, Strichstaerke 1.5, 24 px, currentColor.
+      Ein Icon pro Aussage. Kein Schloss neben dem Wort Sicherheit.
+    </p>
+
+    <ul class="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        icons.map(({ Icon, label }) => (
+          <li class="flex items-center gap-4 border-t border-line pt-5">
+            <Icon size={24} stroke-width={1.5} aria-hidden="true" />
+            <span class="type-small">{label}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <SectionRule />
+
+  <!-- Platzhalter -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 05 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Bild-Platzhalter</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      Der Platzhalter reserviert den Platz per aspect-ratio und traegt den
+      Bildauftrag mit sich. Er sieht wie ein Bauplan aus, damit niemand
+      vergisst, ihn zu ersetzen.
+    </p>
+
+    <div class="mt-12 grid gap-8 lg:grid-cols-2">
+      <ImagePlaceholder slotId="hero-primary" />
+      <ImagePlaceholder slotId="portrait-01" class="max-w-sm" />
+    </div>
+    <div class="mt-8">
+      <ImagePlaceholder slotId="sector-kanzlei" />
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <!-- Raster -->
+  <section class="container-grid section-sm">
+    <Eyebrow>Baustein 06 / 06</Eyebrow>
+    <h2 class="type-h2 mt-6">Raster</h2>
+    <p class="type-body measure mt-6 text-ink-muted">
+      12 Spalten, maximale Inhaltsbreite 1360 px, Innenabstand 24 / 48 / 72 px.
+      Vertikale Abstaende ausschliesslich 96, 128 oder 160 px.
+    </p>
+
+    <div class="mt-12 grid grid-cols-12 gap-4">
+      {
+        Array.from({ length: 12 }).map((_, i) => (
+          <div class="bg-paper-shade py-8 text-center">
+            <span class="type-small tabular text-ink-muted">{i + 1}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Abschluss-CTA: die eine vollflaechig orange Sektion pro Seite -->
+  <section class="bg-signal">
+    <div class="container-grid section-sm">
+      <h2 class="type-h2 text-ink">Abschluss-Sektion in Signalorange</h2>
+      <p class="type-lead measure-wide mt-6 text-ink">
+        Genau eine Sektion pro Seite darf vollflaechig orange sein. Die Schrift
+        steht darin in Anthrazit, nicht in Weiss.
+      </p>
+      <div class="mt-10">
+        <Button href="#" variant="secondary">Sekundaerbutton auf Orange</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

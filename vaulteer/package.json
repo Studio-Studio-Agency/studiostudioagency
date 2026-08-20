@@ -1,0 +1,28 @@
+{
+  "name": "vaulteer-website",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^4.3.14",
+    "@astrojs/sitemap": "^3.7.3",
+    "@lucide/astro": "^1.33.0",
+    "@tailwindcss/vite": "^4.1.18",
+    "astro": "^5.18.2",
+    "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.3"
+  },
+  "overrides": {
+    "vite": "$vite"
+  }
+}

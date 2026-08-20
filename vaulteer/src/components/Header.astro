@@ -1,0 +1,121 @@
+---
+import Wordmark from './Wordmark.astro';
+import { nav } from '../config/site';
+
+/**
+ * Kopfzeile. Klebt an der Rahmenoberkante.
+ *
+ * Die mobile Navigation nutzt <details>/<summary> statt JavaScript:
+ * nativ tastaturbedienbar, keine Skriptlast, kein Hydrations-Overhead.
+ */
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="site-header sticky top-[var(--frame-inset)] z-50 bg-paper">
+  <div class="container-grid">
+    <div class="relative flex items-center justify-between gap-6 border-b border-line py-5">
+      <a href="/" class="inline-flex items-center" aria-label="Vaulteer — zur Startseite">
+        <Wordmark />
+      </a>
+
+      <!-- Desktop -->
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="Hauptnavigation">
+        {
+          nav.map((item) => (
+            <a
+              href={item.href}
+              class:list={[
+                'type-small font-bold link-rule',
+                isActive(item.href) ? 'text-signal-deep' : 'text-ink',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <a href="/kontakt" class="btn btn-primary px-5 py-3">Kontakt</a>
+      </nav>
+
+      <!-- Mobil -->
+      <details class="nav-mobile lg:hidden">
+        <summary
+          class="type-eyebrow flex cursor-pointer list-none items-center gap-2 border border-ink px-4 py-3"
+          aria-label="Navigation oeffnen"
+        >
+          <span class="nav-mobile__open">Menue</span>
+          <span class="nav-mobile__close">Schliessen</span>
+        </summary>
+        <nav class="border-b border-line pb-6 pt-2" aria-label="Hauptnavigation mobil">
+          <ul class="flex flex-col">
+            {
+              nav.map((item) => (
+                <li class="border-t border-line">
+                  <a
+                    href={item.href}
+                    class:list={[
+                      'block py-3 font-bold',
+                      isActive(item.href) ? 'text-signal-deep' : 'text-ink',
+                    ]}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </a>
+                  {item.children && (
+                    <ul class="pb-3 pl-4">
+                      {item.children.map((child) => (
+                        <li>
+                          <a href={child.href} class="type-small block py-1.5 text-ink-muted">
+                            {child.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+          <a href="/kontakt" class="btn btn-primary mt-6 w-full justify-center">Kontakt</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Marker des <summary> entfernen — der Zustand wird ueber die Beschriftung
+     kommuniziert, nicht ueber ein Dreieck. */
+  .nav-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-mobile[open] summary {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .nav-mobile .nav-mobile__close,
+  .nav-mobile[open] .nav-mobile__open {
+    display: none;
+  }
+
+  .nav-mobile[open] .nav-mobile__close {
+    display: inline;
+  }
+
+  /* Vollflaechiges Menue unterhalb der Kopfzeile */
+  /* Das Menue laeuft bis an den Rahmen, nicht nur bis zur Rasterkante —
+     sonst blitzt der Seiteninhalt links und rechts durch. */
+  .nav-mobile[open] nav {
+    position: absolute;
+    top: 100%;
+    left: calc(var(--content-pad) * -1);
+    right: calc(var(--content-pad) * -1);
+    padding-inline: var(--content-pad);
+    background: var(--color-paper);
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+  }
+</style>

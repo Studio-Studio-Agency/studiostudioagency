@@ -1,0 +1,78 @@
+---
+import Wordmark from './Wordmark.astro';
+import { nav, footerLegal, site } from '../config/site';
+
+/**
+ * Fusszeile auf --ink. Enthaelt die vollstaendige Sitemap, damit auch die
+ * Unterseiten der Leistungs- und Branchenbereiche direkt erreichbar sind.
+ */
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer on-ink bg-ink text-paper">
+  <div class="container-grid">
+    <div class="grid gap-12 py-20 md:grid-cols-12 md:gap-8">
+      <div class="md:col-span-4">
+        <Wordmark dark />
+        <p class="type-small measure mt-6 text-paper-muted">
+          Lokale KI-Systeme fuer Schweizer KMU. Gebaut, betrieben und beraten aus Basel.
+        </p>
+      </div>
+
+      <nav class="md:col-span-5" aria-label="Fussnavigation">
+        <ul class="grid gap-8 sm:grid-cols-2">
+          {
+            nav.map((item) => (
+              <li>
+                <a href={item.href} class="type-eyebrow text-paper link-rule">
+                  {item.label}
+                </a>
+                {item.children && (
+                  <ul class="mt-3 flex flex-col gap-1.5">
+                    {item.children.map((child) => (
+                      <li>
+                        <a href={child.href} class="type-small text-paper-muted link-rule">
+                          {child.label}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="md:col-span-3">
+        <p class="type-eyebrow text-paper">Kontakt</p>
+        <address class="type-small mt-3 not-italic text-paper-muted">
+          {site.legalName}<br />
+          {site.address.street}<br />
+          {site.address.postalCode} {site.address.locality}<br />
+          Schweiz
+        </address>
+        <p class="type-small mt-4">
+          <a href={`mailto:${site.email}`} class="text-paper link-rule">{site.email}</a>
+        </p>
+      </div>
+    </div>
+
+    <div
+      class="flex flex-col gap-4 border-t border-line-dark py-8 sm:flex-row sm:items-center sm:justify-between"
+    >
+      <p class="type-small text-paper-muted">&copy; {year} {site.legalName}, Basel-Stadt</p>
+      <ul class="flex gap-6">
+        {
+          footerLegal.map((item) => (
+            <li>
+              <a href={item.href} class="type-small text-paper-muted link-rule">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>
