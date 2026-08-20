@@ -4,6 +4,7 @@ import SectionRule from '../components/SectionRule.astro';
 import Eyebrow from '../components/Eyebrow.astro';
 import Button from '../components/Button.astro';
 import ImagePlaceholder from '../components/ImagePlaceholder.astro';
+import PriceTable from '../components/PriceTable.astro';
 import { Server, FileSearch, Users, ScrollText, RefreshCw, MapPin } from '@lucide/astro';
 
 /**
@@ -214,6 +215,39 @@ const icons = [
   </section>
 
   <!-- Abschluss-CTA: die eine vollflaechig orange Sektion pro Seite -->
+  <SectionRule />
+
+  <section class="container-grid section-sm">
+    <div class="col-span-full">
+      <Eyebrow>Baustein — Preistabelle</Eyebrow>
+      <h2 class="type-h2 mt-4">Preistabelle</h2>
+      <p class="type-body text-ink-muted mt-6 measure">
+        Echte <code>&lt;table&gt;</code> mit tabellarischen Ziffern. Unterhalb
+        von 640&nbsp;px bricht sie zu gestapelten Beschriftung/Wert-Paaren um,
+        statt horizontal zu scrollen. Fenster schmaler ziehen zum Pruefen.
+      </p>
+      <p class="type-small text-ink-muted mt-4 measure">
+        <strong>Die Werte unten sind keine Preisangabe.</strong> Die echten
+        Zahlen stehen in <code>content-brief.md</code>, die dem Projekt noch
+        fehlt. <code>CHF&nbsp;0&#8217;000</code> steht hier nur, um die
+        Ziffernausrichtung zu zeigen.
+      </p>
+
+      <div class="mt-10 max-w-3xl">
+        <PriceTable
+          caption="Beispielstruktur, keine Preisangabe"
+          columns={['Leistung', 'Einmalig', 'Monatlich']}
+          rows={[
+            { label: '[TODO: Paket A]', cells: ['CHF 0\u2019000', 'CHF 000'] },
+            { label: '[TODO: Paket B]', cells: ['CHF 00\u2019000', 'CHF 0\u2019000'] },
+            { label: '[TODO: Paket C]', cells: ['CHF 000\u2019000', 'CHF 00\u2019000'] },
+          ]}
+          note="[TODO: Fussnote aus dem Brief, etwa zur Mehrwertsteuer.]"
+        />
+      </div>
+    </div>
+  </section>
+
   <section class="bg-signal">
     <div class="container-grid section-sm">
       <h2 class="type-h2 text-ink">Abschluss-Sektion in Signalorange</h2>

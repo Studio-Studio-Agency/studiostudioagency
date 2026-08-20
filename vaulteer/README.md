@@ -235,10 +235,10 @@ Buttonvarianten, Farbtokens, Icons, Platzhalter und Raster. Sie steht auf
 | 1 | Fundament: Rahmen, Tokens, Typoskala, Kopf, Fuss, Musterseite | fertig |
 | 2 | Startseite | wartet auf `content-brief.md` |
 | 3 | Leistungsseiten | wartet auf `content-brief.md` |
-| 4 | Vorgehen und Preise | wartet auf `content-brief.md` |
+| 4 | Vorgehen und Preise | Baustein `PriceTable` steht und ist geprueft; Zahlen und Struktur warten auf `content-brief.md` |
 | 5 | Branchenseiten | wartet auf `content-brief.md` |
-| 6 | Wissensbereich | wartet auf `content-brief.md` |
-| 7 | Ueber uns, Kontakt, Rechtliches, 404 | wartet auf `content-brief.md` |
+| 6 | Wissensbereich | Collection und Schema stehen, Musterbeitrag als Entwurf; Texte warten auf `content-brief.md` |
+| 7 | Ueber uns, Kontakt, Rechtliches, 404 | 404 fertig; die uebrigen warten auf `content-brief.md` |
 | 8 | Sitemap, JSON-LD, Meta, Pruefung | teilweise: Sitemap, robots.txt, OG-Grundlage und die Trennung Vorschau/Live stehen |
 
 ## Qualitaetsziele

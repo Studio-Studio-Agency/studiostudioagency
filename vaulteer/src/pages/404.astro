@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import { withBase, nav } from '../config/site';
+---
+
+<BaseLayout
+  title="Seite nicht gefunden"
+  description="Die aufgerufene Seite existiert nicht."
+  noindex
+>
+  <section class="section-lg">
+    <div class="container-grid">
+      <div class="col-span-full md:col-span-8">
+        <Eyebrow>Fehler 404</Eyebrow>
+        <h1 class="type-h1 mt-6">Diese Seite gibt es nicht.</h1>
+        <p class="type-lead text-ink-muted mt-8 measure-wide">
+          Der Link ist veraltet, oder in der Adresse steckt ein Tippfehler.
+          Beides laesst sich von hier aus beheben.
+        </p>
+        <div class="mt-12 flex flex-wrap gap-4">
+          <Button href={withBase('/')} variant="primary">Zur Startseite</Button>
+          <Button href={withBase('/kontakt')} variant="secondary">Kontakt aufnehmen</Button>
+        </div>
+
+        <nav class="mt-16 border-t border-line pt-8" aria-label="Alle Bereiche">
+          <p class="type-eyebrow text-ink-muted">Alle Bereiche</p>
+          <ul class="mt-6 flex flex-col gap-3">
+            {nav.map((item) => (
+              <li>
+                <a href={withBase(item.href)} class="type-body link-rule">{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
