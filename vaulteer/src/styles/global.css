@@ -44,6 +44,7 @@
   /* Maximale Inhaltsbreite */
   --content-max: 85rem; /* 1360px */
   /* Innenabstand des Rasters */
+  --grid-gap: 1.5rem;
   --content-pad: 1.5rem; /* 24px */
   /* Bewegungsdauern — zentral, damit reduced-motion sie auf 0 setzen kann */
   --motion-fast: 120ms;
@@ -231,6 +232,20 @@ h1, h2, h3, h4 {
   max-width: var(--content-max);
   margin-inline: auto;
   padding-inline: var(--content-pad);
+}
+
+/*
+  Das 12-Spalten-Raster aus dem Brief. Bewusst getrennt von container-grid:
+  Kopf- und Fusszeile brauchen nur Breite und Innenabstand, kein Raster.
+  Zusammengelegt wuerde jedes Kind dort zur Rasterzelle.
+
+  Verwendung: <section class="container-grid grid-12">, Kinder mit
+  col-span-* / col-start-*.
+*/
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gap);
 }
 
 /* Vertikale Sektionsabstaende aus der 8px-Skala. Nicht frei waehlen. */

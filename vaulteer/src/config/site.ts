@@ -10,6 +10,7 @@ export const site = {
   /** Aus astro.config.mjs (SITE_URL). Nicht hier haendisch setzen. */
   url: import.meta.env.SITE,
   locale: 'de-CH',
+  /** Vorgesehen: kontakt@vaulteer.ch — bis zur Einrichtung Platzhalter. */
   email: '[TODO: E-Mail-Adresse]',
   phone: '[TODO: Telefonnummer]',
   address: {
@@ -56,27 +57,28 @@ export const nav: NavItem[] = [
     href: '/leistungen',
     label: 'Leistungen',
     children: [
-      { href: '/leistungen/local-ai', label: 'Local AI' },
-      { href: '/leistungen/consulting', label: 'Consulting' },
-      { href: '/leistungen/development', label: 'Development' },
+      { href: '/leistungen/local-ai', label: 'Lokale KI-Systeme' },
+      { href: '/leistungen/consulting', label: 'Beratung Datensouveränität' },
+      { href: '/leistungen/development', label: 'KI-Software-Entwicklung' },
     ],
   },
   { href: '/vorgehen', label: 'Vorgehen und Preise' },
   {
     href: '/anwendungsfaelle',
-    label: 'Anwendungsfaelle',
+    label: 'Anwendungsfälle',
     children: [
-      { href: '/anwendungsfaelle/kanzleien', label: 'Kanzleien' },
+      { href: '/anwendungsfaelle/anwaltskanzleien', label: 'Anwaltskanzleien' },
       { href: '/anwendungsfaelle/treuhand', label: 'Treuhand' },
-      { href: '/anwendungsfaelle/gesundheit', label: 'Gesundheit' },
+      { href: '/anwendungsfaelle/gesundheitswesen', label: 'Gesundheitswesen' },
       { href: '/anwendungsfaelle/industrie', label: 'Industrie' },
     ],
   },
   { href: '/wissen', label: 'Wissen' },
-  { href: '/ueber-uns', label: 'Ueber uns' },
+  { href: '/ueber-uns', label: 'Über uns' },
 ];
 
 export const footerLegal: NavItem[] = [
   { href: '/impressum', label: 'Impressum' },
   { href: '/datenschutz', label: 'Datenschutz' },
+  { href: '/agb', label: 'AGB' },
 ];
