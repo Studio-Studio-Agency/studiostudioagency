@@ -92,6 +92,12 @@ body {
     laenger als eine schmale Rasterspalte bei 320 px. Ohne das laufen sie aus
     der Zelle heraus und die Seite scrollt horizontal.
   */
+  /*
+    Netz gegen Ueberlauf: deutsche Komposita sind laenger als eine schmale
+    Rasterspalte. Greift erst, wenn ein Wort sonst aus der Zelle liefe — und
+    weil Ueberschriften zusaetzlich hyphens:auto tragen, trennt ein Browser mit
+    deutschem Woerterbuch vorher sauber statt mitten im Wort.
+  */
   overflow-wrap: break-word;
   /* Der Inhalt bleibt innerhalb der Umgrenzung. */
   padding: var(--frame-inset);
@@ -175,6 +181,7 @@ h1, h2, h3, h4 {
    ========================================================================= */
 
 @utility type-display {
+  hyphens: auto;
   font-size: clamp(2.75rem, 7vw, 5.5rem);
   font-weight: 700;
   letter-spacing: -0.035em;
@@ -182,6 +189,7 @@ h1, h2, h3, h4 {
 }
 
 @utility type-h1 {
+  hyphens: auto;
   font-size: clamp(2.25rem, 5vw, 3.75rem);
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -189,6 +197,7 @@ h1, h2, h3, h4 {
 }
 
 @utility type-h2 {
+  hyphens: auto;
   font-size: clamp(1.75rem, 3.2vw, 2.75rem);
   font-weight: 700;
   letter-spacing: -0.025em;
@@ -196,6 +205,7 @@ h1, h2, h3, h4 {
 }
 
 @utility type-h3 {
+  hyphens: auto;
   font-size: 1.375rem;
   font-weight: 700;
   letter-spacing: -0.015em;

@@ -214,7 +214,7 @@ vaulteer/
 │  │                  Header, Footer, Wordmark
 │  ├─ config/
 │  │  ├─ site.ts      Stammdaten, Navigation, withBase(), Indexierbarkeit
-│  │  ├─ faq.ts       FAQ aus Teil 13 — Quelle fuer Text UND JSON-LD
+│  │  ├─ faq.ts       FAQ aus Teil 12 — Quelle fuer Text UND JSON-LD
 │  │  ├─ images.ts    Slot-Verzeichnis der Bildplatzhalter
 │  │  └─ schema.ts    JSON-LD: Organization, LocalBusiness, FAQPage, Article
 │  ├─ content/wissen/ Fachbeitraege (MDX), Schema in src/content.config.ts
@@ -222,6 +222,7 @@ vaulteer/
 │  ├─ pages/          20 Seiten, siehe Sitemap im Brief
 │  └─ styles/         global.css: Tokens, Typoskala, Utilities
 ├─ IMAGE-BRIEF.md     Bildauftraege je Slot
+├─ CONTENT-ROADMAP.md Wissensbereich: was geschrieben wird, in welcher Reihenfolge
 ├─ TODO.md            Was vor dem Livegang von aussen kommen muss
 └─ DEPLOY.md          Build und Upload, Vorschau und Live
 ```
@@ -289,6 +290,34 @@ Weiter geprueft:
 - **Breiten 320, 768, 1024, 1440, 1920 px:** kein horizontaler Scroll.
 - **Semantik:** genau ein `<h1>` je Seite, keine Ueberschriftenspruenge,
   `lang="de-CH"`, alle Titles <= 60 und Descriptions <= 155 Zeichen.
+
+### Wortumbruch in Ueberschriften
+
+Deutsche Komposita sind laenger als eine schmale Rasterspalte.
+«Entscheidungsunterstuetzung», «Nachvollziehbarkeit» und
+«Standortbestimmung» wurden bis 1920 px mitten im Wort umgebrochen — ein
+sichtbarer Satzfehler, den ein Pruefskript ueber alle Seiten und die fuenf
+Testbreiten aufgedeckt hat.
+
+Behoben durch drei Massnahmen:
+
+1. **Ueberschriftenspalten von vier auf fuenf Spalten verbreitert**, die
+   Inhaltsspalten entsprechend von sieben auf sechs ab Spalte sieben. Die leere
+   Gutter-Spalte bleibt erhalten, der Fliesstext verliert nichts, weil
+   `measure` ihn ohnehin auf 34rem begrenzt.
+2. **`hyphens: auto` auf allen Ueberschriften-Utilities.** Ein Browser mit
+   deutschem Trennwoerterbuch trennt damit sauber, bevor das Netz aus Punkt 3
+   greift.
+3. **`overflow-wrap: break-word`** bleibt als Netz gegen horizontalen Scroll.
+
+Ab 768 px bricht danach keine Ueberschrift mehr im Wort. **Bei 320 px bleiben
+sechs Faelle**: dort ist der Viewport schmaler als das Wort in der vom Brief
+gesetzten Mindestgroesse (`clamp(1.75rem, ...)`), und die Typoskala wird nicht
+angetastet. Auf Browsern mit deutschem Trennwoerterbuch — Chrome, Safari und
+Firefox liefern eines mit — trennt `hyphens: auto` diese Faelle sauber. Das
+liess sich hier nicht nachweisen: dem Chromium im Testcontainer fehlt das
+Woerterbuch, weshalb er auf `break-word` zurueckfaellt. Auf einem echten Geraet
+gegenpruefen.
 
 ### Drei Befunde aus der Pruefung, die behoben wurden
 

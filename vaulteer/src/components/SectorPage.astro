@@ -67,22 +67,22 @@ const {
   <SectionRule />
 
   <section class="container-grid grid-12 section-md">
-    <div class="col-span-full lg:col-span-4">
+    <div class="col-span-full lg:col-span-5">
       <Eyebrow>Ausgangslage</Eyebrow>
       <h2 class="type-h2 mt-4">Die Ausgangslage</h2>
     </div>
-    <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-8 lg:mt-0">
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
       {ausgangslage.map((p) => <p class="type-body measure mt-6 first:mt-0">{p}</p>)}
     </div>
   </section>
 
   <section class="bg-paper-shade">
     <div class="container-grid grid-12 section-md">
-      <div class="col-span-full lg:col-span-4">
+      <div class="col-span-full lg:col-span-5">
         <Eyebrow>Nutzen</Eyebrow>
         <h2 class="type-h2 mt-4">{leistungenTitel}</h2>
       </div>
-      <ul class="col-span-full lg:col-span-7 lg:col-start-6 mt-10 lg:mt-0 border-t border-line">
+      <ul class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line">
         {leistungen.map((l) => <li class="type-body border-b border-line py-4">{l}</li>)}
       </ul>
     </div>
@@ -91,11 +91,11 @@ const {
   {
     besonderheit && (
       <section class="container-grid grid-12 section-md">
-        <div class="col-span-full lg:col-span-4">
+        <div class="col-span-full lg:col-span-5">
           <Eyebrow>Besonderheit</Eyebrow>
           <h2 class="type-h2 mt-4">{besonderheitTitel}</h2>
         </div>
-        <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-8 lg:mt-0">
+        <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
           {besonderheit.map((p) => <p class="type-body measure mt-6 first:mt-0">{p}</p>)}
         </div>
       </section>
@@ -105,13 +105,13 @@ const {
   <SectionRule />
 
   <section class="container-grid grid-12 section-md">
-    <div class="col-span-full lg:col-span-4">
+    <div class="col-span-full lg:col-span-5">
       <Eyebrow>Abgrenzung</Eyebrow>
       <h2 class="type-h2 mt-4">{abgrenzungTitel}</h2>
     </div>
     <div
       class:list={[
-        'col-span-full lg:col-span-7 lg:col-start-6 mt-8 lg:mt-0',
+        'col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0',
         abgrenzungWarnung && 'border-l-2 border-signal pl-6',
       ]}
     >

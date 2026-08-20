@@ -1,5 +1,5 @@
 /**
- * FAQ aus Teil 13 des Briefs. Woertlich uebernommen.
+ * FAQ aus Teil 12 (FAQ) des Briefs. Woertlich uebernommen.
  * Wird auf Startseite und Leistungsseiten eingesetzt und speist das
  * FAQPage-JSON-LD — beides aus dieser einen Quelle, damit sichtbarer Text und
  * strukturierte Daten nie auseinanderlaufen.

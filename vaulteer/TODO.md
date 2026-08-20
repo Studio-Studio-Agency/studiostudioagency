@@ -1,6 +1,6 @@
 # Offene Angaben vor dem Livegang
 
-Sammelliste aus Teil 15 des Content-Briefs plus dem, was bei der Umsetzung
+Sammelliste aus Teil 14 (Offene Angaben) des Content-Briefs plus dem, was bei der Umsetzung
 dazugekommen ist. Jeder Punkt steht im Code als `[TODO: ...]` und faellt beim
 Durchsehen der Seiten auf.
 
@@ -71,6 +71,12 @@ Quelle: `vaulteer/IMAGE-BRIEF.md`, `vaulteer/src/config/images.ts`
 - [ ] Pillar-Artikel «Der CLOUD Act und Schweizer Unternehmen». Liegt als
       Entwurf mit Gliederung unter `src/content/wissen/cloud-act.mdx`,
       `draft: true`. Der Fliesstext wird redaktionell geschrieben.
+- [ ] Beitrag «Cybersicherheit und Datensouveraenitaet sind zwei verschiedene
+      Probleme». Redaktionsanweisung samt Zitierweise in `CONTENT-ROADMAP.md`.
+      Die dort genannten Deloitte-Zahlen stammen aus dem Brief und gehoeren vor
+      der Veroeffentlichung an der Medienmitteilung verifiziert.
+- [ ] `topic` im Collection-Schema auf `z.enum([...])` umstellen, sobald die
+      Themenliste feststeht.
 - [ ] Branchenseiten Treuhand, Gesundheitswesen und Industrie: je ein
       `[TODO: Text ergänzen]` in der Ausgangslage, dazu die Abgrenzung bei
       Treuhand und Industrie. Der Brief liefert dort nur Stichpunkte.

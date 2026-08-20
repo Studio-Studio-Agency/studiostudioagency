@@ -30,11 +30,11 @@ const portraits = ['portrait-01', 'portrait-02'] as const;
   <SectionRule />
 
   <section class="container-grid grid-12 section-md">
-    <div class="col-span-full lg:col-span-4">
+    <div class="col-span-full lg:col-span-5">
       <Eyebrow>Anlass</Eyebrow>
       <h2 class="type-h2 mt-4">Warum es uns gibt</h2>
     </div>
-    <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-8 lg:mt-0">
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
       <p class="type-body measure">
         Zwischen 2023 und heute hat sich in Schweizer Betrieben eine Praxis
         etabliert, die niemand entschieden hat: KI-Werkzeuge werden genutzt, ohne
@@ -51,11 +51,11 @@ const portraits = ['portrait-01', 'portrait-02'] as const;
 
   <section class="bg-ink on-ink text-paper">
     <div class="container-grid grid-12 section-md">
-      <div class="col-span-full lg:col-span-4">
+      <div class="col-span-full lg:col-span-5">
         <Eyebrow dark>Haltung</Eyebrow>
         <h2 class="type-h2 mt-4 text-paper">Wie wir arbeiten</h2>
       </div>
-      <ul class="col-span-full lg:col-span-7 lg:col-start-6 mt-10 lg:mt-0 border-t border-line-dark">
+      <ul class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line-dark">
         {haltung.map((h) => (
           <li class="type-body text-paper-muted border-b border-line-dark py-5">{h}</li>
         ))}
@@ -64,14 +64,14 @@ const portraits = ['portrait-01', 'portrait-02'] as const;
   </section>
 
   <section class="container-grid grid-12 section-md">
-    <div class="col-span-full lg:col-span-4">
+    <div class="col-span-full lg:col-span-5">
       <Eyebrow>Team</Eyebrow>
       <h2 class="type-h2 mt-4">Team</h2>
       <p class="type-body text-ink-muted mt-6 measure">
         [TODO: Teammitglieder — Name, Funktion, ein Satz Hintergrund]
       </p>
     </div>
-    <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-10 lg:mt-0">
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
       <ul class="grid gap-8 sm:grid-cols-2">
         {portraits.map((slot) => (
           <li>
@@ -93,11 +93,11 @@ const portraits = ['portrait-01', 'portrait-02'] as const;
   <SectionRule />
 
   <section class="container-grid grid-12 section-md">
-    <div class="col-span-full lg:col-span-4">
+    <div class="col-span-full lg:col-span-5">
       <Eyebrow>Standort</Eyebrow>
       <h2 class="type-h2 mt-4">Standort</h2>
     </div>
-    <div class="col-span-full lg:col-span-7 lg:col-start-6 mt-8 lg:mt-0">
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
       <dl class="border-t border-line">
         <div class="border-b border-line py-4 grid sm:grid-cols-[10rem_1fr] gap-x-6 gap-y-1">
           <dt class="type-small text-ink-muted">Adresse</dt>
