@@ -33,8 +33,10 @@ export default defineConfig({
   integrations: [
     mdx(),
     sitemap({
-      // Die interne Musterseite steht auf noindex und gehoert nicht in die Sitemap.
-      filter: (page) => !page.includes('/styleguide'),
+      // Seiten auf noindex gehoeren nicht in die Sitemap — beides zugleich ist
+      // ein Widerspruch, den die Search Console meldet. Betroffen sind die
+      // interne Musterseite und die Bestaetigung nach dem Absenden.
+      filter: (page) => !page.includes('/styleguide') && !page.includes('/kontakt/danke'),
       // Mit base erzeugt die Integration die Wurzel doppelt (mit und ohne
       // Schraegstrich). Auf eine Schreibweise normalisieren und Duplikate
       // verwerfen — sonst meldet die Search Console doppelte Inhalte.

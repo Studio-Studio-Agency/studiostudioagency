@@ -30,49 +30,43 @@ Der naechste zu schreibende Beitrag.
 **Aufhaenger:** Deloitte-Studie «Unterschaetzt, ungeschuetzt, unterversichert:
 KMU-Cyberrisiken in der Schweiz» vom 20. August 2026.
 
-**Kernbefunde laut Brief:**
+**Kernbefunde, gegengeprueft (Stand 21. August 2026):**
 
-| Befund | Wert |
-|---|---|
-| Berichten von einem ernsten Cybervorfall in den letzten drei Monaten | 49 % |
-| Halten das eigene Risiko fuer hoch | 22 % |
-| Cybersicherheitsindex | 58 von 100 |
-| Zwei-Faktor-Anmeldung im Einsatz | 66 % |
-| Zentrales Anmeldeverfahren im Einsatz | 45 % |
+| Befund | Wert | Status |
+|---|---|---|
+| Berichten von einem ernsten Cybervorfall innert drei Monaten | 49 % | bestaetigt |
+| Halten das eigene Risiko fuer hoch | 22 % | bestaetigt |
+| KMU-Cybersicherheitsindex | 58 von 100 | bestaetigt |
+| **Multi**-Faktor-Authentifizierung im Einsatz | 66 % | **korrigiert, siehe unten** |
+| Single Sign-On im Einsatz | 45 % | bestaetigt, **unvollstaendig zitiert** |
+| Passwortlose Authentifizierung im Einsatz | 45 % | im Brief nicht erwaehnt |
+| Cyberversicherung (Schweizer Unternehmen, 2025, Quelle SVV) | 11,5 % | im Brief nicht erwaehnt |
 
-**These des Beitrags:** Diese Zahlen beschreiben ein Abwehrproblem — jemand von
-aussen will hinein. Datensouveraenitaet beschreibt etwas anderes — Daten gehen
-freiwillig nach draussen, durch die Vordertuer, mit Zustimmung der
-Nutzungsbedingungen. Beide Probleme brauchen unterschiedliche Antworten, und
-eine geloeste Firewall-Frage sagt nichts darueber aus, wo die Mandantendaten am
-Freitagabend gelandet sind.
+Erhebung: April 2026, 924 Arbeitnehmende in Unternehmen mit bis zu 250
+Mitarbeitenden. Veroeffentlichung 20. August 2026.
 
-**Warum zuerst:** Verhindert, dass Vaulteer mit IT-Sicherheitsanbietern
-verwechselt wird, und greift ein Thema auf, das gerade Aufmerksamkeit hat.
+**Zwei Korrekturen gegenueber der Formulierung im Brief.** Beide betreffen
+genau die Zahlen, auf denen das Argument des Beitrags ruht:
 
-**Der Beitrag darf die Studie nicht als Bedrohungsargument benutzen, sondern
-zieht eine Grenze.** Teil 15 des Briefs verbietet Datenleck-Statistiken als
-Aufhaenger; die Ausnahme traegt genau so weit, wie die Zahlen der Abgrenzung
-dienen und nicht der Angst.
+1. Der Brief schreibt «Zwei-Faktor-Anmeldung bei 66 Prozent». Erhoben wurde
+   **Multi**-Faktor-Authentifizierung. Zwei-Faktor ist ein Sonderfall davon;
+   die Verengung gibt die Quelle falsch wieder. Im Beitrag gehoert der Begriff
+   der Studie verwendet.
+2. Der Brief schreibt «zentrales Anmeldeverfahren bei 45 Prozent». Das stimmt
+   fuer Single Sign-On — aber passwortlose Authentifizierung liegt **ebenfalls**
+   bei 45 Prozent. So wie es im Brief steht, wirkt der Wert exklusiv fuer SSO.
 
-**Zitierweise, verbindlich:**
+Der Titel der Studie nennt drei Befunde; der dritte, die Unterversicherung
+(11,5 Prozent), fehlt im Brief ganz. Fuer die Abgrenzungsthese des Beitrags ist
+er nicht noetig, aber wer die Studie zitiert, sollte wissen, dass er existiert.
 
-- Deloitte als Urheber nennen
-- Erhebungszeitpunkt April 2026
-- Stichprobe 924 Arbeitnehmende in Betrieben bis 250 Mitarbeitende
-- Auf die Medienmitteilung von Deloitte verlinken, nicht auf eine Newsseite
-- Methodische Einschraenkung offen benennen: befragt wurden Angestellte, nicht
-  IT-Verantwortliche, weshalb die Vorfallszahl Wahrnehmung abbildet und keine
-  Incident-Statistik ist. **Diese Offenheit ist der eigentliche
-  Kompetenznachweis des Beitrags.**
-
-> **Vor dem Schreiben pruefen:** Die Zahlen oben stammen aus dem Brief, nicht
-> aus der Primaerquelle. Die Studie traegt das Datum 20. August 2026 und ist
-> damit taggleich mit der Brief-Aktualisierung. Alle fuenf Werte, das
-> Erhebungsdatum und die Stichprobengroesse gehoeren vor der Veroeffentlichung
-> an der Medienmitteilung selbst verifiziert. Ein Beitrag, der methodische
-> Sorgfalt zum Argument macht, darf sich seine Zahlen nicht aus zweiter Hand
-> holen.
+> **Wie geprueft wurde, und was das wert ist.** Die Angaben stammen aus zwei
+> unabhaengigen Websuchen, die uebereinstimmen. Die Medienmitteilung von
+> Deloitte selbst war nicht abrufbar — der Netzwerk-Proxy dieser
+> Arbeitsumgebung laesst deloitte.com nicht durch. Das ist eine Bestaetigung
+> aus zweiter Hand, keine aus der Primaerquelle. Vor der Veroeffentlichung
+> gehoert jede Zahl an der Medienmitteilung selbst nachgeschlagen, und dorthin
+> gehoert auch der Link — nicht auf eine Newsseite.
 
 **Beruehrungspunkt zur Website:** Der Befund zum zentralen Anmeldeverfahren
 (45 %) deckt sich mit der Formulierung auf `/leistungen/local-ai`: ein zentrales

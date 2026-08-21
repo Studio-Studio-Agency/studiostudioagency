@@ -46,6 +46,15 @@ export function stripBase(pathname: string): string {
 /** Vorschau darf nicht in den Suchindex. Wird ueber SITE_INDEXABLE gesetzt. */
 export const indexable: boolean = import.meta.env.SITE_INDEXABLE === true;
 
+/**
+ * Ziel des Kontaktformulars. Der Endpunkt liegt als PHP-Datei unter
+ * endpoint/kontakt.php im Projekt und wird ins Web-Wurzelverzeichnis
+ * hochgeladen (siehe DEPLOY.md). Der Pfad ist relativ zur Domain und damit
+ * unabhaengig vom Basispfad — er darf NICHT durch withBase() laufen, weil der
+ * Endpunkt auch in der Vorschau im Wurzelverzeichnis liegt.
+ */
+export const formEndpoint = '/endpoint/kontakt.php';
+
 export type NavItem = {
   href: string;
   label: string;

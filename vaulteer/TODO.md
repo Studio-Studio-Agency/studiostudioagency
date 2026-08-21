@@ -46,9 +46,15 @@ Rechtsseite im Suchindex ist schlimmer als keine.
 
 Quelle: `vaulteer/src/pages/kontakt.astro`
 
-- [ ] Formular-Endpunkt. Kein US-Dienst. Zwei souveraene Optionen stehen im
-      README. Bis dahin traegt das Formular einen Platzhalter im `action` und
-      daneben steht die E-Mail-Adresse als funktionierender Weg.
+- [x] Formular-Endpunkt geschrieben: `endpoint/kontakt.php`, ohne
+      Abhaengigkeiten und ohne fremden Dienst. Ende zu Ende geprueft
+      (Absenden, Weiterleitung, Zustellung, Header-Injection, Honigtopf,
+      Sperre). Details in `endpoint/README.md`.
+- [ ] `config.php` auf dem Hoster aus `config.example.php` erstellen und
+      ausfuellen: Empfaengeradresse, Absenderadresse der eigenen Domain,
+      zufaelliges Salz.
+- [ ] SPF- und DKIM-Eintrag fuer die Domain setzen, sonst landen die
+      Benachrichtigungen im Spam-Ordner.
 
 ## Analytik
 
