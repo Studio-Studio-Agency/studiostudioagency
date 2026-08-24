@@ -86,6 +86,50 @@ Dateien weg, die im Build nicht mehr vorkommen — auf dem Vorschau-Host
 betrifft das nur `vaulteer/`, weil rsync nur dieses Verzeichnis anfasst.
 Alternativ ueber den Dateimanager oder FTP.
 
+### Automatisch hochladen (empfohlen)
+
+`.github/workflows/deploy-vaulteer.yml` laedt per GitHub Actions hoch. Bewusst
+nur von Hand ausloesbar (Actions → «Vaulteer hochladen» → Run workflow →
+Ziel waehlen), nicht bei jedem Push: die Website geht erst live, wenn Logo,
+Stammdaten und die geprueften Rechtstexte vorliegen.
+
+Der Workflow baut, prueft auf fremde Domains, laedt per rsync hoch und ruft
+zum Schluss die Adresse auf. Antwortet sie nicht mit 200, schlaegt der Lauf
+fehl.
+
+**Einrichtung.** Unter Settings → Environments zwei Umgebungen anlegen,
+`vorschau` und `live`. Je Umgebung diese Werte setzen:
+
+| Art | Name | Vorschau | Live |
+|---|---|---|---|
+| Variable | `SITE_URL` | `https://dev.studiostudio.ch` | `https://vaulteer.ch` |
+| Variable | `BASE_PATH` | `/vaulteer` | `/` |
+| Variable | `SITE_INDEXABLE` | leer lassen | `true` |
+| Variable | `DEPLOY_PORT` | nur falls nicht 22 | dito |
+| Secret | `DEPLOY_HOST` | Servername | Servername |
+| Secret | `DEPLOY_USER` | Benutzername | Benutzername |
+| Secret | `DEPLOY_PATH` | Zielverzeichnis, mit `/` am Ende | dito |
+| Secret | `DEPLOY_SSH_KEY` | privater Schluessel | privater Schluessel |
+| Secret | `DEPLOY_KNOWN_HOSTS` | Fingerabdruck des Servers | dito |
+
+Den Fingerabdruck liefert `ssh-keyscan -H DEIN-SERVER`. Ohne ihn wuerde die
+Verbindung blind akzeptiert und ein Angreifer in der Leitung waere nicht vom
+Hoster zu unterscheiden.
+
+Fuer den Schluessel ein **eigenes Paar nur fuer den Upload** erzeugen
+(`ssh-keygen -t ed25519 -C "github-actions-vaulteer"`), den oeffentlichen Teil
+auf dem Server in `~/.ssh/authorized_keys` eintragen, den privaten als Secret
+hinterlegen. Nie den persoenlichen Schluessel verwenden — ein eigener laesst
+sich einzeln zurueckziehen, ohne den eigenen Zugang zu verlieren.
+
+Zugangsdaten gehoeren ausschliesslich in die Secrets. Nicht ins Repository,
+nicht in eine Konfigurationsdatei, nicht in einen Chat.
+
+**Die Sicherung vor dem ersten Lauf.** `rsync --delete` raeumt im
+Zielverzeichnis auf. Der Workflow weigert sich bei einem zu allgemeinen Pfad,
+aber ein falsch gesetztes, plausibel aussehendes `DEPLOY_PATH` kann er nicht
+erkennen. Vor dem ersten Lauf einmal sichern, was dort liegt.
+
 ### Die Vorschau gehoert geschuetzt
 
 `dev.studiostudio.ch/vaulteer` steht auf einer fremden, oeffentlich

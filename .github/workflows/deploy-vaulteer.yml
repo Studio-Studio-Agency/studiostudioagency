@@ -1,0 +1,124 @@
+name: Vaulteer hochladen
+
+# Bewusst nur von Hand ausloesbar, nicht bei jedem Push. Die Website geht
+# erst live, wenn Logo, Stammdaten und die anwaltlich geprueften Rechtstexte
+# vorliegen — ein automatischer Livegang bei jedem Merge waere hier ein Fehler.
+on:
+  workflow_dispatch:
+    inputs:
+      ziel:
+        description: 'Wohin hochladen'
+        required: true
+        type: choice
+        default: vorschau
+        options: [vorschau, live]
+
+concurrency:
+  group: deploy-vaulteer-${{ inputs.ziel }}
+  cancel-in-progress: false
+
+jobs:
+  hochladen:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.ziel }}
+    defaults:
+      run:
+        working-directory: vaulteer
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: vaulteer/package-lock.json
+
+      - name: Abhaengigkeiten
+        run: npm ci --no-audit --no-fund
+
+      - name: Bauen
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+          SITE_INDEXABLE: ${{ vars.SITE_INDEXABLE }}
+        run: |
+          set -euo pipefail
+          test -n "$SITE_URL"  || { echo "::error::Variable SITE_URL fehlt";  exit 1; }
+          test -n "$BASE_PATH" || { echo "::error::Variable BASE_PATH fehlt"; exit 1; }
+          echo "Ziel: ${{ inputs.ziel }} — $SITE_URL$BASE_PATH, indexierbar: ${SITE_INDEXABLE:-nein}"
+          npx astro build
+
+      # Dieselbe Pruefung wie im CI-Job. Ein Upload ist die eine Gelegenheit,
+      # bei der ein Verweis auf eine fremde Domain tatsaechlich schadet.
+      - name: Keine Drittdomains im Build
+        run: |
+          set -euo pipefail
+          pages=$(find dist -name '*.html' | wc -l)
+          if [ "$pages" -lt 20 ]; then
+            echo "::error::Nur $pages HTML-Seiten in dist/ — der Build ist unvollstaendig."
+            exit 1
+          fi
+          fremd=$(grep -rEoh \
+                    -e '(href|src|srcset|action|poster|data-src)="https?://[^"]+' \
+                    -e 'url\(\s*["'"'"']?https?://[^)"'"'"']+' \
+                    -e '@import[^;]*https?://[^;"'"'"']+' \
+                    dist --include='*.html' --include='*.css' --include='*.js' \
+                  | grep -oE 'https?://[a-zA-Z0-9.-]+' | sort -u \
+                  | grep -vE '^https?://(vaulteer\.ch|www\.w3\.org)$' || true)
+          if [ -n "$fremd" ]; then
+            echo "::error::Ein Element im Build ruft eine fremde Domain ab:"; echo "$fremd"; exit 1
+          fi
+          echo "$pages Seiten, keine fremden Abrufe."
+
+      - name: SSH-Schluessel einrichten
+        run: |
+          set -euo pipefail
+          test -n "${{ secrets.DEPLOY_SSH_KEY }}" || { echo "::error::Secret DEPLOY_SSH_KEY fehlt"; exit 1; }
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          # Fingerabdruck des Servers vorab hinterlegen, damit die Verbindung
+          # nicht blind akzeptiert wird. Ohne das waere ein Angreifer in der
+          # Leitung nicht von deinem Hoster zu unterscheiden.
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          test -s ~/.ssh/known_hosts || { echo "::error::Secret DEPLOY_KNOWN_HOSTS fehlt"; exit 1; }
+
+      - name: Zielpfad pruefen
+        env:
+          ZIEL: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          set -euo pipefail
+          # rsync --delete raeumt im Zielverzeichnis auf. Auf einem falschen
+          # Pfad loescht es fremde Daten. Deshalb: kein leerer Pfad, keine
+          # Wurzel, kein Heimatverzeichnis ohne Unterordner.
+          test -n "$ZIEL"                  || { echo "::error::Secret DEPLOY_PATH fehlt"; exit 1; }
+          case "$ZIEL" in
+            /|/home|/home/|~|~/) echo "::error::DEPLOY_PATH ist zu allgemein: $ZIEL"; exit 1 ;;
+          esac
+          echo "$ZIEL" | grep -q '/$' || { echo "::error::DEPLOY_PATH muss auf / enden"; exit 1; }
+          echo "Zielpfad in Ordnung."
+
+      - name: Hochladen
+        env:
+          HOST: ${{ secrets.DEPLOY_HOST }}
+          USER: ${{ secrets.DEPLOY_USER }}
+          ZIEL: ${{ secrets.DEPLOY_PATH }}
+          PORT: ${{ vars.DEPLOY_PORT || '22' }}
+        run: |
+          set -euo pipefail
+          rsync -avz --delete --checksum \
+            -e "ssh -i ~/.ssh/id_deploy -p $PORT -o StrictHostKeyChecking=yes" \
+            dist/ "$USER@$HOST:$ZIEL"
+
+      - name: Nachkontrolle
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+          BASE_PATH: ${{ vars.BASE_PATH }}
+        run: |
+          set -euo pipefail
+          adresse="${SITE_URL}${BASE_PATH%/}/"
+          code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 20 "$adresse" || echo 000)
+          echo "$adresse antwortet mit $code"
+          [ "$code" = "200" ] || { echo "::error::Die Seite antwortet nicht mit 200."; exit 1; }
