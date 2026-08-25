@@ -69,10 +69,32 @@
    Basis
    ========================================================================= */
 
+/*
+  Radius als Token, nicht als Zahl im Code verstreut. Der Auftrag setzte
+  ueberall 0; auf Wunsch des Auftraggebers sind Bedienelemente jetzt rund,
+  Flaechen und Linien bleiben hart. Beides an dieser einen Stelle regelbar.
+*/
+:root {
+  --radius-control: 999px;  /* Buttons, Eingabefelder — voll gerundet */
+  --radius-surface: 0;      /* Karten, Bildflaechen, Trennlinien */
+}
+
 *,
 *::before,
 *::after {
-  border-radius: 0;
+  border-radius: var(--radius-surface);
+}
+
+/*
+  Muss ungeschichtet und mit Klassenspezifitaet stehen: die Regel oben ist
+  ebenfalls ungeschichtet, und ungeschichtetes CSS schlaegt jede @layer —
+  eine Angabe in @utility btn liefe deshalb ins Leere.
+*/
+.btn,
+.btn-primary,
+.btn-secondary,
+.btn-secondary-inverse {
+  border-radius: var(--radius-control);
 }
 
 html {
@@ -346,6 +368,7 @@ h1, h2, h3, h4 {
   line-height: 1;
   text-decoration: none;
   border: 1px solid transparent;
+  border-radius: var(--radius-control);
   cursor: pointer;
   transition:
     background-color var(--motion-fast) ease-out,

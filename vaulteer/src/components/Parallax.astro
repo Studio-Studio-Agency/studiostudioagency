@@ -1,0 +1,95 @@
+---
+import { imageSlots, type ImageSlotId } from '../config/images';
+
+/**
+ * Parallax-Ausschnitt fuer Bildflaechen.
+ *
+ * Der Rahmen ist das Fenster und traegt das Seitenverhaeltnis. Der Inhalt
+ * darin ist oben und unten je um `staerke` hoeher und wandert beim Scrollen
+ * gegenlaeufig — dadurch bleibt das Fenster immer gefuellt.
+ *
+ * Das Seitenverhaeltnis MUSS hier stehen, nicht nur am Bild: ohne eigene
+ * Hoehe des Fensters loeste sich die Ueberhoehe des Inhalts gegen `auto` auf
+ * und es gaebe gar keinen Ausschnitt.
+ *
+ * Gerechnet wird ueber die CSS Scroll-Timeline, also im Compositor und ohne
+ * Scroll-Listener. Fehlt sie, steht das Bild still — kein Sprung, kein
+ * leerer Rahmen.
+ *
+ * prefers-reduced-motion schaltet ab. Parallax ist ein zuverlaessiger
+ * Ausloeser fuer Schwindel bei vestibulaeren Stoerungen; das ist keine
+ * Geschmacksfrage.
+ */
+interface Props {
+  /** Slot aus src/config/images.ts — liefert das Seitenverhaeltnis. */
+  slotId?: ImageSlotId;
+  /** Alternativ direkt, z. B. '16 / 10'. */
+  ratio?: string;
+  /** Wanderweg in Prozent der Fensterhoehe, je Richtung. */
+  staerke?: number;
+  class?: string;
+}
+
+const { slotId, staerke = 10, class: className = '' } = Astro.props;
+const ratio = Astro.props.ratio ?? (slotId ? imageSlots[slotId].ratio : '16 / 10');
+---
+
+<div
+  class:list={['parallax', className]}
+  style={`--weg: ${staerke}%; aspect-ratio: ${ratio};`}
+>
+  <div class="parallax-inhalt"><slot /></div>
+</div>
+
+<style>
+  .parallax {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    /*
+      Die Zeitachse haengt am Rahmen, nicht am Inhalt. Der Inhalt ist absolut
+      positioniert und ragt ueber den Rahmen hinaus — als Bezugsobjekt einer
+      view()-Zeitachse liefert er konstant 50 Prozent Fortschritt, also
+      Stillstand. Der Rahmen dagegen ist ein normales Element im Fluss.
+    */
+    view-timeline-name: --parallax-fenster;
+    view-timeline-axis: block;
+  }
+
+  /* Oben und unten je um --weg ueber das Fenster hinaus. */
+  .parallax-inhalt {
+    position: absolute;
+    inset: calc(var(--weg) * -1) 0;
+    will-change: transform;
+  }
+
+  /* Das Kind fuellt den ueberhohen Bereich, nicht nur das Fenster. */
+  .parallax-inhalt > :global(*) {
+    height: 100%;
+    width: 100%;
+    aspect-ratio: auto !important;
+    object-fit: cover;
+  }
+
+  @supports (animation-timeline: view()) {
+    .parallax-inhalt {
+      animation: parallax-wandern linear both;
+      animation-timeline: --parallax-fenster;
+      animation-range: cover 0% cover 100%;
+    }
+  }
+
+  @keyframes parallax-wandern {
+    from { transform: translateY(calc(var(--weg) * -1)); }
+    to   { transform: translateY(var(--weg)); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .parallax-inhalt {
+      position: absolute;
+      inset: 0;
+      animation: none;
+      transform: none;
+    }
+  }
+</style>

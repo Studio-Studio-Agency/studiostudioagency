@@ -5,6 +5,7 @@ import Eyebrow from '../components/Eyebrow.astro';
 import SectionRule from '../components/SectionRule.astro';
 import ImagePlaceholder from '../components/ImagePlaceholder.astro';
 import Faq from '../components/Faq.astro';
+import Parallax from '../components/Parallax.astro';
 import { withBase, site } from '../config/site';
 import { faq } from '../config/faq';
 import { organization, localBusiness, faqPage } from '../config/schema';
@@ -108,7 +109,7 @@ const schritte = [
 
   <div class="container-grid grid-12">
     <div class="col-span-full">
-      <ImagePlaceholder slotId="hero-primary" />
+      <Parallax slotId="hero-primary" staerke={10}><ImagePlaceholder slotId="hero-primary" /></Parallax>
     </div>
   </div>
 
@@ -177,7 +178,7 @@ const schritte = [
         </dl>
       </div>
       <div class="col-span-full mt-16">
-        <ImagePlaceholder slotId="system-ui" />
+        <Parallax slotId="system-ui" staerke={8}><ImagePlaceholder slotId="system-ui" /></Parallax>
       </div>
     </div>
   </section>
@@ -312,7 +313,7 @@ const schritte = [
         </p>
       </div>
       <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-12 lg:mt-0">
-        <ImagePlaceholder slotId="office-basel" />
+        <Parallax slotId="office-basel" staerke={8}><ImagePlaceholder slotId="office-basel" /></Parallax>
       </div>
     </div>
   </section>
