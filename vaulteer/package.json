@@ -8,7 +8,8 @@
     "build": "astro build",
     "build:live": "SITE_URL=https://vaulteer.ch BASE_PATH=/ SITE_INDEXABLE=true astro build",
     "preview": "astro preview",
-    "check": "astro check"
+    "check": "astro check",
+    "build:studiostudio": "SITE_URL=https://vaulteer.studiostudio.ch BASE_PATH=/ astro build"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.14",

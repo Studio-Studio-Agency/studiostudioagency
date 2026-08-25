@@ -9,14 +9,23 @@ Die Seite laeuft zuerst als Vorschau in einem Unterverzeichnis, spaeter unter
 einer eigenen Domain. Beides ist derselbe Code, unterschieden nur ueber drei
 Umgebungsvariablen.
 
-| | Vorschau | Live |
-|---|---|---|
-| Adresse | `https://dev.studiostudio.ch/vaulteer` | `https://vaulteer.ch` |
-| `SITE_URL` | `https://dev.studiostudio.ch` | `https://vaulteer.ch` |
-| `BASE_PATH` | `/vaulteer` | `/` |
-| `SITE_INDEXABLE` | nicht gesetzt | `true` |
-| Suchindex | gesperrt | freigegeben |
-| Befehl | `npm run build` | `npm run build:live` |
+| | Vorschau | Kundenabnahme | Live |
+|---|---|---|---|
+| Adresse | `dev.studiostudio.ch/vaulteer` | `vaulteer.studiostudio.ch` | `vaulteer.ch` |
+| `SITE_URL` | `https://dev.studiostudio.ch` | `https://vaulteer.studiostudio.ch` | `https://vaulteer.ch` |
+| `BASE_PATH` | `/vaulteer` | `/` | `/` |
+| `SITE_INDEXABLE` | nicht gesetzt | **nicht gesetzt** | `true` |
+| Suchindex | gesperrt | gesperrt | freigegeben |
+| Befehl | `npm run build` | `npm run build:studiostudio` | `npm run build:live` |
+
+**Warum die Kundenabnahme nicht indexiert wird.** Die gesamte SEO-Planung im
+Brief zielt auf `vaulteer.ch`. Kaeme `vaulteer.studiostudio.ch` zuerst in den
+Index, muesste die eigene Domain spaeter gegen ihre eigenen Inhalte antreten —
+Google sieht zwei Adressen mit identischem Text und entscheidet selbst, welche
+zaehlt. Wer das aufloesen will, braucht danach Weiterleitungen und Geduld.
+Solange die Adresse der Abnahme dient und nicht der Bewerbung, bleibt sie
+gesperrt. Soll sie doch gefunden werden, genuegt `SITE_INDEXABLE=true` — dann
+aber bewusst und mit dem Wissen, was es kostet.
 
 Die Vorschau ist die Voreinstellung. Wer nichts setzt, baut die Vorschau —
 und riskiert damit nicht versehentlich einen indexierten Zwischenstand.
@@ -149,6 +158,26 @@ immer fuer die ganze Domain. Ein Crawler liest
 landet im Unterverzeichnis und bleibt dort wirkungslos. Wirksam ist sie erst
 im Wurzelverzeichnis der Domain — und dort gehoert sie mit `studiostudio.ch`
 abgestimmt, nicht blind ueberschrieben.
+
+## Serverkonfiguration
+
+`public/.htaccess` wird beim Build nach `dist/` kopiert und landet mit dem
+Upload im Web-Wurzelverzeichnis. Sie regelt vier Dinge: HTTPS erzwingen,
+Fehlerseite, Sicherheits-Kopfzeilen samt Content-Security-Policy, sowie
+Kompression und Zwischenspeicher.
+
+Die Richtlinie erlaubt ausschliesslich Ressourcen der eigenen Domain. Kaeme je
+ein Skript, eine Schrift oder ein Zaehlpixel von aussen hinein, blockiert der
+Browser es, statt es stillschweigend zu laden — bei diesem Kunden ist das das
+Produktversprechen in Serverform. Geprueft im Browser ueber alle 21 Seiten:
+keine Verstoesse, keine fehlenden Stile.
+
+**HSTS ist auskommentiert und bleibt es, bis HTTPS sicher laeuft.** Ein zu
+frueh gesetzter Eintrag sperrt Besucher aus, wenn am Zertifikat etwas klemmt,
+und der Browser merkt sich die Vorgabe monatelang.
+
+Laeuft der Hoster nicht auf Apache, bleibt die Datei wirkungslos; die vier
+Bloecke gehoeren dann in die Serverkonfiguration uebertragen.
 
 ## Servereinstellungen
 
