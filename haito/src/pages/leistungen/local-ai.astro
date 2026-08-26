@@ -1,0 +1,298 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import Faq from '../../components/Faq.astro';
+import { withBase } from '../../config/site';
+import { faq } from '../../config/faq';
+import { faqPage } from '../../config/schema';
+
+const faqAuswahl = [
+  'Ist ein lokales Modell schlechter als ChatGPT?',
+  'Wie lange dauert es bis zum laufenden System?',
+  'Brauchen wir einen eigenen Serverraum?',
+  'Was passiert, wenn es Haito nicht mehr gibt?',
+  'Werden unsere Daten zum Training verwendet?',
+  'Können wir das nicht selbst machen?',
+];
+const schema = [faqPage(faq.filter((f) => faqAuswahl.includes(f.question)))];
+
+const koennen = [
+  {
+    title: 'Dokumente durchsuchen und befragen',
+    text: '«Welche unserer Verträge enthalten eine Konkurrenzverbotsklausel über zwei Jahre?» Das System durchsucht Ihren gesamten Bestand und antwortet mit Verweis auf die konkreten Dokumente.',
+  },
+  {
+    title: 'Entwürfe erstellen',
+    text: 'Offerten, Korrespondenz, Berichte, Protokolle — auf Basis Ihrer bestehenden Vorlagen und in Ihrem Stil.',
+  },
+  {
+    title: 'Zusammenfassen und aufbereiten',
+    text: 'Lange Dokumente, Sitzungsprotokolle, Fachliteratur, E-Mail-Verläufe.',
+  },
+  {
+    title: 'Übersetzen',
+    text: 'Deutsch, Französisch, Italienisch, Englisch. Ohne dass vertrauliche Inhalte durch einen Online-Übersetzer gehen.',
+  },
+  {
+    title: 'Wissen weitergeben',
+    text: 'Neue Mitarbeitende fragen das System, statt Kolleginnen zu unterbrechen. Das interne Wissen bleibt im Betrieb, auch wenn jemand geht.',
+  },
+  {
+    title: 'Interne Prozesse anbinden',
+    text: 'Anbindung an bestehende Systeme — Dokumentenablage, ERP, Branchensoftware — wo es sinnvoll und technisch sauber möglich ist.',
+  },
+];
+
+const kriterien = [
+  {
+    title: 'Lizenz',
+    text: 'Nur Modelle mit Lizenzen, die kommerziellen Einsatz und lokalen Betrieb erlauben. Keine Nutzungsbedingungen, die sich nachträglich ändern können.',
+  },
+  {
+    title: 'Sprache',
+    text: 'Deutschsprachige Qualität ist nicht bei allen Modellen gegeben. Wir testen mit Ihren realen Dokumenten, nicht mit Benchmark-Aufgaben.',
+  },
+  {
+    title: 'Hardware-Bedarf',
+    text: 'Das beste Modell nützt nichts, wenn es auf Ihrer Maschine nicht flüssig läuft. Wir dimensionieren beides gemeinsam.',
+  },
+];
+
+/**
+ * Der erste Punkt traegt seit der Brief-Aktualisierung eine Begruendung mit.
+ * Er bleibt woertlich, wird aber typografisch geteilt: Aussage als
+ * Listenpunkt, Begruendung untergeordnet darunter. Als ein Block gesetzt
+ * waere er dreimal so hoch wie die uebrigen fuenf und wuerde die Liste kippen.
+ */
+const sicherheit: { text: string; note?: string }[] = [
+  {
+    text: 'Zugriff wahlweise über Ihr bestehendes Firmenlogin oder über eine eigene Benutzerverwaltung im System.',
+    note: 'Ein zentrales Anmeldeverfahren ist in Schweizer KMU keineswegs Standard — wo keines besteht, richten wir die Benutzerverwaltung mit ein, statt sie vorauszusetzen. Zwei-Faktor-Anmeldung ist in beiden Varianten obligatorisch.',
+  },
+  { text: 'Rollenbasierte Berechtigungen auf Dokumentenebene' },
+  { text: 'Verschlüsselte Speicherung' },
+  { text: 'Vollständiges Protokoll aller Abfragen' },
+  { text: 'Getrennte Mandantenbereiche, wo die Branche das verlangt' },
+  { text: 'Automatisierte Sicherung, dokumentiertes Wiederherstellungsverfahren' },
+];
+---
+
+<BaseLayout
+  title="Lokale KI-Systeme für KMU | On-Premise | Haito"
+  description="Sprachmodelle auf Ihrem eigenen Server oder in einem Schweizer Rechenzentrum. Kein CLOUD-Act-Zugriff. Fixpreise, laufender Betrieb."
+  bareTitle
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Kernleistung"
+    title="Lokale KI-Systeme für Schweizer KMU"
+    lead="Wir bauen Ihnen ein KI-System, das auf Ihrer eigenen Infrastruktur läuft — und übernehmen den Betrieb, damit Sie sich nicht darum kümmern müssen."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <h2 class="type-h2">Was «lokal» konkret bedeutet</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Ein lokales KI-System läuft auf einem Server, der Ihnen gehört oder den Sie
+        exklusiv gemietet haben. Die Sprachmodelle sind auf dieser Maschine
+        installiert. Wenn eine Mitarbeiterin eine Frage stellt, wird diese Frage
+        auf Ihrem Server verarbeitet und dort beantwortet. Es entsteht keine
+        Verbindung zu einem Anbieter im Ausland.
+      </p>
+      <p class="type-body measure mt-6">
+        Der praktische Unterschied für Ihre Leute: keiner. Die Oberfläche ist ein
+        Chatfenster im Browser, wie sie es kennen.
+      </p>
+      <p class="type-body measure mt-6">Der Unterschied für Sie: vollständig.</p>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Anwendung</Eyebrow>
+      <h2 class="type-h2 mt-4">Was Sie damit machen können</h2>
+    </div>
+    <dl class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
+      {koennen.map((k) => (
+        <div class="border-t border-line py-6 last:border-b">
+          <dt class="type-h3">{k.title}</dt>
+          <dd class="type-body text-ink-muted mt-3 measure">{k.text}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  <section class="bg-paper-shade">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full">
+        <Eyebrow>Betrieb</Eyebrow>
+        <h2 class="type-h2 mt-4">Zwei Betriebsvarianten</h2>
+      </div>
+
+      <article class="col-span-full md:col-span-6 md:pr-8 mt-12">
+        <h3 class="type-h3">On-Premise — Server bei Ihnen im Haus</h3>
+        <p class="type-body text-ink-muted mt-4 measure">
+          Maximale Kontrolle. Die Daten verlassen Ihr Gebäude physisch nicht.
+          Sinnvoll bei höchsten Anforderungen an das Berufsgeheimnis oder wenn
+          ohnehin ein Serverraum besteht.
+        </p>
+        <p class="type-small mt-6 tabular measure">
+          <strong>Investition Hardware:</strong> ab rund CHF 8’000 für kleine Teams,
+          ab rund CHF 25’000 für leistungsfähigere Konfigurationen.
+        </p>
+      </article>
+
+      <article class="col-span-full md:col-span-6 md:pl-8 md:border-l md:border-line mt-10 md:mt-12">
+        <h3 class="type-h3">
+          Dedicated Hosting — exklusiver Server in einem Schweizer Rechenzentrum
+        </h3>
+        <p class="type-body text-ink-muted mt-4 measure">
+          Kein eigener Serverraum nötig, professionelle Stromversorgung, Kühlung
+          und physische Sicherheit. Die Maschine ist ausschliesslich Ihnen
+          zugeteilt, nicht geteilt mit anderen Kunden.
+        </p>
+        <p class="type-small mt-6 tabular measure">
+          <strong>Monatliche Kosten:</strong> ab rund CHF 400 je nach Leistungsklasse.
+        </p>
+      </article>
+
+      <p class="col-span-full lg:col-span-8 type-body mt-12 measure-wide">
+        Wir beraten Sie in beide Richtungen und haben kein Interesse daran, Ihnen
+        die teurere Variante zu verkaufen. Bei den meisten KMU unter 30
+        Mitarbeitenden ist Hosting die wirtschaftlichere Wahl.
+      </p>
+    </div>
+  </section>
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Modelle</Eyebrow>
+      <h2 class="type-h2 mt-4">Modellauswahl</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Es gibt keinen Grund, für jede Aufgabe das grösste verfügbare Modell
+        einzusetzen. Ein kleineres, spezialisiertes Modell ist bei vielen
+        Anwendungsfällen schneller, günstiger und ebenso präzise.
+      </p>
+      <p class="type-body measure mt-6">Wir wählen die Modelle nach drei Kriterien:</p>
+      <dl class="mt-8">
+        {kriterien.map((k) => (
+          <div class="border-t border-line py-5 last:border-b">
+            <dt class="type-body font-bold">{k.title}</dt>
+            <dd class="type-small text-ink-muted mt-2 measure">{k.text}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="type-body measure mt-8">
+        Die Modelllandschaft verändert sich schnell. Ein System, das wir bauen, ist
+        so aufgebaut, dass Modelle ausgetauscht werden können, ohne dass die
+        Anwendung neu gebaut werden muss.
+      </p>
+    </div>
+  </section>
+
+  <section class="flaeche-abgesetzt aufblenden">
+    <div class="container-grid grid-12 section-md">
+      {/* Fuenf statt vier Spalten: "Nachvollziehbarkeit" ist die laengste
+          Wortmarke der Website und bricht bei vier Spalten mitten im Wort. */}
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow dark>Sicherheit</Eyebrow>
+        <h2 class="type-h2 mt-4 text-ink">Sicherheit und Nachvollziehbarkeit</h2>
+      </div>
+      <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
+        <ul class="border-t border-line-dark">
+          {sicherheit.map((item) => (
+            <li class="border-b border-line-dark py-4">
+              <p class="type-body text-ink-muted">{item.text}</p>
+              {item.note && <p class="type-small text-ink-muted mt-2 measure">{item.note}</p>}
+            </li>
+          ))}
+        </ul>
+        <p class="type-body text-ink mt-8 measure">
+          Sie erhalten eine technische Dokumentation, die Sie einer
+          Aufsichtsbehörde, einem Revisor oder einem Auftraggeber mit
+          Sicherheitsanforderungen vorlegen können.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Abgrenzung</Eyebrow>
+      <h2 class="type-h2 mt-4">Was wir übernehmen — und was nicht</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <div class="border-t-2 border-ink pt-5">
+        <h3 class="type-h3">Wir übernehmen:</h3>
+        <p class="type-body text-ink-muted mt-3 measure">
+          Analyse, Modellauswahl, Aufbau, Einrichtung, Schulung Ihrer
+          Mitarbeitenden, Aktualisierungen, Überwachung, Störungsbehebung,
+          laufende Anpassung an neue Anforderungen.
+        </p>
+      </div>
+      <div class="border-t border-line pt-5 mt-8">
+        <h3 class="type-h3">Wir übernehmen nicht:</h3>
+        <p class="type-body text-ink-muted mt-3 measure">
+          Ihre allgemeine IT-Betreuung. Wir arbeiten mit Ihrem bestehenden
+          IT-Dienstleister zusammen, statt ihn zu ersetzen. Das ist für alle
+          Beteiligten günstiger und für uns fokussierter.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Offen gesagt</Eyebrow>
+      <h2 class="type-h2 mt-4">Grenzen, die wir offen ansprechen</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Ein lokales System ist bei manchen Aufgaben nicht so leistungsfähig wie die
+        grössten kommerziellen Modelle. Bei komplexen Programmieraufgaben, sehr
+        langen Kontexten oder hochspezialisierten wissenschaftlichen Fragen kann
+        der Unterschied spürbar sein.
+      </p>
+      <p class="type-body measure mt-6">
+        Für die überwiegende Mehrheit der Aufgaben in einem KMU — Dokumente,
+        Korrespondenz, Recherche im eigenen Bestand, Zusammenfassungen,
+        Übersetzungen — ist der Unterschied heute praktisch bedeutungslos.
+      </p>
+      <p class="type-body measure mt-6">
+        Wir sagen Ihnen vor dem Projekt, in welche Kategorie Ihre Anwendungsfälle
+        fallen. Wenn ein Anwendungsfall lokal nicht sinnvoll abbildbar ist,
+        empfehlen wir eine hybride Lösung oder raten ab.
+      </p>
+    </div>
+  </section>
+
+  <Faq only={faqAuswahl} />
+
+  <section class="bg-signal aufblenden">
+    <div class="container-grid grid-12 section-sm">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-on-signal">Kostenlose Standortbestimmung vereinbaren</h2>
+        <p class="type-lead text-on-signal mt-6 measure-wide">
+          45 Minuten. Wir klären, ob lokale KI für Ihre Situation überhaupt
+          sinnvoll ist. Wenn nicht, sagen wir es.
+        </p>
+        <div class="mt-8">
+          <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

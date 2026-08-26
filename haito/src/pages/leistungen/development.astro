@@ -1,0 +1,176 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import Faq from '../../components/Faq.astro';
+import { withBase } from '../../config/site';
+import { faq } from '../../config/faq';
+import { faqPage } from '../../config/schema';
+
+const faqAuswahl = ['Was passiert, wenn es Haito nicht mehr gibt?', 'Was kostet der Einstieg?'];
+const schema = [faqPage(faq.filter((f) => faqAuswahl.includes(f.question)))];
+
+const bedingungen = [
+  'Der Prozess ist ein echter Wettbewerbsvorteil und lässt sich nicht kaufen',
+  'Bestehende Anbieter verlangen eine Datenübertragung, die für Sie nicht in Frage kommt',
+  'Ein manueller Ablauf bindet mehrere Vollzeitstellen',
+  'Sie wollen die Lösung selbst als Produkt anbieten',
+];
+
+const projekte = [
+  {
+    title: 'Dokumentenverarbeitung',
+    text: 'Eingehende Dokumente automatisch erkennen, einordnen, relevante Angaben extrahieren und ins Zielsystem übergeben. Rechnungen, Anträge, Formulare, Verträge.',
+  },
+  {
+    title: 'Fachassistenten',
+    text: 'Eine Anwendung, die auf Ihrem spezifischen Fachwissen aufbaut und Mitarbeitende bei wiederkehrenden Entscheidungen unterstützt — mit nachvollziehbarer Begründung, nicht als Blackbox.',
+  },
+  {
+    title: 'Recherche in eigenen Beständen',
+    text: 'Durchsuchbare Wissensbasis über Archive, Fachliteratur, Falldokumentationen oder technische Unterlagen.',
+  },
+  {
+    title: 'Kundenportale mit KI-Funktionen',
+    text: 'Erweiterung bestehender Portale um Funktionen, die Ihre Kunden entlasten und Ihre Supportlast senken.',
+  },
+];
+
+const ablauf = [
+  {
+    title: 'Discovery',
+    meta: '1 Woche, CHF 3’800',
+    text: 'Prozessaufnahme, Machbarkeitsprüfung, Aufwandschätzung. Am Ende steht eine Offerte mit Fixpreis für die erste Ausbaustufe — oder eine begründete Absage.',
+  },
+  {
+    title: 'Prototyp',
+    meta: '3–4 Wochen',
+    text: 'Eine lauffähige, reduzierte Version. Sie sehen, ob die Lösung Ihr Problem tatsächlich löst, bevor die Hauptinvestition fällt.',
+  },
+  {
+    title: 'Umsetzung',
+    meta: '',
+    text: 'In zweiwöchigen Abschnitten mit regelmässiger Abnahme. Sie sehen laufend Fortschritt und können nachsteuern.',
+  },
+  {
+    title: 'Betrieb',
+    meta: '',
+    text: 'Wartung, Aktualisierungen, Weiterentwicklung nach Bedarf.',
+  },
+];
+---
+
+<BaseLayout
+  title="KI-Software-Entwicklung Schweiz | Haito Basel"
+  description="Massgeschneiderte KI-Anwendungen für Schweizer Unternehmen. Entwickelt und betrieben in der Schweiz."
+  bareTitle
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Ausbau"
+    title="KI-Software-Entwicklung"
+    lead="Wenn Standardsoftware Ihren Prozess nicht abbildet, bauen wir die Anwendung. Entwickelt in Basel, betrieben in der Schweiz."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Einordnung</Eyebrow>
+      <h2 class="type-h2 mt-4">Wofür sich Eigenentwicklung lohnt</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Nicht für alles. Standardlösungen sind meistens günstiger, schneller
+        verfügbar und besser gewartet. Eine Eigenentwicklung rechnet sich, wenn
+        mindestens eine dieser Bedingungen zutrifft:
+      </p>
+      <ul class="mt-8 border-t border-line">
+        {bedingungen.map((b) => (
+          <li class="type-body border-b border-line py-4">{b}</li>
+        ))}
+      </ul>
+      <p class="type-body measure mt-8">
+        Wenn keine davon zutrifft, sagen wir Ihnen das im Erstgespräch. Ein
+        abgelehntes Projekt kostet uns weniger als ein unzufriedener Kunde.
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-paper-shade">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow>Beispiele</Eyebrow>
+        <h2 class="type-h2 mt-4">Typische Projekte</h2>
+      </div>
+      <dl class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line">
+        {projekte.map((p) => (
+          <div class="border-b border-line py-6">
+            <dt class="type-h3">{p.title}</dt>
+            <dd class="type-body text-ink-muted mt-3 measure">{p.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Ablauf</Eyebrow>
+      <h2 class="type-h2 mt-4">Vorgehen</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
+      <ol class="border-t border-line">
+        {ablauf.map((a, i) => (
+          <li class="border-b border-line py-6 grid grid-cols-[2.5rem_1fr] gap-x-6">
+            <span class="type-h3 text-signal-deep tabular">{i + 1}</span>
+            <div class="min-w-0">
+              <h3 class="type-h3">
+                {a.title}
+                {a.meta && (
+                  <span class="type-small text-ink-muted font-normal"> — {a.meta}</span>
+                )}
+              </h3>
+              <p class="type-body text-ink-muted mt-3 measure">{a.text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="type-body mt-8 measure">
+        Projektvolumen typischerweise ab CHF 40’000. Kleinere Vorhaben lösen wir in
+        der Regel im Rahmen der Local-AI-Systeme günstiger.
+      </p>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Rechte</Eyebrow>
+      <h2 class="type-h2 mt-4">Ihr Code gehört Ihnen</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Sie erhalten die vollständigen Quellen und eine Dokumentation, die es einem
+        anderen Entwicklungsteam erlaubt, die Arbeit fortzuführen. Wir behalten
+        keine Nutzungsrechte an Ihrer Geschäftslogik.
+      </p>
+    </div>
+  </section>
+
+  <Faq only={faqAuswahl} />
+
+  <section class="bg-signal aufblenden">
+    <div class="container-grid grid-12 section-sm">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-ink">Projektidee besprechen</h2>
+        <div class="mt-8">
+          <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

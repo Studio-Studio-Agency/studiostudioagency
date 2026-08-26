@@ -1,0 +1,38 @@
+---
+/**
+ * Button. Primaer = Flaeche --signal, Schrift --ink (AA-konform).
+ * Rendert als <a>, wenn href gesetzt ist, sonst als <button>.
+ */
+interface Props {
+  href?: string;
+  variant?: 'primary' | 'secondary' | 'secondary-inverse';
+  type?: 'button' | 'submit';
+  class?: string;
+  [key: string]: unknown;
+}
+const {
+  href,
+  variant = 'primary',
+  type = 'button',
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const variantClass = {
+  primary: 'btn-primary',
+  secondary: 'btn-secondary',
+  'secondary-inverse': 'btn-secondary-inverse',
+}[variant];
+---
+
+{
+  href ? (
+    <a href={href} class:list={['btn', variantClass, className]} {...rest}>
+      <slot />
+    </a>
+  ) : (
+    <button type={type} class:list={['btn', variantClass, className]} {...rest}>
+      <slot />
+    </button>
+  )
+}

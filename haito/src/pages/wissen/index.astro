@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import { withBase } from '../../config/site';
+
+/**
+ * Entwuerfe erscheinen nie in der Uebersicht — auch nicht in der Vorschau.
+ * Sonst geraet ein unfertiger Text in die Haende eines Interessenten.
+ */
+const beitraege = (await getCollection('wissen', ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime()
+);
+
+const formatDate = (d: Date) =>
+  d.toLocaleDateString('de-CH', { day: '2-digit', month: 'long', year: 'numeric' });
+---
+
+<BaseLayout
+  title="Wissen"
+  description="Fachbeiträge zu lokaler KI, CLOUD Act, revDSG und Datensouveränität für Schweizer KMU."
+>
+  <PageHeader
+    eyebrow="Wissen"
+    title="Fachbeiträge"
+    lead="Sachliche Beiträge zu Datensouveränität, Rechtslage und lokalem KI-Betrieb. Ein fundierter Beitrag pro Monat schlägt vier oberflächliche."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    {
+      beitraege.length === 0 ? (
+        <div class="col-span-full lg:col-span-7">
+          <p class="type-lead text-ink-muted measure-wide">
+            Der erste Beitrag ist in Arbeit: «Der CLOUD Act und Schweizer
+            Unternehmen — was gilt, was nicht, was zu tun ist».
+          </p>
+          <p class="type-body text-ink-muted mt-6 measure">
+            Bis dahin beantworten wir diese Fragen im Gespräch.
+          </p>
+          <p class="mt-8">
+            <a href={withBase('/kontakt')} class="type-body link-rule font-bold">
+              Kontakt aufnehmen
+            </a>
+          </p>
+        </div>
+      ) : (
+        <ul class="col-span-full border-t border-ink">
+          {beitraege.map((b) => (
+            <li class="border-b border-line">
+              <a href={withBase(`/wissen/${b.id}`)} class="beitrag group">
+                <div class="beitrag-meta">
+                  <Eyebrow>{b.data.topic}</Eyebrow>
+                  <p class="type-small text-ink-muted mt-2 tabular">
+                    <time datetime={b.data.publishDate.toISOString().slice(0, 10)}>
+                      {formatDate(b.data.publishDate)}
+                    </time>
+                    <span aria-hidden="true"> · </span>
+                    {b.data.readingTime} Min.
+                  </p>
+                </div>
+                <div>
+                  <h2 class="type-h3 beitrag-titel">{b.data.title}</h2>
+                  <p class="type-body text-ink-muted mt-3 measure">{b.data.description}</p>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+</BaseLayout>
+
+<style>
+  .beitrag {
+    display: grid;
+    gap: 1rem 2rem;
+    padding: 2rem 0;
+  }
+
+  @media (min-width: 48rem) {
+    .beitrag {
+      grid-template-columns: 14rem 1fr;
+    }
+  }
+
+  .beitrag-titel {
+    background-image: linear-gradient(var(--color-signal), var(--color-signal));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0 2px;
+    transition: background-size 160ms ease-out;
+    display: inline;
+  }
+
+  .beitrag:hover .beitrag-titel,
+  .beitrag:focus-visible .beitrag-titel {
+    background-size: 100% 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .beitrag-titel {
+      transition: none;
+    }
+  }
+</style>

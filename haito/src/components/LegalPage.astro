@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from './PageHeader.astro';
+import SectionRule from './SectionRule.astro';
+
+/**
+ * Geruest fuer die Rechtsseiten.
+ *
+ * Hier steht bewusst kein Text. Der Brief verlangt fuer Datenschutzerklaerung
+ * und AGB eine anwaltliche Pruefung und schliesst Generator-Text ausdruecklich
+ * aus. Bei einem Anbieter fuer Datensouveraenitaet ist eine fehlerhafte
+ * Datenschutzerklaerung geschaeftsschaedigend, nicht nur formal falsch.
+ *
+ * Die Seiten stehen auf noindex, solange sie leer sind — eine leere Rechtsseite
+ * im Suchindex ist schlimmer als keine.
+ */
+interface Props {
+  title: string;
+  description: string;
+  hinweis: string;
+  /** Abschnitte, die der Text zwingend abdecken muss. */
+  abschnitte: string[];
+}
+const { title, description, hinweis, abschnitte } = Astro.props;
+---
+
+<BaseLayout title={title} description={description} noindex>
+  <PageHeader title={title} />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-7">
+      <p class="type-body font-bold border-l-2 border-signal pl-6 measure">{hinweis}</p>
+
+      <p class="type-eyebrow text-ink-muted mt-14">Erforderliche Abschnitte</p>
+      <ul class="mt-5 border-t border-line">
+        {abschnitte.map((a) => (
+          <li class="type-body border-b border-line py-4">
+            {a} <span class="text-ink-muted">— [TODO: Text ergänzen]</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>

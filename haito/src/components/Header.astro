@@ -1,0 +1,123 @@
+---
+import Wordmark from './Wordmark.astro';
+import { nav, withBase, stripBase } from '../config/site';
+
+/**
+ * Kopfzeile. Klebt an der Rahmenoberkante.
+ *
+ * Die mobile Navigation nutzt <details>/<summary> statt JavaScript:
+ * nativ tastaturbedienbar, keine Skriptlast, kein Hydrations-Overhead.
+ */
+const path = stripBase(Astro.url.pathname);
+const isActive = (href: string) => path === href || path.startsWith(href + '/');
+---
+
+<header class="site-header sticky top-[calc(var(--frame-inset)+12px)] z-50">
+  <div class="container-grid">
+    <div class="navigationsleiste px-5 py-3 lg:px-6">
+    <div class="relative flex items-center justify-between gap-6">
+      <a href={withBase('/')} class="inline-flex items-center" aria-label="Haito — zur Startseite">
+        <Wordmark />
+      </a>
+
+      <!-- Desktop -->
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="Hauptnavigation">
+        {
+          nav.map((item) => (
+            <a
+              href={withBase(item.href)}
+              class:list={[
+                'type-small font-bold link-rule',
+                isActive(item.href) ? 'text-signal-deep' : 'text-ink',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))
+        }
+        <a href={withBase('/kontakt')} class="btn btn-primary px-5 py-3">Kontakt</a>
+      </nav>
+
+      <!-- Mobil -->
+      <details class="nav-mobile lg:hidden">
+        <summary
+          class="type-eyebrow flex cursor-pointer list-none items-center gap-2 rounded-[var(--radius-control)] border border-line-dark px-4 py-3"
+          aria-label="Navigation öffnen"
+        >
+          <span class="nav-mobile__open">Menü</span>
+          <span class="nav-mobile__close">Schliessen</span>
+        </summary>
+        <nav class="border-b border-line pb-6 pt-2" aria-label="Hauptnavigation mobil">
+          <ul class="flex flex-col">
+            {
+              nav.map((item) => (
+                <li class="border-t border-line">
+                  <a
+                    href={withBase(item.href)}
+                    class:list={[
+                      'block py-3 font-bold',
+                      isActive(item.href) ? 'text-signal-deep' : 'text-ink',
+                    ]}
+                    aria-current={isActive(item.href) ? 'page' : undefined}
+                  >
+                    {item.label}
+                  </a>
+                  {item.children && (
+                    <ul class="pb-3 pl-4">
+                      {item.children.map((child) => (
+                        <li>
+                          <a href={withBase(child.href)} class="type-small block py-1.5 text-ink-muted">
+                            {child.label}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              ))
+            }
+          </ul>
+          <a href={withBase('/kontakt')} class="btn btn-primary mt-6 w-full justify-center">Kontakt</a>
+        </nav>
+      </details>
+    </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  /* Marker des <summary> entfernen — der Zustand wird ueber die Beschriftung
+     kommuniziert, nicht ueber ein Dreieck. */
+  .nav-mobile summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .nav-mobile[open] summary {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .nav-mobile .nav-mobile__close,
+  .nav-mobile[open] .nav-mobile__open {
+    display: none;
+  }
+
+  .nav-mobile[open] .nav-mobile__close {
+    display: inline;
+  }
+
+  /* Vollflaechiges Menue unterhalb der Kopfzeile */
+  /* Das Menue laeuft bis an den Rahmen, nicht nur bis zur Rasterkante —
+     sonst blitzt der Seiteninhalt links und rechts durch. */
+  .nav-mobile[open] nav {
+    position: absolute;
+    top: 100%;
+    left: calc(var(--content-pad) * -1);
+    right: calc(var(--content-pad) * -1);
+    padding-inline: var(--content-pad);
+    background: var(--color-paper);
+    max-height: calc(100vh - 10rem);
+    overflow-y: auto;
+  }
+</style>

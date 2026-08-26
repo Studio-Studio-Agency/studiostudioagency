@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#17171A"/>
+  <rect x="40" y="40" width="1120" height="550" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <rect x="40" y="40" width="24" height="24" fill="#FF3B14"/>
+  <text x="100" y="330" fill="#FFFFFF" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="104" font-weight="700" letter-spacing="-3.5">Vaulteer</text>
+  <rect x="100" y="374" width="20" height="20" fill="#FF3B14"/>
+  <text x="140" y="391" fill="#A9A9AF" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="2.3">LOKALE KI-SYSTEME. BASEL.</text>
+</svg>

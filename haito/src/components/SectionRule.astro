@@ -1,0 +1,19 @@
+---
+/**
+ * Sektionstrennlinie: 1px in --line, mit dem 8x8-Quadrat in --signal am
+ * linken Ende. Wiederholt das Siegel des Rahmens.
+ */
+interface Props {
+  /** Auf dunklem Grund: Linie in --line-dark */
+  dark?: boolean;
+  class?: string;
+}
+const { dark = false, class: className = '' } = Astro.props;
+---
+
+<div
+  class:list={['relative h-px w-full', dark ? 'bg-line-dark' : 'bg-line', className]}
+  role="presentation"
+>
+  <span class="absolute left-0 top-0 block size-2 bg-signal" aria-hidden="true"></span>
+</div>

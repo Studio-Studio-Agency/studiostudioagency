@@ -1,0 +1,103 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site, withBase, indexable } from '../config/site';
+
+/**
+ * Basis-Layout. Enthaelt den fixen Rahmen, die Kopf- und die Fusszeile.
+ *
+ * Keine Verbindung zu Drittdomains: keine Webfonts, keine Analytik, keine
+ * eingebetteten Player oder Karten. Das ist eine Produktanforderung, keine
+ * Praeferenz — der Auftraggeber verkauft Datensouveraenitaet.
+ */
+interface Props {
+  title: string;
+  description: string;
+  /** Ohne Seitensuffix ausgeben (Startseite) */
+  bareTitle?: boolean;
+  /** Aus der Suche ausschliessen (Entwuerfe, Danke-Seiten).
+      Auf einer nicht-indexierbaren Vorschau gilt das ohnehin fuer alles. */
+  noindex?: boolean;
+  /** JSON-LD Objekte, die zusaetzlich zur Organization ausgegeben werden */
+  schema?: Record<string, unknown>[];
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+}
+
+const {
+  title,
+  description,
+  bareTitle = false,
+  noindex = false,
+  schema = [],
+  ogImage = withBase('/og-default.png'),
+  ogType = 'website',
+} = Astro.props;
+
+const fullTitle = bareTitle ? title : `${title} | ${site.name}`;
+const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', Astro.site);
+const ogImageUrl = new URL(ogImage, Astro.site);
+
+// Vorschau: nichts davon gehoert in den Suchindex.
+const blockIndex = noindex || !indexable;
+---
+
+<!doctype html>
+<html lang="de-CH">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    {blockIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="de_CH" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:image" content={ogImageUrl.href} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Die Schrift frueh anfordern: sie steht im CSS und wuerde sonst erst
+         nach dem Stylesheet entdeckt. Eigene Domain, kein Drittanbieter. -->
+    <link
+      rel="preload"
+      href={withBase('/fonts/open-sans-variable.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    {!blockIndex && <link rel="sitemap" href={withBase('/sitemap-index.xml')} />}
+    <meta name="theme-color" content="#17171A" />
+
+    {
+      schema.map((entry) => (
+        <script type="application/ld+json" set:html={JSON.stringify(entry)} is:inline />
+      ))
+    }
+
+    <!--
+      Analytik: bewusst nicht eingebaut. Falls gewuenscht, hier ein
+      selbstgehostetes Plausible- oder Matomo-Snippet einsetzen. Kein Google
+      Analytics, kein Tag Manager — beides widerspricht dem Produktversprechen.
+    -->
+  </head>
+  <body>
+    <a href="#inhalt" class="skip-link">Zum Inhalt springen</a>
+
+    <div class="site-frame" aria-hidden="true"></div>
+
+    <Header />
+
+    <main id="inhalt">
+      <slot />
+    </main>
+
+    <Footer />
+  </body>
+</html>

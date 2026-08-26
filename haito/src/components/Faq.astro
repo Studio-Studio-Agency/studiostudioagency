@@ -1,0 +1,127 @@
+---
+import { faq as allItems, type FaqItem } from '../config/faq';
+import Eyebrow from './Eyebrow.astro';
+
+/**
+ * FAQ-Akkordeon auf Basis von <details>/<summary>.
+ *
+ * Der Brief erlaubt eine JS-Insel unter 3 KB. Gebraucht wird keine: <details>
+ * klappt nativ auf, ist per Tastatur bedienbar, wird von Screenreadern korrekt
+ * angesagt und funktioniert auch, wenn JavaScript scheitert. Eine
+ * nachgebaute Variante mit aria-expanded waere mehr Code bei weniger
+ * Verlaesslichkeit.
+ */
+interface Props {
+  /** Auswahl per Frage-Text. Ohne Angabe alle Eintraege. */
+  only?: string[];
+  heading?: string;
+  eyebrow?: string;
+  class?: string;
+}
+
+const { only, heading = 'Häufige Fragen', eyebrow = 'Fragen und Antworten', class: className = '' } =
+  Astro.props;
+
+const items: FaqItem[] = only
+  ? only.map((q) => {
+      const match = allItems.find((i) => i.question === q);
+      if (!match) throw new Error(`FAQ-Eintrag nicht gefunden: ${q}`);
+      return match;
+    })
+  : allItems;
+---
+
+<section class:list={['container-grid grid-12 section-md', className]}>
+  <div class="col-span-full md:col-span-5">
+    <Eyebrow>{eyebrow}</Eyebrow>
+    <h2 class="type-h2 mt-4">{heading}</h2>
+  </div>
+  <div class="col-span-full md:col-span-6 md:col-start-7 mt-10 md:mt-0">
+    <div class="faq-liste">
+      {items.map((item) => (
+        <details class="border-t border-line">
+          <summary>
+            <h3 class="type-h3">{item.question}</h3>
+            <span class="faq-marker" aria-hidden="true" />
+          </summary>
+          <div class="type-body text-ink-muted measure pb-6">{item.answer}</div>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /*
+    Kein <dl>: eine Definitionsliste darf nur dt/dd enthalten, <details> ist
+    dort ungueltig. <details>/<summary> mit einer Ueberschrift im summary ist
+    die gueltige und zugleich zugaenglichere Fassung — das Aufklappen bringt
+    der Browser mit, und die Fragen bleiben ueber die Ueberschriftennavigation
+    erreichbar.
+  */
+  .faq-liste {
+    border-bottom: 1px solid var(--color-line);
+  }
+
+  summary {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  /* Das voreingestellte Dreieck entfernen, der Marker rechts ersetzt es. */
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  summary h3 {
+    flex: 1 1 auto;
+  }
+
+  /* Plus, das beim Aufklappen zum Minus wird. Zwei Striche, keine Grafik. */
+  .faq-marker {
+    position: relative;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin-top: 0.4em;
+  }
+
+  .faq-marker::before,
+  .faq-marker::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1px;
+    background: var(--color-ink);
+  }
+
+  .faq-marker::after {
+    transform: rotate(90deg);
+    transition: transform 160ms ease-out;
+  }
+
+  details[open] .faq-marker::after {
+    transform: rotate(0deg);
+  }
+
+  summary:hover .faq-marker::before,
+  summary:hover .faq-marker::after {
+    background: var(--color-signal-deep);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq-marker::after {
+      transition: none;
+    }
+  }
+</style>

@@ -1,0 +1,172 @@
+---
+/**
+ * Preistabelle.
+ *
+ * Zwei Anforderungen aus dem Brief, die sich widersprechen: eine echte
+ * <table> — und auf schmalen Viewports kein horizontales Scrollen, sondern
+ * gestapelte Beschriftung/Wert-Paare.
+ *
+ * Geloest mit einer einzigen Tabelle im DOM, die unterhalb von 40rem per CSS
+ * zu Bloecken umbricht. Die naheliegende Alternative — Tabelle und
+ * Definitionsliste nebeneinander, je eine per display:none versteckt —
+ * haette denselben Inhalt zweimal im Quelltext. Das ist fuer Suchmaschinen
+ * unsauber und beim Pflegen fehleranfaellig.
+ *
+ * Wichtig dabei: display:block loescht in mehreren Browsern die impliziten
+ * Tabellenrollen aus dem Accessibility-Baum. Die Rollen stehen deshalb
+ * explizit im Markup und ueberleben den Umbruch.
+ */
+interface Row {
+  /** Zeilenkopf, erste Spalte. */
+  label: string;
+  /** Werte, Reihenfolge wie in `columns` ohne die erste Spalte. */
+  cells: string[];
+}
+
+interface Props {
+  /** Pflicht. Benennt die Tabelle fuer Screenreader und Ausdruck. */
+  caption: string;
+  /** Spaltenkoepfe, inklusive der Beschriftung der ersten Spalte. */
+  columns: string[];
+  rows: Row[];
+  /** Fussnote unter der Tabelle, etwa zur Mehrwertsteuer. */
+  note?: string;
+  class?: string;
+}
+
+const { caption, columns, rows, note, class: className = '' } = Astro.props;
+const [rowHeader, ...valueColumns] = columns;
+---
+
+<div class:list={['price-table', className]}>
+  <table role="table">
+    <caption class="type-eyebrow text-ink text-left pb-4">{caption}</caption>
+    <thead role="rowgroup">
+      <tr role="row">
+        <th role="columnheader" scope="col">{rowHeader}</th>
+        {valueColumns.map((col) => <th role="columnheader" scope="col">{col}</th>)}
+      </tr>
+    </thead>
+    <tbody role="rowgroup">
+      {rows.map((row) => (
+        <tr role="row">
+          <th role="rowheader" scope="row">{row.label}</th>
+          {row.cells.map((cell, i) => (
+            <td role="cell" data-label={valueColumns[i]}>{cell}</td>
+          ))}
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  {note && <p class="type-small text-ink-muted mt-4 measure">{note}</p>}
+</div>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    /* Ziffern in Spalten untereinander ausrichten. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.875rem 1.5rem 0.875rem 0;
+    border-bottom: 1px solid var(--color-line);
+    vertical-align: baseline;
+  }
+
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
+  }
+
+  thead th {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    border-bottom-color: var(--color-ink);
+    padding-bottom: 0.75rem;
+  }
+
+  tbody th {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  tbody td {
+    font-size: 1.0625rem;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  /* Erste Wertspalte traegt meist den Preis und darf nicht umbrechen. */
+  tbody td:first-of-type {
+    white-space: nowrap;
+  }
+
+  /* --- Schmale Viewports: Bloecke statt Spalten ------------------------ */
+  @media (max-width: 40rem) {
+    table,
+    thead,
+    tbody,
+    tr,
+    th,
+    td {
+      display: block;
+    }
+
+    /* Die Spaltenkoepfe wiederholen sich unten je Zelle als data-label. */
+    thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    tr {
+      border-bottom: 1px solid var(--color-ink);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    tr:last-child {
+      margin-bottom: 0;
+    }
+
+    tbody th {
+      border-bottom: none;
+      padding: 0 0 0.5rem;
+    }
+
+    tbody td {
+      border-bottom: none;
+      padding: 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 1.5rem;
+      white-space: normal;
+    }
+
+    tbody td::before {
+      content: attr(data-label);
+      flex: none;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      line-height: 1.9;
+      text-transform: uppercase;
+      color: var(--color-ink-muted);
+    }
+
+    tbody td:first-of-type {
+      white-space: normal;
+    }
+  }
+</style>

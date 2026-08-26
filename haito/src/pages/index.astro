@@ -1,0 +1,371 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import SectionRule from '../components/SectionRule.astro';
+import ImagePlaceholder from '../components/ImagePlaceholder.astro';
+import Faq from '../components/Faq.astro';
+import Parallax from '../components/Parallax.astro';
+import { withBase, site } from '../config/site';
+import { faq } from '../config/faq';
+import { organization, localBusiness, faqPage } from '../config/schema';
+
+const siteUrl = Astro.site!.href.replace(/\/$/, '');
+const schema = [organization(siteUrl), localBusiness(siteUrl), faqPage(faq)];
+
+const problems = [
+  {
+    title: 'Rechtlich',
+    text: 'Berufsgeheimnis, revDSG, branchenspezifische Aufsichtsregeln und NDAs mit Auftraggebern. Bei sensiblen Daten reicht die Zustimmung zu Nutzungsbedingungen nicht aus.',
+  },
+  {
+    title: 'Wirtschaftlich',
+    text: 'Interne Dokumente, Kalkulationen und Kundenlisten sind das eigentliche Betriebsvermögen eines KMU. Was ein Anbieter mit hochgeladenen Inhalten tut, steht in dessen AGB — und dieser kann sie ändern.',
+  },
+  {
+    title: 'Praktisch',
+    text: 'Wenn jede Abteilung ein eigenes Tool nutzt, entsteht weder Sicherheit noch Effizienz. Ein System, alle Zugriffe protokolliert, eine Rechnung.',
+  },
+];
+
+const merkmale = [
+  {
+    title: 'Ihre Dokumente als Wissensbasis',
+    text: 'Das System greift auf Ihre Verträge, Richtlinien, Protokolle und Fachunterlagen zu und beantwortet Fragen mit Quellenangabe aus Ihren eigenen Dokumenten. Nicht aus dem Internet.',
+  },
+  {
+    title: 'Rollen und Berechtigungen',
+    text: 'Wer welche Dokumente sehen darf, entscheiden Sie. Das System hält sich daran — abteilungsweise, mandatsweise, personenbezogen.',
+  },
+  {
+    title: 'Nachvollziehbar',
+    text: 'Jede Abfrage wird protokolliert. Für interne Kontrolle, Revision und im Ernstfall für die Aufsichtsbehörde.',
+  },
+  {
+    title: 'Betreut',
+    text: 'Modelle veralten, Sicherheitsupdates kommen, Anforderungen ändern sich. Wir übernehmen den Betrieb. Sie haben eine Ansprechperson in Basel.',
+  },
+];
+
+const schritte = [
+  {
+    nr: '1',
+    title: 'Standortbestimmung',
+    meta: 'kostenlos, 45 Minuten',
+    text: 'Wir klären, ob lokale KI für Ihre Situation überhaupt sinnvoll ist. Wenn nicht, sagen wir es.',
+  },
+  {
+    nr: '2',
+    title: 'Assessment',
+    meta: '1–2 Wochen',
+    text: 'Wo liegen Ihre Daten heute? Welche Anwendungsfälle bringen messbaren Nutzen? Welche Hardware braucht es? Sie erhalten einen schriftlichen Bericht mit Kostenrahmen.',
+  },
+  {
+    nr: '3',
+    title: 'Pilot',
+    meta: '4–6 Wochen',
+    text: 'Ein System, ein Anwendungsfall, eine begrenzte Nutzergruppe. Sie sehen Resultate, bevor Sie in die Vollversion investieren.',
+  },
+  {
+    nr: '4',
+    title: 'Betrieb',
+    meta: '',
+    text: 'Ausrollen im ganzen Betrieb, Schulung der Mitarbeitenden, Wartungsvertrag mit fixer monatlicher Pauschale.',
+  },
+];
+---
+
+<BaseLayout
+  title="Lokale KI für Schweizer KMU | Haito Basel"
+  description="KI-Systeme, die Ihr Haus nie verlassen. Aufbau, Betrieb und Wartung lokaler Sprachmodelle für Schweizer KMU. GmbH in Basel."
+  bareTitle
+  schema={schema}
+>
+  {/* --- 3.1 Hero ---------------------------------------------------- */}
+  <section class="band-gruen hero-band container-grid grid-12 pt-24 pb-24 md:pt-32 md:pb-32">
+    <div class="col-span-full flex flex-col items-center text-center lg:col-span-10 lg:col-start-2">
+      <p class="signalpille hero-step" style="--step: 0">
+        <span class="size-2 rounded-full bg-signal" aria-hidden="true"></span>
+        Lokale KI für Schweizer KMU
+      </p>
+      <h1 class="type-display mt-8 hero-step" style="--step: 1">
+        Künstliche Intelligenz, die Ihr Haus nie verlässt.
+      </h1>
+      <p class="type-lead text-ink-muted mt-8 measure-wide hero-step" style="--step: 2">
+        Haito baut und betreibt lokale KI-Systeme für Schweizer KMU. Auf Ihrer
+        Hardware oder in Schweizer Rechenzentren. Kein US-Cloud-Zugriff, kein
+        CLOUD Act, keine Trainingsdaten an Dritte.
+      </p>
+      <div class="mt-12 flex flex-wrap justify-center gap-4 hero-step" style="--step: 3">
+        <Button href={withBase('/kontakt')} variant="primary">
+          Kostenloses Erstgespräch vereinbaren
+        </Button>
+        <Button href={withBase('/leistungen/local-ai')} variant="secondary">
+          Wie das technisch funktioniert
+        </Button>
+      </div>
+      <p class="type-small text-ink-muted mt-12 hero-step" style="--step: 4">
+        GmbH mit Sitz in Basel-Stadt <span aria-hidden="true">·</span> Verträge nach
+        Schweizer Recht <span aria-hidden="true">·</span> Betrieb ausschliesslich in der Schweiz
+      </p>
+    </div>
+  </section>
+
+  <div class="container-grid grid-12">
+    <div class="col-span-full">
+      <Parallax slotId="hero-primary" staerke={10}><ImagePlaceholder slotId="hero-primary" /></Parallax>
+    </div>
+  </div>
+
+  <SectionRule />
+
+  {/* --- 3.2 Problem --------------------------------------------------- */}
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Ausgangslage</Eyebrow>
+      <h2 class="type-h2 mt-4">
+        Ihre Mitarbeitenden nutzen bereits KI. Die Frage ist nur, wohin die Daten gehen.
+      </h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        In den meisten Schweizer KMU wird heute mit KI gearbeitet — ohne Freigabe,
+        ohne Richtlinie, ohne Übersicht. Ein Vertragsentwurf in ein Chatfenster
+        kopiert, ein Sitzungsprotokoll zusammenfassen lassen, eine Offerte
+        umformuliert. Das ist nachvollziehbar, weil es Zeit spart. Und es ist ein
+        Problem, weil diese Daten auf Servern ausserhalb der Schweiz landen, auf
+        die Schweizer Recht keinen Zugriff hat.
+      </p>
+      <p class="type-body measure mt-6">
+        Der übliche Reflex ist ein Verbot. Verbote funktionieren nicht — sie
+        verlagern die Nutzung nur auf private Geräte, wo sie unsichtbar wird.
+      </p>
+      <p class="type-body measure mt-6">
+        Die Alternative ist ein System, das gut genug ist, dass niemand mehr
+        ausweichen muss.
+      </p>
+    </div>
+
+    <ul class="col-span-full mt-16 grid gap-px bg-line sm:grid-cols-3 border-y border-line">
+      {problems.map((p) => (
+        <li class="bg-paper p-8">
+          <h3 class="type-h3">{p.title}</h3>
+          <p class="type-small text-ink-muted mt-4">{p.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  {/* --- 3.3 Lösung ---------------------------------------------------- */}
+  <section class="band-gruen aufblenden">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow dark>Das System</Eyebrow>
+        <h2 class="type-h2 mt-4 text-ink">Ein System. Ihr Haus. Volle Kontrolle.</h2>
+        <p class="type-body text-ink-muted mt-8 measure">
+          Haito richtet ein KI-System ein, das vollständig unter Ihrer Kontrolle
+          läuft — auf einem Server in Ihren Räumen oder in einem Schweizer
+          Rechenzentrum Ihrer Wahl. Ihre Mitarbeitenden arbeiten in einer
+          Oberfläche, die sich anfühlt wie die bekannten Chatdienste. Der
+          Unterschied ist unsichtbar und entscheidend: Keine Eingabe verlässt Ihre
+          Infrastruktur.
+        </p>
+      </div>
+      <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-12 lg:mt-0">
+        <dl class="grid gap-px bg-line-dark sm:grid-cols-2 border border-line-dark">
+          {merkmale.map((m) => (
+            <div class="flaeche-abgesetzt p-7">
+              <dt class="type-h3 text-ink">{m.title}</dt>
+              <dd class="type-small text-ink-muted mt-3">{m.text}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
+      <div class="col-span-full mt-16">
+        <Parallax slotId="system-ui" staerke={8}><ImagePlaceholder slotId="system-ui" /></Parallax>
+      </div>
+    </div>
+  </section>
+
+  {/* --- 3.4 Leistungsübersicht (Funnel) -------------------------------- */}
+  <section class="container-grid grid-12 section-lg aufblenden">
+    <div class="col-span-full">
+      <Eyebrow>Leistungen</Eyebrow>
+      <h2 class="type-h2 mt-4">Drei Wege, je nach Ausgangslage.</h2>
+    </div>
+
+    <article class="col-span-full mt-14 border-t-2 border-ink pt-10 lg:grid lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-2">
+        <Eyebrow>Kernleistung</Eyebrow>
+      </div>
+      <div class="lg:col-span-10 mt-4 lg:mt-0">
+        <h3 class="type-h1">Lokale KI-Systeme</h3>
+        <p class="type-lead text-ink-muted mt-6 measure-wide">
+          Analyse, Modellauswahl, Aufbau, Einführung und laufender Betrieb. Von der
+          ersten Abklärung bis zum System, mit dem Ihr Team täglich arbeitet.
+        </p>
+        <p class="mt-8">
+          <a href={withBase('/leistungen/local-ai')} class="type-body link-rule font-bold">
+            Zur Kernleistung
+          </a>
+        </p>
+      </div>
+    </article>
+
+    <article class="col-span-full md:col-span-6 mt-14 border-t border-line pt-8">
+      <Eyebrow>Einstieg</Eyebrow>
+      <h3 class="type-h3 mt-4">Beratung Datensouveränität</h3>
+      <p class="type-body text-ink-muted mt-4 measure">
+        Workshops, Assessments und Seminare. Wo liegen Ihre Daten heute? Welche
+        Alternativen zu US-Anbietern gibt es? Was ist realistisch, was ist
+        Symbolpolitik?
+      </p>
+      <p class="mt-6">
+        <a href={withBase('/leistungen/consulting')} class="type-body link-rule">Zur Beratung</a>
+      </p>
+    </article>
+
+    <article class="col-span-full md:col-span-6 mt-8 md:mt-14 border-t border-line pt-8">
+      <Eyebrow>Ausbau</Eyebrow>
+      <h3 class="type-h3 mt-4">KI-Software-Entwicklung</h3>
+      <p class="type-body text-ink-muted mt-4 measure">
+        Wenn Standard nicht reicht: massgeschneiderte Anwendungen für Ihre
+        Prozesse. Entwickelt in der Schweiz, betrieben in der Schweiz.
+      </p>
+      <p class="mt-6">
+        <a href={withBase('/leistungen/development')} class="type-body link-rule">Zur Entwicklung</a>
+      </p>
+    </article>
+  </section>
+
+  <SectionRule />
+
+  {/* --- 3.5 Beweis ----------------------------------------------------- */}
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Technologie</Eyebrow>
+      <h2 class="type-h2 mt-4">Womit wir arbeiten.</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Wir setzen auf offene Modelle, die geprüft, selbst betrieben und ohne
+        Lizenzbindung an einen Anbieter eingesetzt werden können. Welches Modell
+        zum Einsatz kommt, entscheidet der Anwendungsfall — nicht ein
+        Rahmenvertrag.
+      </p>
+      <ul class="mt-10 flex flex-col border-t border-line">
+        <li class="type-small border-b border-line py-3">Offene Sprachmodelle</li>
+        <li class="type-small border-b border-line py-3">Eigene Vektor-Datenbanken</li>
+        <li class="type-small border-b border-line py-3">Verschlüsselte Speicherung</li>
+        <li class="type-small border-b border-line py-3">
+          Bereitstellung auf eigener Hardware oder in Schweizer Rechenzentren
+        </li>
+      </ul>
+      <p class="type-body measure mt-10">
+        Wir legen offen, welche Komponenten in Ihrem System stecken, und
+        dokumentieren die Architektur so, dass ein anderer Dienstleister sie
+        übernehmen könnte. <strong>Abhängigkeit ist kein Geschäftsmodell.</strong>
+      </p>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  {/* --- 3.6 Vorgehen --------------------------------------------------- */}
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Vorgehen</Eyebrow>
+      <h2 class="type-h2 mt-4">In vier Schritten zum laufenden System.</h2>
+      <p class="mt-8">
+        <a href={withBase('/vorgehen')} class="type-body link-rule font-bold">
+          Vorgehen und Preise im Detail
+        </a>
+      </p>
+    </div>
+    <ol class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
+      {schritte.map((s) => (
+        <li class="border-t border-line py-7 grid grid-cols-[2.5rem_1fr] gap-x-6 last:border-b">
+          <span class="type-h3 text-signal-deep tabular">{s.nr}</span>
+          <div class="min-w-0">
+            <h3 class="type-h3">
+              {s.title}
+              {s.meta && <span class="type-small text-ink-muted font-normal"> — {s.meta}</span>}
+            </h3>
+            <p class="type-small text-ink-muted mt-3 measure">{s.text}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  {/* --- 3.7 Standort --------------------------------------------------- */}
+  <section class="flaeche-abgesetzt aufblenden">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow>Standort</Eyebrow>
+        <h2 class="type-h2 mt-4">Basel. Nicht Delaware.</h2>
+        <p class="type-body mt-8 measure">
+          Haito ist eine GmbH mit Sitz in Basel-Stadt. Unsere Verträge
+          unterstehen Schweizer Recht, Gerichtsstand ist Basel. Ihre Daten werden
+          in der Schweiz verarbeitet, unsere Rechnungen kommen in Franken, und
+          wenn etwas nicht funktioniert, sitzt die verantwortliche Person im
+          selben Kanton.
+        </p>
+        <p class="type-body mt-6 measure">
+          Das klingt selbstverständlich. Bei Ihrem aktuellen KI-Anbieter ist es
+          das mit hoher Wahrscheinlichkeit nicht.
+        </p>
+      </div>
+      <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-12 lg:mt-0">
+        <Parallax slotId="office-basel" staerke={8}><ImagePlaceholder slotId="office-basel" /></Parallax>
+      </div>
+    </div>
+  </section>
+
+  <Faq />
+
+  {/* --- 3.8 Abschluss-CTA ---------------------------------------------- */}
+  <section class="bg-signal aufblenden">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-on-signal">45 Minuten, die Klarheit schaffen.</h2>
+        <p class="type-lead text-on-signal mt-8 measure-wide">
+          Im Erstgespräch klären wir drei Fragen: Welche Daten sind bei Ihnen
+          tatsächlich kritisch? Wo würde KI bei Ihnen konkret Zeit sparen? Und
+          rechtfertigt der Nutzen den Aufwand? Kostenlos, unverbindlich, und ohne
+          dass wir Ihnen etwas verkaufen müssen, das Sie nicht brauchen.
+        </p>
+        <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
+          <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
+          <p class="type-small text-on-signal">
+            Oder rufen Sie direkt an: <span class="font-bold">{site.phone}</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /*
+    Einmalige Einblendung beim Laden. 240 ms, 60 ms Versatz je Stufe, nur
+    Opazitaet und 8 px Y. Nicht scrollgebunden, nicht wiederholt.
+  */
+  .hero-step {
+    animation: hero-in 240ms ease-out backwards;
+    animation-delay: calc(var(--step) * 60ms);
+  }
+
+  @keyframes hero-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-step {
+      animation: none;
+    }
+  }
+</style>

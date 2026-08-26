@@ -1,0 +1,56 @@
+---
+import { imageSlots, type ImageSlotId } from '../config/images';
+
+/**
+ * Bild-Platzhalter. Sieht bewusst wie ein Bauplan aus, nicht wie eine graue
+ * Flaeche mit Kamerasymbol — damit niemand vergisst, ihn zu ersetzen.
+ *
+ * Der Platz wird per aspect-ratio reserviert. Beim spaeteren Einbau des
+ * echten Bildes entsteht deshalb kein Layout-Shift.
+ *
+ * Ersetzen (eine Zeile): statt <ImagePlaceholder slotId="hero-primary" />
+ *   <Image src={heroPrimary} alt="..." widths={[800,1200,2000]} formats={['avif','webp']} />
+ */
+interface Props {
+  /** ID aus src/config/images.ts — zieht ratio, Groesse und Auftrag automatisch */
+  slotId?: ImageSlotId;
+  /** Manuelle Angaben, falls kein Slot im Verzeichnis steht */
+  ratio?: string;
+  label?: string;
+  brief?: string;
+  class?: string;
+}
+
+const { slotId, class: className = '' } = Astro.props;
+const entry = slotId ? imageSlots[slotId] : undefined;
+
+const ratio = Astro.props.ratio ?? entry?.ratio ?? '16 / 9';
+const label = Astro.props.label ?? entry?.id ?? 'unbenannter-slot';
+const brief = Astro.props.brief ?? entry?.brief ?? '[TODO: Bildauftrag ergaenzen]';
+const ratioLabel = entry?.ratioLabel ?? ratio.replace(/\s*\/\s*/, ':');
+const size = entry?.size ?? '[TODO: Zielgroesse]';
+---
+
+<figure
+  class:list={['relative w-full overflow-hidden rounded-[var(--radius-card)] band-gruen', className]}
+  style={`aspect-ratio: ${ratio};`}
+  role="img"
+  aria-label="[TODO: Alt-Text]"
+  data-image-slot={label}
+>
+  <span class="absolute left-6 top-6 block size-2 bg-white" aria-hidden="true"></span>
+
+  <div class="absolute inset-0 flex flex-col justify-center gap-3 p-6 md:p-10">
+    <p class="type-eyebrow">{label}</p>
+    <p class="type-small platzhalter-detail tabular">{ratioLabel} &middot; {size} px</p>
+    <p class="type-small max-w-[34rem] platzhalter-detail">{brief}</p>
+  </div>
+</figure>
+
+<style>
+  /* Auf dem gruenen Band traegt Weiss; die Details eine Spur zurueckgenommen,
+     aber nicht so weit, dass der Kontrast kippt. */
+  .platzhalter-detail {
+    color: color-mix(in oklab, white 78%, transparent);
+  }
+</style>

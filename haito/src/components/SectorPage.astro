@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from './PageHeader.astro';
+import Eyebrow from './Eyebrow.astro';
+import Button from './Button.astro';
+import SectionRule from './SectionRule.astro';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+import { withBase } from '../config/site';
+import type { ImageSlotId } from '../config/images';
+
+/**
+ * Gemeinsame Vorlage der vier Branchenseiten. Der Brief verlangt identische
+ * Struktur — deshalb eine Vorlage statt vier Einzelseiten, die auseinanderdriften.
+ *
+ * Die Abschnittsfolge ist fix: Ausgangslage, Leistungen, Abgrenzung. Die
+ * Kanzleien-Seite ist im Brief ausformuliert, die uebrigen drei sind aus den
+ * dortigen Stichpunkten ausformuliert — ohne neue Sachbehauptungen.
+ */
+interface Props {
+  title: string;
+  metaTitle: string;
+  metaDescription: string;
+  bareTitle?: boolean;
+  lead: string;
+  slotId: ImageSlotId;
+  ausgangslage: string[];
+  leistungenTitel: string;
+  leistungen: string[];
+  /** Ueberschrift des Abgrenzungsabschnitts. */
+  abgrenzungTitel: string;
+  abgrenzung: string[];
+  /** Abgrenzung als Warnhinweis hervorheben (Gesundheitswesen). */
+  abgrenzungWarnung?: boolean;
+  besonderheitTitel?: string;
+  besonderheit?: string[];
+  ctaLabel: string;
+}
+
+const {
+  title,
+  metaTitle,
+  metaDescription,
+  bareTitle = false,
+  lead,
+  slotId,
+  ausgangslage,
+  leistungenTitel,
+  leistungen,
+  abgrenzungTitel,
+  abgrenzung,
+  abgrenzungWarnung = false,
+  besonderheitTitel,
+  besonderheit,
+  ctaLabel,
+} = Astro.props;
+---
+
+<BaseLayout title={metaTitle} description={metaDescription} bareTitle={bareTitle}>
+  <PageHeader eyebrow="Anwendungsfall" title={title} lead={lead} />
+
+  <div class="container-grid grid-12">
+    <div class="col-span-full">
+      <ImagePlaceholder slotId={slotId} />
+    </div>
+  </div>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Ausgangslage</Eyebrow>
+      <h2 class="type-h2 mt-4">Die Ausgangslage</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      {ausgangslage.map((p) => <p class="type-body measure mt-6 first:mt-0">{p}</p>)}
+    </div>
+  </section>
+
+  <section class="bg-paper-shade">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow>Nutzen</Eyebrow>
+        <h2 class="type-h2 mt-4">{leistungenTitel}</h2>
+      </div>
+      <ul class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line">
+        {leistungen.map((l) => <li class="type-body border-b border-line py-4">{l}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  {
+    besonderheit && (
+      <section class="container-grid grid-12 section-md aufblenden">
+        <div class="col-span-full lg:col-span-5">
+          <Eyebrow>Besonderheit</Eyebrow>
+          <h2 class="type-h2 mt-4">{besonderheitTitel}</h2>
+        </div>
+        <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+          {besonderheit.map((p) => <p class="type-body measure mt-6 first:mt-0">{p}</p>)}
+        </div>
+      </section>
+    )
+  }
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Abgrenzung</Eyebrow>
+      <h2 class="type-h2 mt-4">{abgrenzungTitel}</h2>
+    </div>
+    <div
+      class:list={[
+        'col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0',
+        abgrenzungWarnung && 'border-l-2 border-signal pl-6',
+      ]}
+    >
+      {abgrenzung.map((p) => <p class="type-body measure mt-6 first:mt-0">{p}</p>)}
+    </div>
+  </section>
+
+  <section class="bg-signal aufblenden">
+    <div class="container-grid grid-12 section-sm">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-on-signal">{ctaLabel}</h2>
+        <p class="type-lead text-on-signal mt-6 measure-wide">
+          45 Minuten, kostenlos, ohne Verpflichtung.
+        </p>
+        <div class="mt-8">
+          <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

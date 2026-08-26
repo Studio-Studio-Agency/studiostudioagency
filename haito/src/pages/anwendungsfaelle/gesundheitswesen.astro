@@ -1,0 +1,29 @@
+---
+import SectorPage from '../../components/SectorPage.astro';
+---
+
+<SectorPage
+  title="Lokale KI im Gesundheitswesen"
+  metaTitle="Lokale KI für Arztpraxen und Gesundheitsbetriebe"
+  metaDescription="Administrative und dokumentarische Entlastung für Arztpraxen und Gesundheitsbetriebe. Patientendaten bleiben im Haus."
+  lead="Patientendaten sind nach revDSG besonders schützenswerte Personendaten. Ein lokales KI-System entlastet die Administration, ohne diese Daten aus dem Betrieb zu geben."
+  slotId="sector-gesundheit"
+  ausgangslage={[
+    'Im Gesundheitswesen gelten drei Regelwerke gleichzeitig: das revDSG mit seinen Anforderungen an besonders schützenswerte Personendaten, das Arztgeheimnis nach Art. 321 StGB und die kantonale Gesundheitsgesetzgebung.',
+    '[TODO: Text ergänzen — Ausgangslage aus Sicht der Branche vertiefen.]',
+  ]}
+  leistungenTitel="Was ein lokales System im Gesundheitsbetrieb leistet"
+  leistungen={[
+    'Berichtsentwürfe',
+    'Befundzusammenfassungen',
+    'Korrespondenz mit Zuweisern und Versicherern',
+    'Verwaltungsentlastung',
+  ]}
+  abgrenzungTitel="Was wir explizit nicht behaupten"
+  abgrenzungWarnung
+  abgrenzung={[
+    'Keine diagnostische oder therapeutische Entscheidungsunterstützung. Das ist ein regulierter Medizinprodukte-Bereich und nicht unser Feld.',
+    'Wir liefern ausschliesslich administrative und dokumentarische Entlastung.',
+  ]}
+  ctaLabel="Erstgespräch für Gesundheitsbetriebe"
+/>

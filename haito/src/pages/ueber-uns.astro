@@ -1,0 +1,125 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import SectionRule from '../components/SectionRule.astro';
+import ImagePlaceholder from '../components/ImagePlaceholder.astro';
+import { site } from '../config/site';
+
+const haltung = [
+  'Wir sagen ab, wenn ein Projekt keinen Sinn ergibt.',
+  'Wir dokumentieren so, dass ein anderer übernehmen könnte.',
+  'Wir verrechnen Hardware ohne Aufschlag.',
+  'Wir behaupten nicht, dass lokale Modelle in allem besser sind. Sie sind es nicht — sie sind in dem besser, was für Sie zählt.',
+  'Wir arbeiten mit Ihrem bestehenden IT-Partner, nicht gegen ihn.',
+];
+
+const portraits = ['portrait-01', 'portrait-02'] as const;
+---
+
+<BaseLayout
+  title="Über Haito"
+  description="Eine Basler GmbH, die lokale KI-Systeme baut und betreibt. Haltung, Team und Standort."
+>
+  <PageHeader
+    eyebrow="Über uns"
+    title="Über Haito"
+    lead="Eine Basler GmbH, die lokale KI-Systeme baut und betreibt."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Anlass</Eyebrow>
+      <h2 class="type-h2 mt-4">Warum es uns gibt</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Zwischen 2023 und heute hat sich in Schweizer Betrieben eine Praxis
+        etabliert, die niemand entschieden hat: KI-Werkzeuge werden genutzt, ohne
+        dass geklärt wäre, wohin die Daten fliessen. Gleichzeitig sind die
+        technischen Möglichkeiten, KI vollständig im eigenen Haus zu betreiben,
+        erheblich besser und deutlich günstiger geworden.
+      </p>
+      <p class="type-body measure mt-6">
+        Diese Lücke zwischen dem, was rechtlich verlangt wird, und dem, was
+        technisch bereits möglich ist, ist unser Geschäft.
+      </p>
+    </div>
+  </section>
+
+  <section class="flaeche-abgesetzt aufblenden">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow dark>Haltung</Eyebrow>
+        <h2 class="type-h2 mt-4 text-ink">Wie wir arbeiten</h2>
+      </div>
+      <ul class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line-dark">
+        {haltung.map((h) => (
+          <li class="type-body text-ink-muted border-b border-line-dark py-5">{h}</li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Team</Eyebrow>
+      <h2 class="type-h2 mt-4">Team</h2>
+      <p class="type-body text-ink-muted mt-6 measure">
+        [TODO: Teammitglieder — Name, Funktion, ein Satz Hintergrund]
+      </p>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
+      <ul class="grid gap-8 sm:grid-cols-2">
+        {portraits.map((slot) => (
+          <li>
+            <ImagePlaceholder slotId={slot} />
+            <p class="type-h3 mt-4">[TODO: Name]</p>
+            <p class="type-small text-ink-muted mt-1">[TODO: Funktion]</p>
+          </li>
+        ))}
+      </ul>
+      <p class="type-small text-ink-muted mt-8 measure">
+        Bei ein bis zwei Personen stellen wir das offen so dar. Kleine Struktur ist
+        bei dieser Zielgruppe kein Nachteil — sie bedeutet direkten Zugang.
+        Weitere Porträtplätze (<code>portrait-03</code>, <code>portrait-04</code>)
+        stehen im Bildverzeichnis bereit.
+      </p>
+    </div>
+  </section>
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md aufblenden">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Standort</Eyebrow>
+      <h2 class="type-h2 mt-4">Standort</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <dl class="border-t border-line">
+        <div class="border-b border-line py-4 grid sm:grid-cols-[10rem_1fr] gap-x-6 gap-y-1">
+          <dt class="type-small text-ink-muted">Adresse</dt>
+          <dd class="type-body">
+            {site.legalName}<br />
+            {site.address.street}<br />
+            {site.address.postalCode} {site.address.locality}
+          </dd>
+        </div>
+        <div class="border-b border-line py-4 grid sm:grid-cols-[10rem_1fr] gap-x-6 gap-y-1">
+          <dt class="type-small text-ink-muted">Handelsregister</dt>
+          <dd class="type-body">[TODO: Handelsregisternummer]</dd>
+        </div>
+        <div class="border-b border-line py-4 grid sm:grid-cols-[10rem_1fr] gap-x-6 gap-y-1">
+          <dt class="type-small text-ink-muted">UID</dt>
+          <dd class="type-body">[TODO: UID CHE-...]</dd>
+        </div>
+      </dl>
+      <p class="type-small text-ink-muted mt-6">
+        [TODO: Karte als statisches Bild oder Link auf OpenStreetMap ergänzen —
+        kein eingebettetes iframe.]
+      </p>
+    </div>
+  </section>
+</BaseLayout>
