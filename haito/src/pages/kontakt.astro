@@ -1,0 +1,252 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHeader from '../components/PageHeader.astro';
+import Eyebrow from '../components/Eyebrow.astro';
+import Button from '../components/Button.astro';
+import SectionRule from '../components/SectionRule.astro';
+import { site, formEndpoint } from '../config/site';
+
+/**
+ * Kontaktformular exakt mit den Feldern aus Teil 9 (Kontakt) des Briefs. Kein Feld fuer
+ * Budget, keines fuer Zeithorizont — jedes zusaetzliche Pflichtfeld kostet
+ * Anfragen.
+ *
+ * Es gibt noch keinen Endpunkt. Das action-Attribut ist ein Platzhalter, und
+ * daneben steht eine sichtbare E-Mail-Adresse als funktionierender Weg. Kein
+ * US-Formulardienst — das widerspraeche dem Produktversprechen.
+ */
+const groessen = ['1–9', '10–24', '25–49', '50+'];
+const anliegen = [
+  'Lokale KI',
+  'Beratung Datensouveränität',
+  'Softwareentwicklung',
+  'Noch unklar',
+];
+---
+
+<BaseLayout
+  title="Kontakt"
+  description="Kostenloses Erstgespräch, 45 Minuten, ohne Verpflichtung. Haito GmbH, Basel-Stadt."
+>
+  <PageHeader
+    eyebrow="Kontakt"
+    title="Kontakt"
+    lead="Der schnellste Weg ist ein Gespräch. 45 Minuten, kostenlos, ohne Verpflichtung."
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-7">
+      <form action={formEndpoint} method="post" class="flex flex-col gap-7">
+        <p class="type-small text-ink-muted">
+          Mit <span aria-hidden="true">*</span> bezeichnete Felder sind Pflichtfelder.
+        </p>
+
+        {/*
+          Honigtopf. Fuer Menschen unsichtbar, Automaten fuellen ihn aus — der
+          Endpunkt verwirft solche Anfragen stillschweigend. Ersetzt ein
+          CAPTCHA, ohne jemanden zu behelligen und ohne einen Dritten
+          einzubinden; reCAPTCHA schiede als Google-Dienst ohnehin aus.
+
+          tabindex="-1" nimmt das Feld aus der Tabulatorreihenfolge — sonst
+          waere ein fokussierbares Element in einem aria-hidden-Bereich, was
+          Screenreader in einen widerspruechlichen Zustand bringt.
+        */}
+        <div class="honigtopf" aria-hidden="true">
+          <label for="website">Website (dieses Feld bitte leer lassen)</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="feld">
+          <label for="name">Name <span aria-hidden="true">*</span></label>
+          <input type="text" id="name" name="name" required autocomplete="name" />
+        </div>
+
+        <div class="feld">
+          <label for="firma">Firma <span aria-hidden="true">*</span></label>
+          <input type="text" id="firma" name="firma" required autocomplete="organization" />
+        </div>
+
+        <div class="feld">
+          <label for="email">E-Mail <span aria-hidden="true">*</span></label>
+          <input type="email" id="email" name="email" required autocomplete="email" />
+        </div>
+
+        <div class="feld">
+          <label for="telefon">Telefon</label>
+          <input type="tel" id="telefon" name="telefon" autocomplete="tel" />
+        </div>
+
+        <fieldset class="feld-gruppe">
+          <legend>Anzahl Mitarbeitende <span aria-hidden="true">*</span></legend>
+          <div class="optionen">
+            {groessen.map((g, i) => (
+              <label class="option">
+                <input type="radio" name="mitarbeitende" value={g} required={i === 0} />
+                <span>{g}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <fieldset class="feld-gruppe">
+          <legend>Worum geht es? <span aria-hidden="true">*</span></legend>
+          <div class="optionen optionen-breit">
+            {anliegen.map((a, i) => (
+              <label class="option">
+                <input type="radio" name="anliegen" value={a} required={i === 0} />
+                <span>{a}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+
+        <div class="feld">
+          <label for="frage">Ihre Frage in einem Satz</label>
+          <textarea id="frage" name="frage" rows="3"></textarea>
+        </div>
+
+        <div>
+          <Button type="submit" variant="primary">Anfrage senden</Button>
+        </div>
+      </form>
+
+      <p class="type-small text-ink-muted mt-10 measure">
+        Wir antworten innerhalb eines Arbeitstages. Ihre Angaben werden
+        ausschliesslich zur Bearbeitung Ihrer Anfrage verwendet, auf Schweizer
+        Servern gespeichert und nicht an Dritte weitergegeben. Alles andere wäre in
+        unserem Fall schwer zu erklären.
+      </p>
+    </div>
+
+    <aside class="col-span-full lg:col-span-4 lg:col-start-9 mt-16 lg:mt-0">
+      <div class="border-t-2 border-ink pt-6">
+        <Eyebrow>Direkt</Eyebrow>
+        <dl class="mt-6 flex flex-col gap-5">
+          <div>
+            <dt class="type-small text-ink-muted">E-Mail</dt>
+            <dd class="type-body mt-1">
+              <a href={`mailto:${site.email}`} class="link-rule">{site.email}</a>
+            </dd>
+          </div>
+          <div>
+            <dt class="type-small text-ink-muted">Telefon</dt>
+            <dd class="type-body mt-1">{site.phone}</dd>
+          </div>
+          <div>
+            <dt class="type-small text-ink-muted">Adresse</dt>
+            <dd class="type-body mt-1">
+              {site.legalName}<br />
+              {site.address.street}<br />
+              {site.address.postalCode} {site.address.locality}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <p class="type-small text-ink-muted mt-8 measure">
+        Solange das Formular noch keinen Endpunkt hat, ist die E-Mail-Adresse der
+        zuverlässige Weg.
+      </p>
+    </aside>
+  </section>
+</BaseLayout>
+
+<style>
+  .feld {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-width: 34rem;
+  }
+
+  label,
+  legend {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    line-height: 1.55;
+  }
+
+  input[type='text'],
+  input[type='email'],
+  input[type='tel'],
+  textarea {
+    font: inherit;
+    font-size: 1.0625rem;
+    color: var(--color-ink);
+    background: var(--color-paper);
+    border: 1px solid var(--color-ink);
+    border-radius: 1.25rem;
+    padding: 0.75rem 1rem;
+    width: 100%;
+  }
+
+  textarea {
+    resize: vertical;
+  }
+
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  .feld-gruppe {
+    border: none;
+    padding: 0;
+    margin: 0;
+    max-width: 34rem;
+  }
+
+  .optionen {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+  }
+
+  .option {
+    font-weight: 400;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    padding: 0.5rem 0.875rem;
+    cursor: pointer;
+  }
+
+  .option:hover {
+    border-color: var(--color-ink);
+  }
+
+  /* Ausgewaehlte Option deutlich markieren, nicht nur ueber den Radiopunkt. */
+  .option:has(input:checked) {
+    border-color: var(--color-ink);
+    box-shadow: inset 0 0 0 1px var(--color-ink);
+  }
+
+  .option:has(input:focus-visible) {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 2px;
+  }
+
+  .option input {
+    accent-color: var(--color-signal);
+  }
+</style>
+
+<style>
+  /*
+    Ausserhalb des Bildschirms statt display:none — manche Automaten
+    ueberspringen ausgeblendete Felder, verschobene fuellen sie aus.
+  */
+  .honigtopf {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

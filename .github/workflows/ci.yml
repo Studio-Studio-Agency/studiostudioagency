@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  # Das Wurzelprojekt (Vite/React) und die Vaulteer-Website (Astro) sind
+  # Das Wurzelprojekt (Vite/React) und die Haito-Website (Astro) sind
   # getrennte npm-Projekte mit eigenen Lockfiles. Sie laufen deshalb als eigene
   # Jobs: ein Fehler im einen darf den anderen nicht verdecken.
   ci:
@@ -50,12 +50,12 @@ jobs:
       - name: Build (Klimapartner standalone)
         run: npm run build:klimapartner
 
-  vaulteer:
-    name: vaulteer (Astro)
+  haito:
+    name: haito (Astro)
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: vaulteer
+        working-directory: haito
     steps:
       - uses: actions/checkout@v4
 
@@ -63,7 +63,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: vaulteer/package-lock.json
+          cache-dependency-path: haito/package-lock.json
 
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
@@ -106,7 +106,7 @@ jobs:
                     dist --include='*.html' --include='*.css' --include='*.js' \
                   | grep -oE 'https?://[a-zA-Z0-9.-]+' \
                   | sort -u \
-                  | grep -vE '^https?://(vaulteer\.ch|www\.w3\.org)$' \
+                  | grep -vE '^https?://(haito\.ch|www\.w3\.org)$' \
                   || true)
           if [ -n "$fremd" ]; then
             echo "::error::Ein Element im Build ruft eine fremde Domain ab:"

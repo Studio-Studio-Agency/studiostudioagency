@@ -1,0 +1,22 @@
+---
+/**
+ * Wortmarke. Reine Typografie in Helvetica 700, eng gesetzt.
+ * Bewusst kein generiertes Logo — die Bildmarke liefert der Auftraggeber.
+ * Das orange Quadrat ist der Punkt des Siegels, nicht Dekor.
+ */
+interface Props {
+  class?: string;
+  dark?: boolean;
+}
+const { class: className = '', dark = false } = Astro.props;
+---
+
+<span class:list={['inline-flex items-baseline gap-[0.3em]', className]}>
+  <span
+    class:list={[
+      'text-[1.0625rem] font-bold tracking-[-0.02em] uppercase leading-none',
+      'text-ink',
+    ]}>Haito</span
+  >
+  <span class="block size-2 shrink-0 self-center bg-signal" aria-hidden="true"></span>
+</span>

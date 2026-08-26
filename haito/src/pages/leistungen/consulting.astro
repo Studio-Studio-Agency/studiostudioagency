@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHeader from '../../components/PageHeader.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import Button from '../../components/Button.astro';
+import SectionRule from '../../components/SectionRule.astro';
+import Faq from '../../components/Faq.astro';
+import { withBase } from '../../config/site';
+import { faq } from '../../config/faq';
+import { faqPage } from '../../config/schema';
+
+const faqAuswahl = ['Was kostet der Einstieg?', 'Was passiert, wenn es Haito nicht mehr gibt?'];
+const schema = [faqPage(faq.filter((f) => faqAuswahl.includes(f.question)))];
+
+const formate = [
+  {
+    title: 'Impulsreferat',
+    meta: 'halber Tag, CHF 1’800',
+    text: 'Für Geschäftsleitungen, Verbände und Branchenanlässe. Wo steht die Schweiz, was verlangt das revDSG, welche realistischen Alternativen gibt es. Verständlich, ohne Vorkenntnisse, mit Zeit für Fragen.',
+  },
+  {
+    title: 'Workshop Datensouveränität',
+    meta: 'ein Tag, CHF 3’400',
+    text: 'Mit Ihrem Führungsteam. Wir gehen Ihre tatsächlich eingesetzten Dienste durch, ordnen Datenkategorien nach Schutzbedarf und arbeiten heraus, wo Handlungsbedarf besteht und wo nicht. Ergebnis: eine priorisierte Liste, kein Foliensatz.',
+  },
+  {
+    title: 'Datenstandort-Assessment',
+    meta: '1–2 Wochen, ab CHF 4’800',
+    text: 'Systematische Erhebung: welche Dienste im Einsatz sind, wo die Daten liegen, welche vertraglichen Grundlagen bestehen, wo Lücken sind. Sie erhalten einen schriftlichen Bericht mit konkreten Empfehlungen und Aufwandschätzung — verwendbar gegenüber Revision, Aufsicht und Auftraggebern.',
+  },
+  {
+    title: 'KI-Nutzungsrichtlinie',
+    meta: 'ab CHF 2’400',
+    text: 'Eine Richtlinie, die Ihre Mitarbeitenden verstehen und befolgen können. Was ist erlaubt, was nicht, welche Daten dürfen wohin. Auf Ihren Betrieb zugeschnitten, nicht aus einer Vorlage.',
+  },
+  {
+    title: 'Alternativen-Evaluation',
+    meta: 'auf Anfrage',
+    text: 'Für einzelne Dienste: welche europäischen oder Schweizer Alternativen es gibt, was der Wechsel kostet, wo er sich lohnt und wo nicht. Wir sind nicht ideologisch. Manche Wechsel sind es nicht wert.',
+  },
+];
+---
+
+<BaseLayout
+  title="Beratung Datensouveränität Schweiz | Haito"
+  description="Workshops und Assessments zu CLOUD Act, revDSG und Alternativen zu US-Diensten. Für Schweizer KMU, aus Basel."
+  bareTitle
+  schema={schema}
+>
+  <PageHeader
+    eyebrow="Einstieg"
+    title="Beratung Datensouveränität"
+    lead="Bevor über KI gesprochen wird, lohnt sich eine einfachere Frage: Wo liegen Ihre Firmendaten heute eigentlich — und wer hat rechtlich Zugriff darauf?"
+  />
+
+  <SectionRule />
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Rechtslage</Eyebrow>
+      <h2 class="type-h2 mt-4">Der CLOUD Act in einem Absatz</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Der US CLOUD Act von 2018 verpflichtet US-amerikanische
+        Technologieunternehmen, US-Behörden auf Anordnung Zugriff auf gespeicherte
+        Daten zu gewähren — unabhängig davon, in welchem Land diese Daten physisch
+        liegen. Ein Rechenzentrum in Zürich, betrieben von einem US-Konzern, ändert
+        an dieser Rechtslage nichts.
+      </p>
+      <p class="type-body measure mt-6">
+        Für Schweizer Unternehmen entsteht daraus ein Zielkonflikt: Der Anbieter
+        kann gleichzeitig an eine US-Anordnung und an Schweizer
+        Geheimhaltungspflichten gebunden sein. Wie dieser Konflikt im Einzelfall
+        gelöst wird, ist offen — und genau das ist das Problem.
+      </p>
+      <p class="type-body measure mt-6">
+        Das heisst nicht, dass US-Dienste generell unbrauchbar sind. Es heisst,
+        dass die Entscheidung bewusst getroffen werden sollte,
+        datenkategorienweise, und dokumentiert.
+      </p>
+      <p class="mt-8">
+        <a href={withBase('/wissen/cloud-act')} class="type-body link-rule font-bold">
+          Ausführlich im Wissensbereich
+        </a>
+      </p>
+    </div>
+  </section>
+
+  <section class="bg-paper-shade">
+    <div class="container-grid grid-12 section-md">
+      <div class="col-span-full lg:col-span-5">
+        <Eyebrow>Angebot</Eyebrow>
+        <h2 class="type-h2 mt-4">Unsere Formate</h2>
+      </div>
+      <dl class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0 border-t border-line">
+        {formate.map((f) => (
+          <div class="border-b border-line py-6">
+            <dt class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+              <span class="type-h3">{f.title}</span>
+              <span class="type-small text-signal-deep font-bold tabular">{f.meta}</span>
+            </dt>
+            <dd class="type-body text-ink-muted mt-3 measure">{f.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  </section>
+
+  <section class="container-grid grid-12 section-md">
+    <div class="col-span-full lg:col-span-5">
+      <Eyebrow>Abgrenzung</Eyebrow>
+      <h2 class="type-h2 mt-4">Was wir nicht tun</h2>
+    </div>
+    <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-8 lg:mt-0">
+      <p class="type-body measure">
+        Wir erstellen keine Rechtsgutachten und ersetzen keine Anwältin. Wo eine
+        juristische Beurteilung nötig ist, sagen wir das und arbeiten mit
+        spezialisierten Kanzleien zusammen.
+      </p>
+      <p class="type-body measure mt-6">
+        Wir verkaufen auch keine pauschale Cloud-Abkehr. Für viele Anwendungen ist
+        eine internationale Cloud die richtige Wahl. Der Punkt ist, zwischen den
+        Datenkategorien zu unterscheiden — nicht alles gleich zu behandeln.
+      </p>
+    </div>
+  </section>
+
+  <Faq only={faqAuswahl} />
+
+  <section class="bg-signal">
+    <div class="container-grid grid-12 section-sm">
+      <div class="col-span-full lg:col-span-8">
+        <h2 class="type-h2 text-ink">Beratungstermin anfragen</h2>
+        <div class="mt-8">
+          <Button href={withBase('/kontakt')} variant="secondary">Termin anfragen</Button>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

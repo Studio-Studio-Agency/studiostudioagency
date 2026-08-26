@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import Eyebrow from '../../components/Eyebrow.astro';
+import { withBase, site } from '../../config/site';
+
+/**
+ * Bestaetigung nach dem Absenden. Auf noindex und aus der Sitemap
+ * ausgeschlossen — eine Danke-Seite im Suchindex bringt niemandem etwas und
+ * faengt Suchende ab, die eigentlich das Formular wollen.
+ *
+ * Die Seite existiert, weil die Website statisch ist: ein Abfragestring wie
+ * ?ok=1 koennte an fertigem HTML nichts aendern. Der Endpunkt leitet deshalb
+ * per 303 hierher.
+ */
+---
+
+<BaseLayout
+  title="Anfrage gesendet"
+  description="Ihre Anfrage ist bei Haito eingegangen. Wir antworten innerhalb eines Arbeitstages."
+  noindex
+>
+  <section class="container-grid grid-12 section-lg">
+    <div class="col-span-full lg:col-span-7">
+      <Eyebrow>Eingegangen</Eyebrow>
+      <h1 class="type-h1 mt-4">Ihre Anfrage ist da.</h1>
+      <p class="type-lead text-ink-muted mt-8 measure-wide">
+        Wir antworten innerhalb eines Arbeitstages. Falls es dringend ist,
+        rufen Sie an: <span class="font-bold text-ink">{site.phone}</span>
+      </p>
+      <p class="type-body text-ink-muted mt-6 measure">
+        Sie erhalten keine Bestätigungsmail — wir verschicken keine
+        automatischen Nachrichten. Die Antwort kommt von einer Person.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-4">
+        <Button href={withBase('/')} variant="secondary">Zur Startseite</Button>
+        <Button href={withBase('/wissen')} variant="secondary">Zum Wissensbereich</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
