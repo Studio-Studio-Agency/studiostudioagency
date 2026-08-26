@@ -62,6 +62,15 @@ const blockIndex = noindex || !indexable;
     <meta property="og:image" content={ogImageUrl.href} />
     <meta name="twitter:card" content="summary_large_image" />
 
+    <!-- Die Schrift frueh anfordern: sie steht im CSS und wuerde sonst erst
+         nach dem Stylesheet entdeckt. Eigene Domain, kein Drittanbieter. -->
+    <link
+      rel="preload"
+      href={withBase('/fonts/open-sans-variable.woff2')}
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     {!blockIndex && <link rel="sitemap" href={withBase('/sitemap-index.xml')} />}
     <meta name="theme-color" content="#17171A" />

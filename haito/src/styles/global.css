@@ -7,6 +7,28 @@
    an genau dieser Stelle, nicht in den Komponenten.
    ========================================================================= */
 
+/* =========================================================================
+   Schrift
+
+   Open Sans, selbst ausgeliefert. Nicht ueber Google Fonts: die Seite darf
+   keine Verbindung zu einer Drittdomain aufbauen, und ein Schriftdienst waere
+   genau das. Die Datei liegt unter /fonts/ auf der eigenen Domain.
+
+   Variable Fassung, 47 KB fuer den ganzen Gewichtsbereich — drei Einzelschnitte
+   waeren zusammen groesser gewesen und haetten trotzdem weniger geboten.
+
+   font-display: swap zeigt den Text sofort im Systemzeichensatz und tauscht
+   nach. Lieber ein kurzer Sprung als eine Sekunde leere Flaeche.
+   ========================================================================= */
+
+@font-face {
+  font-family: 'Open Sans Variable';
+  src: url('/fonts/open-sans-variable.woff2') format('woff2-variations');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* --- Farbtokens ------------------------------------------------------- */
   /*
@@ -50,7 +72,7 @@
   /* Einzige Stelle, an der der Font-Stack definiert ist. Soll spaeter eine
      selbstgehostete Helvetica Now oder Inter zum Einsatz kommen, wird hier
      der @font-face-Name vorangestellt — sonst nirgends. */
-  --font-sans: "Helvetica Neue", Helvetica, "Inter", "Arial", sans-serif;
+  --font-sans: 'Open Sans Variable', 'Open Sans', 'Segoe UI', system-ui, sans-serif;
 
   /* --- Raster ----------------------------------------------------------- */
   --spacing-gutter: 1.5rem;     /* 24px mobil */
@@ -159,9 +181,13 @@ p, li, dd, dt, figcaption, blockquote {
   text-wrap: pretty;
 }
 
+/*
+  Kein font-weight hier. Diese Regel steht ungeschichtet und schluege damit
+  jede @utility — die Typoskala kaeme nie durch. Genau so blieben schon einmal
+  die Buttons eckig. Das Gewicht setzt type-display, type-h1 und so fort.
+*/
 h1, h2, h3, h4 {
   text-wrap: balance;
-  font-weight: 700;
 }
 
 ::selection {
@@ -222,25 +248,25 @@ h1, h2, h3, h4 {
 
 @utility type-display {
   hyphens: auto;
-  font-size: clamp(2.75rem, 7vw, 5.5rem);
-  font-weight: 700;
-  letter-spacing: -0.035em;
+  font-size: clamp(3rem, 7.6vw, 6.25rem);
+  font-weight: 800;
+  letter-spacing: -0.022em;
   line-height: 0.94;
 }
 
 @utility type-h1 {
   hyphens: auto;
-  font-size: clamp(2.25rem, 5vw, 3.75rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.375rem, 5.2vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
   line-height: 1;
 }
 
 @utility type-h2 {
   hyphens: auto;
-  font-size: clamp(1.75rem, 3.2vw, 2.75rem);
+  font-size: clamp(1.875rem, 3.4vw, 3rem);
   font-weight: 700;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.016em;
   line-height: 1.08;
 }
 
@@ -276,7 +302,7 @@ h1, h2, h3, h4 {
 @utility type-eyebrow {
   font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.14em;
   line-height: 1.2;
   text-transform: uppercase;
 }
@@ -548,6 +574,11 @@ body::before {
 }
 
 /* Gruenes Band: die 30 Prozent. Traegt weisse Schrift. */
+@keyframes verlauf-wandern {
+  from { background-position: 0% 50%; }
+  to   { background-position: 100% 50%; }
+}
+
 @utility band-gruen {
   /*
     Farbe und Verlauf getrennt setzen, nicht ueber die Kurzform: `background`
@@ -557,8 +588,15 @@ body::before {
   */
   background-color: var(--color-signal);
   background-image: var(--verlauf-tief);
+  background-size: 220% 220%;
   color: var(--color-on-signal);
   border-radius: var(--radius-card);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .band-gruen {
+    animation: verlauf-wandern 24s ease-in-out infinite alternate;
+  }
 }
 
 /*
@@ -566,6 +604,14 @@ body::before {
   jedes text-ink und text-ink-muted, ohne dass an hundert Stellen eine andere
   Klasse stehen muss — und ohne dass die naechste Sektion es wieder vergisst.
 */
+.band-gruen .signalpille,
+section.bg-signal .signalpille {
+  background: color-mix(in oklab, white 16%, transparent);
+  border-color: color-mix(in oklab, white 42%, transparent);
+  color: #FFFFFF;
+  backdrop-filter: blur(6px);
+}
+
 .band-gruen,
 section.bg-signal {
   --color-ink: #FFFFFF;
