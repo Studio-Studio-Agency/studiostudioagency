@@ -201,24 +201,24 @@ const sicherheit: { text: string; note?: string }[] = [
     </div>
   </section>
 
-  <section class="bg-ink on-ink text-paper">
+  <section class="flaeche-abgesetzt">
     <div class="container-grid grid-12 section-md">
       {/* Fuenf statt vier Spalten: "Nachvollziehbarkeit" ist die laengste
           Wortmarke der Website und bricht bei vier Spalten mitten im Wort. */}
       <div class="col-span-full lg:col-span-5">
         <Eyebrow dark>Sicherheit</Eyebrow>
-        <h2 class="type-h2 mt-4 text-paper">Sicherheit und Nachvollziehbarkeit</h2>
+        <h2 class="type-h2 mt-4 text-ink">Sicherheit und Nachvollziehbarkeit</h2>
       </div>
       <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-10 lg:mt-0">
         <ul class="border-t border-line-dark">
           {sicherheit.map((item) => (
             <li class="border-b border-line-dark py-4">
-              <p class="type-body text-paper-muted">{item.text}</p>
-              {item.note && <p class="type-small text-paper-muted mt-2 measure">{item.note}</p>}
+              <p class="type-body text-ink-muted">{item.text}</p>
+              {item.note && <p class="type-small text-ink-muted mt-2 measure">{item.note}</p>}
             </li>
           ))}
         </ul>
-        <p class="type-body text-paper mt-8 measure">
+        <p class="type-body text-ink mt-8 measure">
           Sie erhalten eine technische Dokumentation, die Sie einer
           Aufsichtsbehörde, einem Revisor oder einem Auftraggeber mit
           Sicherheitsanforderungen vorlegen können.
@@ -284,8 +284,8 @@ const sicherheit: { text: string; note?: string }[] = [
   <section class="bg-signal">
     <div class="container-grid grid-12 section-sm">
       <div class="col-span-full lg:col-span-8">
-        <h2 class="type-h2 text-ink">Kostenlose Standortbestimmung vereinbaren</h2>
-        <p class="type-lead text-ink mt-6 measure-wide">
+        <h2 class="type-h2 text-on-signal">Kostenlose Standortbestimmung vereinbaren</h2>
+        <p class="type-lead text-on-signal mt-6 measure-wide">
           45 Minuten. Wir klären, ob lokale KI für Ihre Situation überhaupt
           sinnvoll ist. Wenn nicht, sagen wir es.
         </p>

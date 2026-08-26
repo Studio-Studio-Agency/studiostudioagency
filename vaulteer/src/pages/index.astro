@@ -82,17 +82,21 @@ const schritte = [
   schema={schema}
 >
   {/* --- 3.1 Hero ---------------------------------------------------- */}
-  <section class="container-grid grid-12 pt-16 pb-20 md:pt-24 md:pb-28">
-    <div class="col-span-full lg:col-span-8">
-      <h1 class="type-display hero-step" style="--step: 0">
+  <section class="container-grid grid-12 pt-20 pb-20 md:pt-28 md:pb-28">
+    <div class="col-span-full flex flex-col items-center text-center lg:col-span-10 lg:col-start-2">
+      <p class="signalpille hero-step" style="--step: 0">
+        <span class="size-2 rounded-full bg-signal" aria-hidden="true"></span>
+        Lokale KI für Schweizer KMU
+      </p>
+      <h1 class="type-display mt-8 hero-step" style="--step: 1">
         Künstliche Intelligenz, die Ihr Haus nie verlässt.
       </h1>
-      <p class="type-lead text-ink-muted mt-8 measure-wide hero-step" style="--step: 1">
+      <p class="type-lead text-ink-muted mt-8 measure-wide hero-step" style="--step: 2">
         Vaulteer baut und betreibt lokale KI-Systeme für Schweizer KMU. Auf Ihrer
         Hardware oder in Schweizer Rechenzentren. Kein US-Cloud-Zugriff, kein
         CLOUD Act, keine Trainingsdaten an Dritte.
       </p>
-      <div class="mt-10 flex flex-wrap gap-4 hero-step" style="--step: 2">
+      <div class="mt-12 flex flex-wrap justify-center gap-4 hero-step" style="--step: 3">
         <Button href={withBase('/kontakt')} variant="primary">
           Kostenloses Erstgespräch vereinbaren
         </Button>
@@ -100,7 +104,7 @@ const schritte = [
           Wie das technisch funktioniert
         </Button>
       </div>
-      <p class="type-small text-ink-muted mt-10 hero-step" style="--step: 3">
+      <p class="type-small text-ink-muted mt-12 hero-step" style="--step: 4">
         GmbH mit Sitz in Basel-Stadt <span aria-hidden="true">·</span> Verträge nach
         Schweizer Recht <span aria-hidden="true">·</span> Betrieb ausschliesslich in der Schweiz
       </p>
@@ -153,12 +157,12 @@ const schritte = [
   </section>
 
   {/* --- 3.3 Lösung ---------------------------------------------------- */}
-  <section class="bg-ink on-ink text-paper">
+  <section class="flaeche-abgesetzt">
     <div class="container-grid grid-12 section-md">
       <div class="col-span-full lg:col-span-5">
         <Eyebrow dark>Das System</Eyebrow>
-        <h2 class="type-h2 mt-4 text-paper">Ein System. Ihr Haus. Volle Kontrolle.</h2>
-        <p class="type-body text-paper-muted mt-8 measure">
+        <h2 class="type-h2 mt-4 text-ink">Ein System. Ihr Haus. Volle Kontrolle.</h2>
+        <p class="type-body text-ink-muted mt-8 measure">
           Vaulteer richtet ein KI-System ein, das vollständig unter Ihrer Kontrolle
           läuft — auf einem Server in Ihren Räumen oder in einem Schweizer
           Rechenzentrum Ihrer Wahl. Ihre Mitarbeitenden arbeiten in einer
@@ -170,9 +174,9 @@ const schritte = [
       <div class="col-span-full lg:col-span-6 lg:col-start-7 mt-12 lg:mt-0">
         <dl class="grid gap-px bg-line-dark sm:grid-cols-2 border border-line-dark">
           {merkmale.map((m) => (
-            <div class="bg-ink p-7">
-              <dt class="type-h3 text-paper">{m.title}</dt>
-              <dd class="type-small text-paper-muted mt-3">{m.text}</dd>
+            <div class="flaeche-abgesetzt p-7">
+              <dt class="type-h3 text-ink">{m.title}</dt>
+              <dd class="type-small text-ink-muted mt-3">{m.text}</dd>
             </div>
           ))}
         </dl>
@@ -324,8 +328,8 @@ const schritte = [
   <section class="bg-signal">
     <div class="container-grid grid-12 section-md">
       <div class="col-span-full lg:col-span-8">
-        <h2 class="type-h2 text-ink">45 Minuten, die Klarheit schaffen.</h2>
-        <p class="type-lead text-ink mt-8 measure-wide">
+        <h2 class="type-h2 text-on-signal">45 Minuten, die Klarheit schaffen.</h2>
+        <p class="type-lead text-on-signal mt-8 measure-wide">
           Im Erstgespräch klären wir drei Fragen: Welche Daten sind bei Ihnen
           tatsächlich kritisch? Wo würde KI bei Ihnen konkret Zeit sparen? Und
           rechtfertigt der Nutzen den Aufwand? Kostenlos, unverbindlich, und ohne
@@ -333,7 +337,7 @@ const schritte = [
         </p>
         <div class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
           <Button href={withBase('/kontakt')} variant="secondary">Gespräch vereinbaren</Button>
-          <p class="type-small text-ink">
+          <p class="type-small text-on-signal">
             Oder rufen Sie direkt an: <span class="font-bold">{site.phone}</span>
           </p>
         </div>

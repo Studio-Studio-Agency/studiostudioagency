@@ -12,9 +12,10 @@ const path = stripBase(Astro.url.pathname);
 const isActive = (href: string) => path === href || path.startsWith(href + '/');
 ---
 
-<header class="site-header sticky top-[var(--frame-inset)] z-50 bg-paper">
+<header class="site-header sticky top-[calc(var(--frame-inset)+12px)] z-50">
   <div class="container-grid">
-    <div class="relative flex items-center justify-between gap-6 border-b border-line py-5">
+    <div class="navigationsleiste px-5 py-3 lg:px-6">
+    <div class="relative flex items-center justify-between gap-6">
       <a href={withBase('/')} class="inline-flex items-center" aria-label="Vaulteer — zur Startseite">
         <Wordmark />
       </a>
@@ -41,7 +42,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
       <!-- Mobil -->
       <details class="nav-mobile lg:hidden">
         <summary
-          class="type-eyebrow flex cursor-pointer list-none items-center gap-2 border border-ink px-4 py-3"
+          class="type-eyebrow flex cursor-pointer list-none items-center gap-2 rounded-[var(--radius-control)] border border-line-dark px-4 py-3"
           aria-label="Navigation öffnen"
         >
           <span class="nav-mobile__open">Menü</span>
@@ -80,6 +81,7 @@ const isActive = (href: string) => path === href || path.startsWith(href + '/');
           <a href={withBase('/kontakt')} class="btn btn-primary mt-6 w-full justify-center">Kontakt</a>
         </nav>
       </details>
+    </div>
     </div>
   </div>
 </header>

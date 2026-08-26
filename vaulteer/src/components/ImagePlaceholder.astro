@@ -32,17 +32,17 @@ const size = entry?.size ?? '[TODO: Zielgroesse]';
 ---
 
 <figure
-  class:list={['relative w-full bg-ink text-paper', className]}
+  class:list={['relative w-full overflow-hidden rounded-[var(--radius-card)] border border-line bg-paper-shade text-ink', className]}
   style={`aspect-ratio: ${ratio};`}
   role="img"
   aria-label="[TODO: Alt-Text]"
   data-image-slot={label}
 >
-  <span class="absolute left-0 top-0 block size-2 bg-signal" aria-hidden="true"></span>
+  <span class="absolute left-6 top-6 block size-2 bg-signal" aria-hidden="true"></span>
 
   <div class="absolute inset-0 flex flex-col justify-center gap-3 p-6 md:p-10">
-    <p class="type-eyebrow text-paper">{label}</p>
-    <p class="type-small text-paper-muted tabular">{ratioLabel} &middot; {size} px</p>
-    <p class="type-small max-w-[34rem] text-paper-muted">{brief}</p>
+    <p class="type-eyebrow text-ink">{label}</p>
+    <p class="type-small text-ink-muted tabular">{ratioLabel} &middot; {size} px</p>
+    <p class="type-small max-w-[34rem] text-ink-muted">{brief}</p>
   </div>
 </figure>
