@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>TV Board Watcher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { --bg:#fff; --fg:#111; --muted:#666; --line:#ddd; --accent:#0a66c2; --kauf:#1b7f3b; --rep:#8a5a00; --don:#5a3d8a; --hid:#999; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#111; --fg:#eee; --muted:#999; --line:#333; --accent:#5aa9ff; } }
+  body { font: 14px/1.4 -apple-system, system-ui, sans-serif; margin: 0; padding: 16px; background: var(--bg); color: var(--fg); }
+  h1 { font-size: 18px; margin: 0 0 12px; }
+  form.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  select, input { font: inherit; padding: 4px 6px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 4px; }
+  input[type=number] { width: 90px; }
+  button { font: inherit; padding: 4px 10px; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); color: var(--fg); cursor: pointer; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th a { color: var(--fg); text-decoration: none; }
+  tr.seen td { opacity: .6; }
+  .cat { font-weight: 600; font-size: 12px; padding: 2px 6px; border-radius: 3px; color: #fff; white-space: nowrap; }
+  .cat.KAUF { background: var(--kauf); } .cat.REPARATUR { background: var(--rep); } .cat.TEILESPENDER { background: var(--don); }
+  .cat.UNKLAR { background: var(--muted); } .cat.SUCHE, .cat.FALSCH { background: var(--hid); }
+  .muted { color: var(--muted); font-size: 12px; }
+  .stats span { margin-right: 14px; }
+  .states { margin: 10px 0 16px; font-size: 12px; color: var(--muted); }
+  .states b { color: var(--fg); }
+  .bad { color: #c0392b; }
+  td.actions form { display: inline; }
+  td.actions button { padding: 2px 6px; font-size: 12px; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<h1>TV Board Watcher – Sony KD-65AF9 Mainboard</h1>
+
+<div class="stats muted">
+  {% for c in categories %}<span><span class="cat {{c}}">{{c}}</span> {{ stats.get(c, 0) }}</span>{% endfor %}
+  <a href="{{ url_for('runs') }}">Läufe &amp; Plattformstatus</a>
+</div>
+
+<div class="states">
+  {% for s in states %}
+    <span><b>{{ s['platform'] }}</b>:
+      {% if s['last_status'] in ('blocked','error','robots') %}<span class="bad">{{ s['last_status'] }}</span>{% else %}{{ s['last_status'] or '–' }}{% endif %}
+      ({{ s['last_run_at']|dt or 'noch nie' }}) &nbsp;</span>
+  {% endfor %}
+</div>
+
+<form class="filters" method="get">
+  <select name="category">
+    <option value="">Alle Kategorien</option>
+    {% for c in categories %}<option value="{{c}}" {% if args.get('category')==c %}selected{% endif %}>{{c}}</option>{% endfor %}
+  </select>
+  <select name="platform">
+    <option value="">Alle Plattformen</option>
+    {% for p in platforms %}<option value="{{p}}" {% if args.get('platform')==p %}selected{% endif %}>{{p}}</option>{% endfor %}
+  </select>
+  <input type="number" name="price_min" placeholder="CHF von" value="{{ args.get('price_min','') }}">
+  <input type="number" name="price_max" placeholder="CHF bis" value="{{ args.get('price_max','') }}">
+  <label><input type="checkbox" name="hidden" value="1" {% if args.get('hidden')=='1' %}checked{% endif %}> Ausgeblendete zeigen</label>
+  <input type="hidden" name="sort" value="{{ args.get('sort','found_at') }}">
+  <input type="hidden" name="order" value="{{ args.get('order','desc') }}">
+  <button type="submit">Filtern</button>
+  <a href="{{ url_for('index') }}">Zurücksetzen</a>
+</form>
+
+{% macro sortlink(col, label) -%}
+  {% set cur = args.get('sort','found_at') %}
+  {% set nxt = 'asc' if (cur==col and args.get('order','desc')=='desc') else 'desc' %}
+  {% set q = args.to_dict() %}{% set _ = q.update({'sort': col, 'order': nxt}) %}
+  <a href="?{{ q|urlencode }}">{{ label }}{% if cur==col %} {{ '▲' if args.get('order')=='asc' else '▼' }}{% endif %}</a>
+{%- endmacro %}
+
+<table>
+  <thead>
+    <tr>
+      <th>Kat.</th>
+      <th>Titel</th>
+      <th>{{ sortlink('price', 'Preis') }}</th>
+      <th>Standort</th>
+      <th>{{ sortlink('platform', 'Plattform') }}</th>
+      <th>Verkäufer / Zustand</th>
+      <th>{{ sortlink('found_at', 'Gefunden') }}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for r in rows %}
+    <tr class="{% if r['seen'] %}seen{% endif %}">
+      <td><span class="cat {{ r['category'] }}" title="{{ r['reason'] }}">{{ r['category'] }}</span></td>
+      <td><a href="{{ r['url'] }}" target="_blank" rel="noopener">{{ r['title'] }}</a>
+          <div class="muted">Suche: {{ r['query'] }}{% if r['shipping'] %} · Versand {{ r['shipping'] }}{% endif %}</div></td>
+      <td>{{ r['price']|money(r['currency']) }}
+          {% if r['price_chf'] is not none and r['currency'] != 'CHF' %}<div class="muted">≈ CHF {{ r['price_chf']|money }}</div>{% endif %}</td>
+      <td>{{ r['location'] or '–' }}</td>
+      <td>{{ r['platform'] }}</td>
+      <td>{{ r['seller'] or '–' }}{% if r['seller_rating'] %} <span class="muted">({{ r['seller_rating'] }})</span>{% endif %}
+          <div class="muted">{{ r['condition'] or '' }}</div></td>
+      <td class="muted">{{ r['found_at']|dt }}</td>
+      <td class="actions">
+        <form method="post" action="{{ url_for('flag', hit_id=r['id'], field='seen') }}">
+          <input type="hidden" name="value" value="{{ 0 if r['seen'] else 1 }}">
+          <input type="hidden" name="back" value="{{ request.full_path }}">
+          <button title="gesehen">{{ 'ungesehen' if r['seen'] else 'gesehen' }}</button>
+        </form>
+        <form method="post" action="{{ url_for('flag', hit_id=r['id'], field='ignored') }}">
+          <input type="hidden" name="value" value="{{ 0 if r['ignored'] else 1 }}">
+          <input type="hidden" name="back" value="{{ request.full_path }}">
+          <button title="uninteressant">{{ 'wieder zeigen' if r['ignored'] else 'uninteressant' }}</button>
+        </form>
+      </td>
+    </tr>
+  {% else %}
+    <tr><td colspan="8" class="muted">Noch keine Treffer.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+</body>
+</html>
