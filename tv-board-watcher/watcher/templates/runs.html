@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>TV Board Watcher – Läufe</title>
+<style>
+  body { font: 14px/1.4 -apple-system, system-ui, sans-serif; margin: 0; padding: 16px; }
+  @media (prefers-color-scheme: dark) { body { background:#111; color:#eee; } a { color:#5aa9ff; } th, td { border-color:#333 !important; } }
+  table { border-collapse: collapse; width: 100%; margin-bottom: 24px; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ddd; }
+  .bad { color: #c0392b; font-weight: 600; }
+</style>
+</head>
+<body>
+<p><a href="{{ url_for('index') }}">← Treffer</a></p>
+<h2>Plattformstatus</h2>
+<table>
+  <tr><th>Plattform</th><th>Letzter Lauf</th><th>Status</th><th>Meldung</th><th>Fehler in Folge</th><th>Nächster Lauf</th><th>Treffer gesamt</th></tr>
+  {% for s in states %}
+  <tr>
+    <td>{{ s['platform'] }}</td><td>{{ s['last_run_at'] }}</td>
+    <td class="{% if s['last_status'] in ('blocked','error','robots') %}bad{% endif %}">{{ s['last_status'] or '–' }}</td>
+    <td>{{ s['last_message'] or '' }}</td><td>{{ s['consecutive_failures'] }}</td>
+    <td>{{ s['next_run_at'] }}</td><td>{{ s['hits_total'] }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Letzte Läufe</h2>
+<table>
+  <tr><th>Zeit (UTC)</th><th>Plattform</th><th>Status</th><th>Gefunden</th><th>Neu</th><th>Meldung</th></tr>
+  {% for r in runs %}
+  <tr><td>{{ r['started_at'] }}</td><td>{{ r['platform'] }}</td>
+      <td class="{% if r['status'] in ('blocked','error','robots') %}bad{% endif %}">{{ r['status'] }}</td>
+      <td>{{ r['found'] }}</td><td>{{ r['new'] }}</td><td>{{ r['message'] }}</td></tr>
+  {% endfor %}
+</table>
+</body>
+</html>

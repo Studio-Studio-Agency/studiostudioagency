@@ -1,0 +1,230 @@
+# =============================================================================
+# TV Board Watcher – zentrale Konfiguration
+# Sucht nach dem Mainboard des Sony KD-65AF9 (EU) auf vielen Plattformen und
+# meldet neue Treffer. Alles, was du anpassen willst, steht in dieser Datei.
+# Nach Änderungen: Dienst neu starten (siehe README, Abschnitt "Stopp/Start").
+# =============================================================================
+
+search:
+  # Primäre Suchbegriffe: Teilenummern. Jede wird einzeln auf jeder Plattform
+  # gesucht. Ein Treffer, der eine dieser Nummern enthält, gilt als relevant.
+  primary:
+    - "1-983-356-11"
+    - "173712811"
+    - "A2199065A"
+    - "A2199066A"
+    - "YA03070AA"
+    - "YA03071AA"
+    - "YD8S009UNG01"
+    - "YD8S007UNG01"
+
+  # Sekundäre Begriffe: Modellbezeichnungen. Werden NUR in Kombination mit
+  # einem der Board-Wörter unten gesucht (z.B. "KD-65AF9 Mainboard").
+  secondary:
+    - "KD-65AF9"
+    - "KD65AF9"
+    - "KD-55AF9"
+    - "KD55AF9"
+
+  # Board-Wörter, je Sprache. Für jede Sekundär-Modellnummer werden auf einer
+  # Plattform nur die Wörter der Sprachen dieser Plattform verwendet
+  # (z.B. ebay.fr -> "carte mère"), damit nicht 9 Varianten pro Plattform laufen.
+  board_words:
+    de: ["Mainboard", "Hauptplatine"]
+    en: ["Mainboard", "Motherboard"]
+    fr: ["carte mère"]
+    it: ["scheda madre"]
+    pl: ["płyta główna"]
+    hu: ["alaplap"]
+    nl: ["moederbord"]
+    es: ["placa base"]
+
+  # Zusätzliche Modellsuche für Teilespender (ganze defekte Fernseher):
+  # Wird nur auf Kleinanzeigen-Plattformen gesucht (nicht in Shops).
+  donor_search: true
+
+schedule:
+  # Minimaler/maximaler Abstand zwischen zwei Abfragen DERSELBEN Plattform
+  # in Minuten. Der tatsächliche Abstand wird zufällig dazwischen gewählt.
+  # Vorgabe: 2 bis 4 Stunden. Nicht unter 60 setzen.
+  interval_min_minutes: 120
+  interval_max_minutes: 240
+  # Zufällige Pause zwischen zwei Suchbegriffen auf derselben Plattform (Sek.)
+  pause_between_queries_seconds: [8, 25]
+  # Startverzögerung nach Programmstart (Sekunden), damit nicht alles auf einmal
+  # losläuft. Plattformen werden über diesen Zeitraum verteilt.
+  startup_spread_seconds: 600
+  # Uhrzeit (lokal) für die tägliche E-Mail-Zusammenfassung, Format HH:MM
+  daily_summary_time: "08:00"
+
+# -----------------------------------------------------------------------------
+# Plattformen. enabled: false schaltet eine Plattform ab, ohne sie zu löschen.
+# mode: api | http | browser | manual
+#   api     = offizielle Schnittstelle (braucht Schlüssel, siehe credentials)
+#   http    = einfache HTTPS-Abfrage ohne Browser (kleine Shops)
+#   browser = Playwright mit echtem Chromium
+#   manual  = nicht automatisch abfragbar; README erklärt die Alternative
+# Eine Plattform, deren robots.txt die Suchseite verbietet, wird automatisch
+# übersprungen und einmal gemeldet (Einstellung respect_robots).
+# -----------------------------------------------------------------------------
+platforms:
+  # --- eBay (alle Länder über EINE API) ---------------------------------------
+  ebay:
+    enabled: true
+    mode: api
+    marketplaces: [EBAY_DE, EBAY_CH, EBAY_AT, EBAY_FR, EBAY_IT, EBAY_ES,
+                   EBAY_NL, EBAY_BE, EBAY_PL, EBAY_GB, EBAY_US]
+    # Suchumfang: Titel+Beschreibung macht die Suche breiter, aber unschärfer.
+    search_in_description: true
+
+  # --- Allegro (PL + HU, API) -------------------------------------------------
+  allegro:
+    enabled: true
+    mode: api
+  allegro_lokalnie:
+    enabled: true
+    mode: browser
+  allegro_hu:
+    enabled: true
+    mode: browser          # allegro.hu hat keinen eigenen API-Marktplatz
+
+  # --- Kleinanzeigen-Portale (Browser) -----------------------------------------
+  kleinanzeigen:
+    enabled: true
+    mode: browser
+  willhaben:
+    enabled: true
+    mode: browser
+  ricardo:
+    enabled: true
+    mode: browser
+  tutti:
+    enabled: true
+    mode: browser
+  anibis:
+    enabled: true
+    mode: browser
+  leboncoin:
+    enabled: true
+    mode: browser          # starker Bot-Schutz (DataDome); bei Block -> manual
+  subito:
+    enabled: true
+    mode: browser
+  wallapop:
+    enabled: true
+    mode: browser
+  marktplaats:
+    enabled: true
+    mode: browser
+  tweedehands:             # 2dehands.be (gleiche Technik wie Marktplaats)
+    enabled: true
+    mode: browser
+  olx:
+    enabled: true
+    mode: browser
+  jofogas:
+    enabled: true
+    mode: browser
+
+  # --- Grosse Händler ----------------------------------------------------------
+  amazon:
+    enabled: false
+    mode: manual           # ToS verbieten automatisierte Abfragen; siehe README
+    domains: [amazon.de, amazon.fr, amazon.it, amazon.co.uk]
+  aliexpress:
+    enabled: false
+    mode: manual           # Login-Wall/Captcha; siehe README
+
+  # --- Ersatzteilshops (einfache HTTP-Suche, kein Browser) --------------------
+  shops:
+    enabled: true
+    mode: http
+    # Jeder Shop: Suchvorlage mit {q}. Selektoren im Code (platforms/shops.py),
+    # weitere Shops einfach hier anhängen; ohne eigene Selektoren wird ein
+    # generischer Produktlisten-Parser verwendet.
+    list:
+      - { name: replace4u,     url: "https://www.replace4u.be/search?q={q}",                              lang: nl }
+      - { name: iebelservices, url: "https://www.iebelservices.fr/recherche?controller=search&s={q}",     lang: fr }
+      - { name: vareza,        url: "https://www.vareza.de/search?sSearch={q}",                           lang: de }
+      - { name: lcd-onderdelen,url: "https://www.lcd-onderdelen.nl/search?q={q}",                         lang: nl }
+      - { name: sjstv,         url: "https://www.sjstv.co.uk/search?q={q}",                               lang: en }
+      - { name: electromix,    url: "https://www.electromix.co.uk/search?q={q}",                          lang: en }
+      - { name: mjkelectronics,url: "https://www.mjkelectronics.com/search?q={q}",                        lang: en }
+      - { name: digitechbm,    url: "https://www.digitechbm.com/search?q={q}",                            lang: en }
+      - { name: kuehlschrank-reparatur, url: "https://www.kuehlschrank-reparatur.de/search?q={q}",        lang: de }
+
+  # --- Allgemeine Websuche -----------------------------------------------------
+  websearch:
+    enabled: true
+    mode: api              # Brave Search API (kostenloser Plan reicht); ohne
+                           # Schlüssel Fallback auf DuckDuckGo-HTML
+    # Domains, die bereits als Plattform abgedeckt sind, werden ausgefiltert.
+
+# -----------------------------------------------------------------------------
+# Zugangsdaten. Lieber in .env eintragen (wird nicht ins Git eingecheckt);
+# Werte hier gelten als Fallback. Format .env:  EBAY_CLIENT_ID=...
+# -----------------------------------------------------------------------------
+credentials:
+  ebay_client_id: ""        # EBAY_CLIENT_ID    (Production App ID)
+  ebay_client_secret: ""    # EBAY_CLIENT_SECRET (Cert ID)
+  allegro_client_id: ""     # ALLEGRO_CLIENT_ID
+  allegro_client_secret: "" # ALLEGRO_CLIENT_SECRET
+  brave_api_key: ""         # BRAVE_API_KEY
+
+# -----------------------------------------------------------------------------
+# Benachrichtigung
+# -----------------------------------------------------------------------------
+notify:
+  # Kategorien, die sofort per Push gemeldet werden
+  push_categories: [KAUF, REPARATUR, TEILESPENDER]
+
+  ntfy:
+    enabled: true
+    server: "https://ntfy.sh"
+    topic: ""               # NTFY_TOPIC – langes, zufälliges Wort wählen!
+    token: ""               # NTFY_TOKEN – optional (ntfy.sh Konto / eigener Server)
+
+  telegram:
+    enabled: false
+    bot_token: ""           # TELEGRAM_BOT_TOKEN
+    chat_id: ""             # TELEGRAM_CHAT_ID
+
+  email:
+    enabled: false
+    # Tägliche Zusammenfassung aller neuen Treffer der letzten 24h
+    smtp_host: "smtp.example.com"
+    smtp_port: 587
+    smtp_user: ""           # SMTP_USER
+    smtp_password: ""       # SMTP_PASSWORD
+    from: "watcher@example.com"
+    to: "studio@alainsz.com"
+    # Auch leere Zusammenfassungen schicken? (Lebenszeichen)
+    send_if_empty: false
+
+# -----------------------------------------------------------------------------
+# Verhalten
+# -----------------------------------------------------------------------------
+behaviour:
+  respect_robots: true      # robots.txt pro Plattform prüfen, bei Verbot skippen
+  headless: true            # Browser unsichtbar laufen lassen
+  browser_timeout_seconds: 45
+  # Nach so vielen aufeinanderfolgenden Blocks/Fehlern einer Plattform wird
+  # eine Störungsmeldung gepusht (dann erst wieder nach Erholung)
+  alert_after_consecutive_failures: 3
+  # Nur Treffer melden, deren Preis (in CHF) unter dieser Grenze liegt.
+  # 0 = keine Grenze
+  max_price_chf: 0
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
+
+fx:
+  # Freie Kursquelle (EZB-Kurse). Wird einmal täglich gelesen und gecacht.
+  source: "https://api.frankfurter.app/latest?to=CHF&from={cur}"
+  base: CHF
+
+web:
+  host: "127.0.0.1"
+  port: 8765
+
+storage:
+  db_path: "data/watcher.sqlite"
+  log_path: "logs/watcher.log"
